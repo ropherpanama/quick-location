@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QuickLocation</string>
+    <string name="place_activity_label">Lugares cercanos</string>
+    <string name="place_detail_activity_label">Detalles</string>
+</resources>
