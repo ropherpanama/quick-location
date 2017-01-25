@@ -12,19 +12,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.codebase.quicklocation.adapters.AccessItemAdapter;
+import com.codebase.quicklocation.gps.GPSTracker;
 import com.codebase.quicklocation.model.AccessItem;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<AccessItem> elements = new ArrayList();
     private SearchView mSearchView;
     private MenuItem searchMenuItem;
+    private GPSTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        gpsTracker = new GPSTracker(this);
+
+        if(!gpsTracker.isCanGetLocation())
+            gpsTracker.showSettingsAlert();
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mLayoutManager = new GridLayoutManager(this, 2);
@@ -86,5 +92,11 @@ public class WelcomeActivity extends AppCompatActivity {
         elements.add(new AccessItem("HOSPITALES", 2));
         elements.add(new AccessItem("BOMBEROS", 3));
         elements.add(new AccessItem("FARMACIAS", 4));
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        gpsTracker.stopUsingGPS();
     }
 }

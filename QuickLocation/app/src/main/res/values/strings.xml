@@ -2,4 +2,9 @@
     <string name="app_name">QuickLocation</string>
     <string name="place_activity_label">Lugares cercanos</string>
     <string name="place_detail_activity_label">Detalles</string>
+
+    <string name="alert_gps_title">Ajustes de GPS</string>
+    <string name="alert_gps_msg">El GPS no está habilitado. ¿Desea ir al menu de Ajustes?</string>
+    <string name="alert_gps_btn_ok">Ajustes</string>
+    <string name="alert_gps_btn_no">Cancelar</string>
 </resources>

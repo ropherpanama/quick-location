@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 
 /**
  * Created by Spanky on 22/01/2017.
@@ -55,6 +56,37 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void writeJsonOnDisk(Context context, String fileName, StringBuilder bigStr) {
+        try {
+            FileWriter Filewriter = new FileWriter(context.getApplicationInfo().dataDir + "/" + fileName + ".json");
+            Filewriter.write(bigStr.toString());
+            Filewriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String objectToJson(Object object) {
+        return Utils.factoryGson().toJson(object);
+    }
+
+    /**
+     * Con este metodo se puede retornar una referencia a la ultima coordenada guardada por la
+     * aplicacion, esta coordenada sera usada para realizar el request al API segun la ubicacion
+     * del usuario
+     * @param context contexto de la aplicacion
+     * @return cadena json con el objeto Location
+     */
+    public static String getSavedLocation(Context context) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
+            JsonElement json = new JsonParser().parse(br);
+            return json.getAsJsonObject().toString();
+        }catch (Exception e){
+            return "no_location";
         }
     }
 }
