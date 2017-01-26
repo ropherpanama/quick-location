@@ -1,10 +1,10 @@
 ¿Qué falta por hacer?
 =============== Ubicar la coordenada GPS actual del teléfono
 Organizar la información de la pantalla de detalles 
-En base a esa ubicación; junto con la categoría elegida, se debe realizar el request al API
 En la pantalla de detalle del lugar escogido: colocar los botones "Llamar" y "Trazar ruta"
 Al presionar el botón "Llamar", se debe desplegar el Intent de llamada del sistema operativo
 Al presionar el botón "Trazar ruta" se deben pasar 2 parámetros: la ubicación actual (pto.1) y la coordenada destino (que viene en el request y en la data del lugar escogido). Con estos 2 puntos se debe dibujar la mejor ruta a través de un mapa (aún no defino si integrarlo con Waze o Google Maps)
+En base a esa ubicación; junto con la categoría elegida, se debe realizar el request al API
 Guardar en una base de datos los lugares visitados, escogidos, etc.
 Muy importante, pero no me preocupa ahora mismo: diseñar un interfaz agradable e intuitivo
 Habilitar la búsqueda libre (por search query), ya en la pantalla principal se muestra el campo de texto para realizar la búsqueda.

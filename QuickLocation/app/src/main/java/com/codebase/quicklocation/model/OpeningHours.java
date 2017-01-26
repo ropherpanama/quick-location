@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName;
 public class OpeningHours {
     @SerializedName("weekday_text")
     private String[] weekdayText;
+    @SerializedName("open_now")
+    private boolean openNow;
 
     public String[] getWeekdayText() {
         return weekdayText;
@@ -16,5 +18,13 @@ public class OpeningHours {
 
     public void setWeekdayText(String[] weekdayText) {
         this.weekdayText = weekdayText;
+    }
+
+    public boolean isOpenNow() {
+        return openNow;
+    }
+
+    public void setOpenNow(boolean openNow) {
+        this.openNow = openNow;
     }
 }

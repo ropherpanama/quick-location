@@ -89,4 +89,41 @@ public class Utils {
             return "no_location";
         }
     }
+
+    public static StringBuilder formatDays(StringBuilder trama) {
+        String origin = trama.toString();
+        String result = trama.toString();
+
+        if(origin.contains("Monday"))
+            result = result.replace("Monday", "Lunes");
+
+        if(origin.contains("Tuesday"))
+            result = result.replace("Tuesday", "Martes");
+
+        if(origin.contains("Wednesday"))
+            result = result.replace("Wednesday", "Miercoles");
+
+        if(origin.contains("Thursday"))
+            result = result.replace("Thursday", "Jueves");
+
+        if(origin.contains("Friday"))
+            result = result.replace("Friday", "Viernes");
+
+        if(origin.contains("Saturday"))
+            result = result.replace("Saturday", "Sabado");
+
+        if(origin.contains("Sunday"))
+            result = result.replace("Sunday", "Domingo");
+
+        if(origin.contains("Closed"))
+            result = result.replace("Closed", "Cerrado");
+
+        if(origin.contains("Sunday"))
+            result = result.replace("Open", "Abierto");
+
+        if(origin.toLowerCase().contains("now"))
+            result = result.replace("now", "ahora");
+
+        return new StringBuilder(result);
+    }
 }

@@ -29,6 +29,7 @@ import java.util.List;
 
 public class PlaceActivity extends AppCompatActivity {
     static final String KEY_DATA = "data";
+    static final String KEY_PLACE_NAME = "placeName";
     private String data;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -69,6 +70,7 @@ public class PlaceActivity extends AppCompatActivity {
                         //Snackbar snack = Snackbar.make(toolbar, item.getName() + " " + item.getPlaceId(), Snackbar.LENGTH_SHORT);
                         //snack.show();
                         Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
+                        i.putExtra(KEY_PLACE_NAME, item.getName());
                         startActivity(i);
                     }
                 });
