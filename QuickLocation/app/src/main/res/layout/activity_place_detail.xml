@@ -47,88 +47,114 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="?attr/buttonBarButtonStyle"
+            android:id="@+id/call_action_button"
+            android:textColorHint="@color/primary_dark"
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_width="0dp"
+            android:layout_height="40sp"
+            android:layout_weight="1"
+            android:onClick="makeACall"
+            android:text="Llamar"/>
+
+        <Button
+            style="?attr/buttonBarButtonStyle"
+            android:id="@+id/go_action_button"
+            android:layout_width="0dp"
+            android:layout_height="40sp"
+            android:layout_weight="1"
+            android:onClick="goToThePlace"
+            android:text="Ir"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
-                android:padding="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_call"/>
+                android:padding="5dp"
+                android:src="@android:drawable/ic_menu_call" />
 
             <TextView
                 android:id="@+id/tv_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:padding="5dp"
                 android:layout_marginLeft="20dp"
+                android:padding="5dp"
                 android:text="222-2222"
                 android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_vertical">
-
-        <ImageView
-            android:padding="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_dialog_map"/>
-
-        <TextView
-            android:id="@+id/tv_place_direction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:padding="5dp"
-            android:layout_marginLeft="20dp"
-            android:text="En algun lugar de un gran pais"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@android:drawable/ic_dialog_map" />
+
+            <TextView
+                android:id="@+id/tv_place_direction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:padding="5dp"
+                android:text="En algun lugar de un gran pais"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_opening_status"
             android:layout_width="314dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:padding="5dp"
             android:layout_marginLeft="20dp"
+            android:padding="5dp"
             android:text="Abierto"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text" />
+            android:textColor="@color/secondary_text"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
-                android:padding="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_dialog_info"/>
+                android:padding="5dp"
+                android:src="@android:drawable/ic_dialog_info" />
 
             <TextView
                 android:id="@+id/tv_opening_hours"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:padding="5dp"
                 android:layout_marginLeft="20dp"
+                android:padding="5dp"
                 android:text="Horarios"
                 android:textSize="14sp" />
         </LinearLayout>

@@ -17,6 +17,7 @@ public class PlaceDetail {
     private String url;
     private String vicinity;
     private String website;
+    private Geometry geometry;
 
     public String getFormattedAddress() {
         return formattedAddress;
@@ -64,5 +65,13 @@ public class PlaceDetail {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
     }
 }

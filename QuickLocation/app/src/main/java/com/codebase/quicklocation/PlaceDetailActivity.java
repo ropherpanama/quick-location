@@ -1,13 +1,18 @@
 package com.codebase.quicklocation;
 
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import com.codebase.quicklocation.model.LastLocation;
+import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.utils.Utils;
@@ -26,6 +31,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlacePhone;
     private String strOpeningStatus;
     private StringBuilder strOpeningHours;
+    private ResponseForPlaceDetails response = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         //load temporal data
         StringBuilder json = Utils.getJsonFromDisk(PlaceDetailActivity.this, "response_for_detail");
-        ResponseForPlaceDetails response = Utils.factoryGson().fromJson(json.toString(), ResponseForPlaceDetails.class);
+        response = Utils.factoryGson().fromJson(json.toString(), ResponseForPlaceDetails.class);
         PlaceDetail detail = response.getResult();
 
         Bundle bundle = getIntent().getExtras();
@@ -80,5 +86,48 @@ public class PlaceDetailActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Este metodo realiza la llamada al local
+     * al presionar el boton Llamar
+     * @param v vista padre del boton (no se utiliza pero es necesaria para el
+     *          funcionamiento del click handler)
+     */
+    public void makeACall(View v) {
+        try {
+            Intent i = new Intent(Intent.ACTION_CALL);
+            i.setData(Uri.parse("tel:" + strPlacePhone));
+            startActivity(i);
+        }catch (SecurityException se) {
+            se.printStackTrace();
+        }
+    }
+
+    /**
+     * Este metodo realiza lo siguiente:
+     * Obtiene la coordenada actual del usuario
+     * Obtiene la coordenada del lugar escogido
+     *
+     * @param v vista padre del boton (no se utiliza pero es necesaria para el
+     *          funcionamiento del click handler)
+     */
+    public void goToThePlace(View v) {
+        try {
+            String lastLocation = Utils.getSavedLocation(PlaceDetailActivity.this);
+
+            if(!"no_location".equals(lastLocation)) {
+                LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
+
+                if (userLocation != null) {
+                    Location placeLocation = response.getResult().getGeometry().getLocation();
+                    Intent i = new Intent(Intent.CATEGORY_APP_MAPS);
+                }
+            } else {
+                //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
