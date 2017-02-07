@@ -3,6 +3,7 @@ package com.codebase.quicklocation;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -121,10 +122,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                 if (userLocation != null) {
                     Location placeLocation = response.getResult().getGeometry().getLocation();
-                    Intent i = new Intent(Intent.CATEGORY_APP_MAPS);
+                    String queryParams = placeLocation.getLat() + "," + placeLocation.getLng();
+                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + queryParams);
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
                 }
             } else {
                 //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
+                Snackbar.make(findViewById(android.R.id.content), "Had a snack at Snackbar", Snackbar.LENGTH_LONG).show();
             }
         }catch(Exception e){
             e.printStackTrace();

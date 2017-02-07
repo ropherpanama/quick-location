@@ -1,5 +1,6 @@
 package com.codebase.quicklocation.gps;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -37,8 +39,6 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public Location getLocation() {
-        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
         try {
             locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -52,24 +52,24 @@ public class GPSTracker extends Service implements LocationListener {
                 if (isNetworkEnabled) {
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                    Log.d("Network", "Network");
+                    Log.d(this.getClass().getCanonicalName(), "Provider Network");
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        Log.d(this.getClass().getCanonicalName(), "Intentando buscar la ultima ubicacion conocida");
                     }
                 }
 
                 if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                        Log.d("GPS Enabled", "GPS Enabled");
-                        if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
+                    Log.d(this.getClass().getCanonicalName(), "Provider GPS");
+                    if (locationManager != null) {
+                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        Log.d(this.getClass().getCanonicalName(), "Probando conectar con el GPS la ultima coordenada");
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             e.printStackTrace();
         }
         return location;
@@ -79,10 +79,10 @@ public class GPSTracker extends Service implements LocationListener {
         if (Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (locationManager != null) {
+                locationManager.removeUpdates(GPSTracker.this);
+            }
             return;
-        }
-        if (locationManager != null) {
-            locationManager.removeUpdates(GPSTracker.this);
         }
     }
 

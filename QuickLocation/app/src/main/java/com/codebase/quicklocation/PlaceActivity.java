@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.adapters.AccessItemAdapter;
@@ -47,9 +48,9 @@ public class PlaceActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         try {
-            if(Utils.DATA_NOT_FOUND.equals(data))
-                System.out.println(data);
-            else {
+            if(Utils.DATA_NOT_FOUND.equals(data)) {
+                Snackbar.make(findViewById(android.R.id.content), data, Snackbar.LENGTH_LONG).show();
+            } else {
                 ResponseForPlaces response = Utils.factoryGson().fromJson(data, ResponseForPlaces.class);
                 List<Place>  places = response.getResults();
 

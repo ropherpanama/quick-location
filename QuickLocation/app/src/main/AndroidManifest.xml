@@ -26,6 +26,8 @@
             android:label="@string/place_activity_label" />
         <activity android:name=".PlaceDetailActivity"
             android:label="@string/place_detail_activity_label"/>
+
+        <service android:name=".gps.GPSTrackingService" android:process=":gps_tracking" />
     </application>
 
 </manifest>
