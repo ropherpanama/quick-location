@@ -7,4 +7,6 @@
     <string name="alert_gps_msg">El GPS no está habilitado. ¿Desea ir al menu de Ajustes?</string>
     <string name="alert_gps_btn_ok">Ajustes</string>
     <string name="alert_gps_btn_no">Cancelar</string>
+    <string name="google_api_nearby_search_url">"https://maps.googleapis.com/maps/api/place/nearbysearch/json?"</string>
+    <string name="google_api_place_details_url">"https://maps.googleapis.com/maps/api/place/details/json?"</string>
 </resources>

@@ -1,85 +1,71 @@
 package com.codebase.quicklocation;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
-import com.codebase.quicklocation.adapters.AccessItemAdapter;
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
-import com.codebase.quicklocation.model.AccessItem;
-import com.codebase.quicklocation.model.Geometry;
+import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Place;
-import com.codebase.quicklocation.model.PlaceItem;
 import com.codebase.quicklocation.model.ResponseForPlaces;
+import com.codebase.quicklocation.utils.HTTPTasks;
+import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Scanner;
 
 public class PlaceActivity extends AppCompatActivity {
-    static final String KEY_DATA = "data";
+    static final String KEY_CATEGORY = "categoria";
+    static final String KEY_PLACE_ID = "placeId";
     static final String KEY_PLACE_NAME = "placeName";
-    private String data;
+    private String categoria;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private Toolbar toolbar;
+    private Reporter logger = Reporter.getInstance(PlaceActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
         Bundle bundle = getIntent().getExtras();
-        data = bundle.getString(KEY_DATA);
-
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //data contiene la categoria seleccionada por el usuario en la pantalla anterior
+        categoria = bundle.getString(KEY_CATEGORY);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         try {
-            if(Utils.DATA_NOT_FOUND.equals(data)) {
-                Snackbar.make(findViewById(android.R.id.content), data, Snackbar.LENGTH_LONG).show();
+            //descargar data
+            String lastLocation = Utils.getSavedLocation(PlaceActivity.this);
+            if (!"no_location".equals(lastLocation)) {
+                LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
+                //Date date = new Date(userLocation.getTime()); //fecha de la ultima coordenada guardada
+                String key = Utils.getApplicationKey(this);
+                String url = getString(R.string.google_api_nearby_search_url) + "location=" + userLocation.getLatitude() + "," + userLocation.getLongitude()
+                        + "&rankby=distance" + "&type=" + categoria + "&key=" + key;
+
+                DownloadListOfPlaces downloader = new DownloadListOfPlaces();
+                downloader.execute(url);
             } else {
-                ResponseForPlaces response = Utils.factoryGson().fromJson(data, ResponseForPlaces.class);
-                List<Place>  places = response.getResults();
-
-                //Ajustar la data para mostrar en la lista de resultados
-                recyclerView = (RecyclerView) findViewById(R.id.list_of_places);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                recyclerView.setHasFixedSize(true);
-                recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                    @Override
-                    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                        super.onDraw(c, parent, state);
-                    }
-                });
-
-                mAdapter = new PlaceItemAdapter(places, new PlaceItemAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(Place item) {
-                        //Snackbar snack = Snackbar.make(toolbar, item.getName() + " " + item.getPlaceId(), Snackbar.LENGTH_SHORT);
-                        //snack.show();
-                        Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
-                        i.putExtra(KEY_PLACE_NAME, item.getName());
-                        startActivity(i);
-                    }
-                });
-
-                recyclerView.setAdapter(mAdapter);
+                Snackbar.make(toolbar, "No fue posible determinar tu ubicacion actual", Snackbar.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
         }
     }
 
@@ -89,5 +75,74 @@ public class PlaceActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class DownloadListOfPlaces extends AsyncTask<String, String, String> {
+        private String apiResponse;
+        ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                logger.write("Calling places API ...");
+                InputStream streamResponse = HTTPTasks.getJsonFromServer(params[0]);
+                return new Scanner(streamResponse).useDelimiter("\\A").next();
+            } catch (Exception e) {
+                apiResponse = "Error! : " + e.getMessage();
+                logger.error(Reporter.stringStackTrace(e));
+            }
+            return apiResponse;
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            logger.write(result);
+            progressDialog.dismiss();
+            if (!result.contains("Error!")) {
+                ResponseForPlaces response = Utils.factoryGson().fromJson(result, ResponseForPlaces.class);
+                if ("OK".equals(response.getStatus())) {
+                    List<Place> places = response.getResults();
+                    //Ajustar la data para mostrar en la lista de resultados
+                    recyclerView = (RecyclerView) findViewById(R.id.list_of_places);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(PlaceActivity.this));
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                        @Override
+                        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                            super.onDraw(c, parent, state);
+                        }
+                    });
+
+                    mAdapter = new PlaceItemAdapter(places, new PlaceItemAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(Place item) {
+                            Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
+                            i.putExtra(KEY_PLACE_ID, item.getPlaceId());
+                            i.putExtra(KEY_PLACE_NAME, item.getName());
+                            startActivity(i);
+                        }
+                    });
+
+                    recyclerView.setAdapter(mAdapter);
+                } else if ("ZERO_RESULTS".equals(response.getStatus())) {
+                    //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
+                    Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    //TODO: Caso probado colocar pantalla de informacion
+                    Snackbar.make(toolbar, response.getStatus(), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(PlaceActivity.this, "ProgressDialog", "Descargando datos");
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+        }
     }
 }

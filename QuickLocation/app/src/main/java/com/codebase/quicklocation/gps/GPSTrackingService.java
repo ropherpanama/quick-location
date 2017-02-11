@@ -11,43 +11,51 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.codebase.quicklocation.model.LastLocation;
+import com.codebase.quicklocation.utils.Reporter;
+import com.codebase.quicklocation.utils.Utils;
+
 /**
  * Created by Spanky on 06/02/2017.
  */
 
 public class GPSTrackingService extends Service {
-    private static final String TAG = GPSTrackingService.class.getCanonicalName();
+    private Reporter logger = Reporter.getInstance(GPSTrackingService.class);
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
+    private static final int LOCATION_INTERVAL = 3000;
     private static final float LOCATION_DISTANCE = 0f;
 
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
         public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
+            logger.write("LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
-            mLastLocation.set(location);
+            Log.d(this.getClass().getCanonicalName(), "La coordenada ha cambiado!");
+            LastLocation last = new LastLocation();
+            last.setAccuracy(location.getAccuracy());
+            last.setLatitude(location.getLatitude());
+            last.setLongitude(location.getLongitude());
+            last.setProvider(location.getProvider());
+            last.setTime(System.currentTimeMillis());
+            Log.d(this.getClass().getCanonicalName(), Utils.objectToJson(last));
+            Utils.writeJsonOnDisk(getApplication().getApplicationContext(), "location", new StringBuilder(Utils.objectToJson(last)));
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
 
@@ -64,18 +72,14 @@ public class GPSTrackingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
+        logger.write("onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
-
-        Log.e(TAG, "onCreate");
-
         initializeLocationManager();
-
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.PASSIVE_PROVIDER,
@@ -84,15 +88,15 @@ public class GPSTrackingService extends Service {
                     mLocationListeners[0]
             );
         } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
+            logger.error(Reporter.stringStackTrace(ex));
         } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            logger.error(Reporter.stringStackTrace(ex));
         }
     }
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        logger.write("onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -102,14 +106,14 @@ public class GPSTrackingService extends Service {
                     }
                     mLocationManager.removeUpdates(mLocationListeners[i]);
                 } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listener, ignore", ex);
+                    logger.error(Reporter.stringStackTrace(ex));
                 }
             }
         }
     }
 
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
+        logger.write("initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

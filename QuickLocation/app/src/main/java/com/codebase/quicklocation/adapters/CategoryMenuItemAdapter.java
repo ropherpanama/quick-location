@@ -1,7 +1,5 @@
 package com.codebase.quicklocation.adapters;
 
-import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.R;
-import com.codebase.quicklocation.model.AccessItem;
+import com.codebase.quicklocation.model.CategoryMenuItem;
 
 import java.util.ArrayList;
 
@@ -18,12 +16,12 @@ import java.util.ArrayList;
  * Created by Spanky on 10/01/2017.
  */
 
-public class AccessItemAdapter extends RecyclerView.Adapter<AccessItemAdapter.ViewHolder> {
-    private final ArrayList<AccessItem> elements;
+public class CategoryMenuItemAdapter extends RecyclerView.Adapter<CategoryMenuItemAdapter.ViewHolder> {
+    private final ArrayList<CategoryMenuItem> elements;
     private final OnItemClickListener listener;
 
 
-    public AccessItemAdapter(ArrayList<AccessItem> elements, OnItemClickListener listener) {
+    public CategoryMenuItemAdapter(ArrayList<CategoryMenuItem> elements, OnItemClickListener listener) {
         this.elements = elements;
         this.listener = listener;
     }
@@ -55,7 +53,7 @@ public class AccessItemAdapter extends RecyclerView.Adapter<AccessItemAdapter.Vi
             imageView = (ImageView) itemView.findViewById(R.id.item_logo);
         }
 
-        public void bind(final AccessItem item, final OnItemClickListener listener) {
+        public void bind(final CategoryMenuItem item, final OnItemClickListener listener) {
             textView.setText(item.getItemName());
             //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +66,7 @@ public class AccessItemAdapter extends RecyclerView.Adapter<AccessItemAdapter.Vi
     }
 
     public interface OnItemClickListener {
-        void onItemClick(AccessItem item);
+        void onItemClick(CategoryMenuItem item);
     }
 
 }

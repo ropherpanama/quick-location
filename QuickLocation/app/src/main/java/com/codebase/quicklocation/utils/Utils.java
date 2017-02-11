@@ -6,6 +6,7 @@ import android.os.Environment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -77,6 +78,7 @@ public class Utils {
      * Con este metodo se puede retornar una referencia a la ultima coordenada guardada por la
      * aplicacion, esta coordenada sera usada para realizar el request al API segun la ubicacion
      * del usuario
+     *
      * @param context contexto de la aplicacion
      * @return cadena json con el objeto Location
      */
@@ -85,7 +87,7 @@ public class Utils {
             BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
             JsonElement json = new JsonParser().parse(br);
             return json.getAsJsonObject().toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             return "no_location";
         }
     }
@@ -94,36 +96,48 @@ public class Utils {
         String origin = trama.toString();
         String result = trama.toString();
 
-        if(origin.contains("Monday"))
+        if (origin.contains("Monday"))
             result = result.replace("Monday", "Lunes");
 
-        if(origin.contains("Tuesday"))
+        if (origin.contains("Tuesday"))
             result = result.replace("Tuesday", "Martes");
 
-        if(origin.contains("Wednesday"))
+        if (origin.contains("Wednesday"))
             result = result.replace("Wednesday", "Miercoles");
 
-        if(origin.contains("Thursday"))
+        if (origin.contains("Thursday"))
             result = result.replace("Thursday", "Jueves");
 
-        if(origin.contains("Friday"))
+        if (origin.contains("Friday"))
             result = result.replace("Friday", "Viernes");
 
-        if(origin.contains("Saturday"))
+        if (origin.contains("Saturday"))
             result = result.replace("Saturday", "Sabado");
 
-        if(origin.contains("Sunday"))
+        if (origin.contains("Sunday"))
             result = result.replace("Sunday", "Domingo");
 
-        if(origin.contains("Closed"))
+        if (origin.contains("Closed"))
             result = result.replace("Closed", "Cerrado");
 
-        if(origin.contains("Sunday"))
+        if (origin.contains("Sunday"))
             result = result.replace("Open", "Abierto");
 
-        if(origin.toLowerCase().contains("now"))
+        if (origin.toLowerCase().contains("now"))
             result = result.replace("now", "ahora");
 
         return new StringBuilder(result);
+    }
+
+    /**
+     * Retorna el API Key de Google para que la app pueda conectarse al API
+     * @param context Contexto de la aplicacion
+     * @return Key del API autorizado
+     */
+    public static String getApplicationKey(Context context) {
+        StringBuilder keyJson = Utils.getJsonFromDisk(context, "api_key");
+        JsonObject jsonObject = new JsonParser().parse(keyJson.toString()).getAsJsonObject();
+        JsonElement jsonElement = jsonObject.get("key");
+        return jsonElement.getAsString();
     }
 }
