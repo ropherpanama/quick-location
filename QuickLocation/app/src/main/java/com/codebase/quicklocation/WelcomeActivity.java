@@ -73,12 +73,12 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         searchMenuItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) searchMenuItem.getActionView();
-        mSearchView.setOnQueryTextListener(listener);
+        //mSearchView.setOnQueryTextListener(listener);
         return true;
     }
 
@@ -93,7 +93,7 @@ public class WelcomeActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
             return false;
         }
-    };
+    }; */
 
     private void fillElementsData() {
         elements.add(new CategoryMenuItem("POLICIA", 1));

@@ -169,33 +169,36 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 response = Utils.factoryGson().fromJson(result, ResponseForPlaceDetails.class);
 
                 if ("OK".equals(response.getStatus())) {
-                    /////******************************************************************************************
                     PlaceDetail detail = response.getResult();
 
-                    strPlacePhone = detail.getFormattedPhoneNumber();
-                    strPlaceDirection = detail.getFormattedAddress();
+                    if(detail.getFormattedPhoneNumber() != null)
+                        strPlacePhone = detail.getFormattedPhoneNumber();
 
-                    if (detail.getOpeningHours().getWeekdayText().length > 0) {
-                        strOpeningHours = new StringBuilder();
+                    if(detail.getFormattedAddress() != null)
+                        strPlaceDirection = detail.getFormattedAddress();
 
-                        for (String str : detail.getOpeningHours().getWeekdayText())
-                            strOpeningHours.append(str).append("\n");
+                    if(detail.getOpeningHours() != null) {
+                        if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
+                            strOpeningHours = new StringBuilder();
+
+                            for (String str : detail.getOpeningHours().getWeekdayText())
+                                strOpeningHours.append(str).append("\n");
+                        }
+
+                        tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
+
+                        if (detail.getOpeningHours().isOpenNow()) {
+                            tvOpeningStatus.setText("Abierto en este momento");
+                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.accent));
+                        } else {
+                            tvOpeningStatus.setText("Cerrado en este momento");
+                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));
+                        }
                     }
 
                     tvPlaceName.setText(strPlaceName);
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
-
-                    if (detail.getOpeningHours().isOpenNow()) {
-                        tvOpeningStatus.setText("Abierto en este momento");
-                        tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.accent));
-                    } else {
-                        tvOpeningStatus.setText("Cerrado en este momento");
-                        tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));
-                    }
-
-                    tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
-                    ////*******************************************************************************************
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
