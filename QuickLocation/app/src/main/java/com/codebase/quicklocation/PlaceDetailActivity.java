@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,7 +42,6 @@ import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
-    private TextView tvPlaceName;
     private TextView tvPlaceDirection;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
@@ -53,6 +53,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private StringBuilder strOpeningHours;
     private ResponseForPlaceDetails response;
     private Toolbar toolbar;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
     private Reporter logger = Reporter.getInstance(PlaceDetailActivity.class);
 
     @Override
@@ -60,11 +61,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
 
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
+        collapsingToolbarLayout.setTitleEnabled(false);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        tvPlaceName = (TextView) findViewById(R.id.tv_place_name);
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
@@ -72,7 +75,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         try {
             Bundle bundle = getIntent().getExtras();
+
             strPlaceName = bundle.getString(PlaceActivity.KEY_PLACE_NAME);
+            setTitle(strPlaceName);
+
             String strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
 
             String key = Utils.getApplicationKey(this);
@@ -196,7 +202,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         }
                     }
 
-                    tvPlaceName.setText(strPlaceName);
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {

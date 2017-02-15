@@ -18,17 +18,21 @@
         <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".PlaceActivity"
             android:label="@string/place_activity_label" />
-        <activity android:name=".PlaceDetailActivity"
-            android:label="@string/place_detail_activity_label"/>
+        <activity
+            android:name=".PlaceDetailActivity"
+            android:label="@string/place_detail_activity_label"
+            android:theme="@style/AppTheme" />
 
-        <service android:name=".gps.GPSTrackingService" android:process=":gps_tracking" />
+        <service
+            android:name=".gps.GPSTrackingService"
+            android:process=":gps_tracking" />
+
     </application>
 
 </manifest>
