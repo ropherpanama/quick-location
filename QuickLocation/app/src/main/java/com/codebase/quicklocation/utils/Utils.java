@@ -141,9 +141,9 @@ public class Utils {
         return jsonElement.getAsString();
     }
 
-    public static int getDrawableByName(Context ctx, String str) {
-        String name = "ic_" + str.toLowerCase();
+    public static int getDrawableByName(Context ctx, String directorio, String id) {
+        String name = "ic_" + id.toLowerCase();
         System.out.println("Buscando drawable llamado : " + name);
-        return ctx.getResources().getIdentifier(name, "mipmap", ctx.getPackageName());
+        return ctx.getResources().getIdentifier(name, directorio, ctx.getPackageName());
     }
 }

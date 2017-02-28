@@ -18,6 +18,15 @@ public class PlaceDetail {
     private String vicinity;
     private String website;
     private Geometry geometry;
+    private Photo[] photos;
+
+    public Photo[] getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(Photo[] photos) {
+        this.photos = photos;
+    }
 
     public String getFormattedAddress() {
         return formattedAddress;

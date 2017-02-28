@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
@@ -32,6 +34,7 @@ import com.codebase.quicklocation.utils.Utils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -41,11 +44,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {
-
+    private ImageView ivPlacePhoto;
     private TextView tvPlaceDirection;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
     private TextView tvOpeningStatus;
+    private Button callButton;
     private String strPlaceName;
     private String strPlaceDirection;
     private String strPlacePhone;
@@ -68,10 +72,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        ivPlacePhoto = (ImageView) findViewById(R.id.iv_place_photo);
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
         tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
+        callButton = (Button) findViewById(R.id.call_action_button);
 
         try {
             Bundle bundle = getIntent().getExtras();
@@ -112,7 +118,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             i.setData(Uri.parse("tel:" + strPlacePhone));
             startActivity(i);
         } catch (SecurityException se) {
-            se.printStackTrace();
+            logger.error(Reporter.stringStackTrace(se));
         }
     }
 
@@ -176,8 +182,32 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 if ("OK".equals(response.getStatus())) {
                     PlaceDetail detail = response.getResult();
 
-                    if(detail.getFormattedPhoneNumber() != null)
+                    //Búsqueda de la foto del lugar en el API
+                    if(detail.getPhotos() != null && detail.getPhotos().length > 0) {
+                        String photoUrl = getString(R.string.google_api_place_photo_url) +
+                                "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
+                                "&key=" + Utils.getApplicationKey(PlaceDetailActivity.this);
+
+                        logger.write("Photo place URL: " + photoUrl);
+
+                        Picasso.with(PlaceDetailActivity.this)
+                                .load(photoUrl)
+                                .error(R.drawable.default_img)
+                                .into(ivPlacePhoto);
+                    } else {
+                        ivPlacePhoto.setImageResource(R.drawable.default_img);
+                    }
+
+                    if(detail.getFormattedPhoneNumber() != null) {
                         strPlacePhone = detail.getFormattedPhoneNumber();
+                        if("".equals(strPlacePhone)) {
+                            strPlacePhone = "Dato no disponible";
+                            callButton.setEnabled(false);
+                        }
+                    } else {
+                        callButton.setEnabled(false);
+                        strPlacePhone = "Dato no disponible";
+                    }
 
                     if(detail.getFormattedAddress() != null)
                         strPlaceDirection = detail.getFormattedAddress();
@@ -190,7 +220,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 strOpeningHours.append(str).append("\n");
                         }
 
-                        tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
+                        if(strOpeningHours.equals(""))
+                            tvPlaceOpeningHours.setText("Dato no disponible");
+                        else
+                            tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
 
                         if (detail.getOpeningHours().isOpenNow()) {
                             tvOpeningStatus.setText("Abierto en este momento");
@@ -199,7 +232,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             tvOpeningStatus.setText("Cerrado en este momento");
                             tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));
                         }
-                    }
+                    } else
+                        tvPlaceOpeningHours.setText("Dato no disponible");
 
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);

@@ -10,6 +10,7 @@ import java.net.URLConnection;
 
 public class HTTPTasks {
 
+    private static Reporter logger = Reporter.getInstance(HTTPTasks.class);
     /**
      * Este metodo busca en el contenido json en el servidor (ejecuta un http request)
      *
@@ -22,7 +23,7 @@ public class HTTPTasks {
             URLConnection urlConnection = url.openConnection();
             return urlConnection.getInputStream();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
             return null;
         }
     }

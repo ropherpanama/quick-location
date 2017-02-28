@@ -102,7 +102,7 @@ public class WelcomeActivity extends AppCompatActivity {
         String[] arrayCategorias = getResources().getStringArray(R.array.categorias);
 
         for (String c : arrayCategorias)
-            elements.add(new CategoryMenuItem(c.toUpperCase(), Utils.getDrawableByName(this, c)));
+            elements.add(new CategoryMenuItem(c.toUpperCase(), Utils.getDrawableByName(this, "drawable", c)));
 
         //Traduccion de categorias para el API
         categorias.put("POLICIA", "police");

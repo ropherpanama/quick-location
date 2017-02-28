@@ -64,7 +64,7 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         public void bind(final Place item, final PlaceItemAdapter.OnItemClickListener listener) {
             placeName.setText(item.getName());
             placeDirection.setText(item.getVicinity());
-            placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), appCategory));
+            placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), "mipmap", appCategory));
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

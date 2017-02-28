@@ -9,9 +9,9 @@
         android:id="@+id/item_logo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@android:drawable/ic_menu_my_calendar"
-        android:scaleType="centerCrop"/>
+        android:src="@drawable/ic_bomberos"
+        android:scaleType="center"
+        android:adjustViewBounds="true" />
 
     <TextView
         android:id="@+id/item_title"

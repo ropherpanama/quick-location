@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QuickLocation</string>
+    <string name="app_name">SOS Places</string>
     <string name="place_activity_label">Lugares cercanos</string>
     <string name="place_detail_activity_label">Detalles</string>
 
@@ -9,4 +9,6 @@
     <string name="alert_gps_btn_no">Cancelar</string>
     <string name="google_api_nearby_search_url">"https://maps.googleapis.com/maps/api/place/nearbysearch/json?"</string>
     <string name="google_api_place_details_url">"https://maps.googleapis.com/maps/api/place/details/json?"</string>
+    <string name="google_api_place_photo_url">"https://maps.googleapis.com/maps/api/place/photo?"</string>
+
 </resources>
