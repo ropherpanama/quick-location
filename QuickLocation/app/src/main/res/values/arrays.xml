@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categorias">
+        <item>policia</item>
+        <item>hospitales</item>
+        <item>bomberos</item>
+        <item>farmacias</item>
+    </string-array>
+</resources>

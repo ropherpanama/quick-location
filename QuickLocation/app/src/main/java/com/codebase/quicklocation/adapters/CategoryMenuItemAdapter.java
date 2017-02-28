@@ -1,5 +1,6 @@
 package com.codebase.quicklocation.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.codebase.quicklocation.R;
 import com.codebase.quicklocation.model.CategoryMenuItem;
+import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 public class CategoryMenuItemAdapter extends RecyclerView.Adapter<CategoryMenuItemAdapter.ViewHolder> {
     private final ArrayList<CategoryMenuItem> elements;
     private final OnItemClickListener listener;
-
 
     public CategoryMenuItemAdapter(ArrayList<CategoryMenuItem> elements, OnItemClickListener listener) {
         this.elements = elements;
@@ -55,6 +56,7 @@ public class CategoryMenuItemAdapter extends RecyclerView.Adapter<CategoryMenuIt
 
         public void bind(final CategoryMenuItem item, final OnItemClickListener listener) {
             textView.setText(item.getItemName());
+            imageView.setImageResource(item.getItemLogo());
             //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

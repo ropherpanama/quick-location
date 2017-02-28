@@ -18,7 +18,9 @@ import android.widget.Toast;
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
+import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.utils.Reporter;
+import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,6 +59,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
                         logger.write("Selected category : " + categorias.get(item.getItemName()));
                         i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
+                        i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
                         startActivity(i);
                         //No se llama a finish porque la actividad debe estar disponible
                     }
@@ -96,10 +99,11 @@ public class WelcomeActivity extends AppCompatActivity {
     }; */
 
     private void fillElementsData() {
-        elements.add(new CategoryMenuItem("POLICIA", 1));
-        elements.add(new CategoryMenuItem("HOSPITALES", 2));
-        elements.add(new CategoryMenuItem("BOMBEROS", 3));
-        elements.add(new CategoryMenuItem("FARMACIAS", 4));
+        String[] arrayCategorias = getResources().getStringArray(R.array.categorias);
+
+        for (String c : arrayCategorias)
+            elements.add(new CategoryMenuItem(c.toUpperCase(), Utils.getDrawableByName(this, c)));
+
         //Traduccion de categorias para el API
         categorias.put("POLICIA", "police");
         categorias.put("HOSPITALES", "hospital");

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,9 +30,11 @@ import java.util.Scanner;
 
 public class PlaceActivity extends AppCompatActivity {
     static final String KEY_CATEGORY = "categoria";
+    static final String KEY_APP_CATEGORY = "app_categoria";
     static final String KEY_PLACE_ID = "placeId";
     static final String KEY_PLACE_NAME = "placeName";
     private String categoria;
+    private String appCategoria;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,6 +48,7 @@ public class PlaceActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         //data contiene la categoria seleccionada por el usuario en la pantalla anterior
         categoria = bundle.getString(KEY_CATEGORY);
+        appCategoria = bundle.getString(KEY_APP_CATEGORY);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -97,7 +101,6 @@ public class PlaceActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            logger.write(result);
             progressDialog.dismiss();
             if (!result.contains("Error!")) {
                 ResponseForPlaces response = Utils.factoryGson().fromJson(result, ResponseForPlaces.class);
@@ -105,16 +108,13 @@ public class PlaceActivity extends AppCompatActivity {
                     List<Place> places = response.getResults();
                     //Ajustar la data para mostrar en la lista de resultados
                     recyclerView = (RecyclerView) findViewById(R.id.list_of_places);
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
                     recyclerView.setLayoutManager(new LinearLayoutManager(PlaceActivity.this));
                     recyclerView.setHasFixedSize(true);
-                    recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                        @Override
-                        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                            super.onDraw(c, parent, state);
-                        }
-                    });
+                    recyclerView.addItemDecoration(dividerItemDecoration);
 
-                    mAdapter = new PlaceItemAdapter(places, new PlaceItemAdapter.OnItemClickListener() {
+                    mAdapter = new PlaceItemAdapter(places, appCategoria, new PlaceItemAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(Place item) {
                             Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
@@ -137,7 +137,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(PlaceActivity.this, "ProgressDialog", "Descargando datos");
+            progressDialog = ProgressDialog.show(PlaceActivity.this, "Buscando", "Por favor espere ...");
         }
 
 

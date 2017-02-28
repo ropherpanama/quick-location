@@ -169,7 +169,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            logger.write(result);
             progressDialog.dismiss();
             if (!result.contains("Error!")) {
                 response = Utils.factoryGson().fromJson(result, ResponseForPlaceDetails.class);
@@ -216,7 +215,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(PlaceDetailActivity.this, "ProgressDialog", "Descargando datos");
+            progressDialog = ProgressDialog.show(PlaceDetailActivity.this, "Buscando", "Por favor espere ...");
         }
 
         @Override

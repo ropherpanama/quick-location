@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
 
 
     <ImageView
@@ -12,10 +13,11 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_marginRight="5dp"
         android:id="@+id/place_logo" />
 
     <TextView
-        android:text="TextView"
+        android:text="Este texto es muy largo para mostrarlo en este simple textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/place_name"
@@ -26,7 +28,8 @@
         android:layout_toEndOf="@+id/place_logo"
         android:fontFamily="sans-serif"
         android:textSize="18sp"
-        android:textColor="@color/primary_dark" />
+        android:textColor="@color/primary_text"
+        android:lines="1"/>
 
     <TextView
         android:text="TextView"
@@ -36,5 +39,6 @@
         android:layout_below="@+id/place_name"
         android:layout_toRightOf="@+id/place_logo"
         android:layout_toEndOf="@+id/place_logo"
-        android:textColor="@color/secondary_text" />
+        android:textColor="@color/secondary_text"
+        android:lines="1"/>
 </RelativeLayout>

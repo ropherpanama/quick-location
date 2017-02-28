@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.codebase.quicklocation.R;
 import com.codebase.quicklocation.model.Place;
+import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +21,19 @@ import java.util.List;
 public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.ViewHolder>{
     private final List<Place> places;
     private final PlaceItemAdapter.OnItemClickListener listener;
+    private final String appCategory;
 
 
-    public PlaceItemAdapter(List<Place> places, PlaceItemAdapter.OnItemClickListener listener) {
+    public PlaceItemAdapter(List<Place> places, String appCategory, PlaceItemAdapter.OnItemClickListener listener) {
         this.places = places;
         this.listener = listener;
+        this.appCategory = appCategory;
     }
 
     @Override
     public PlaceItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.place_item, parent, false);
-        return new PlaceItemAdapter.ViewHolder(v);
+        return new PlaceItemAdapter.ViewHolder(v, appCategory);
     }
 
     @Override
@@ -48,18 +51,20 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         private TextView placeName;
         private TextView placeDirection;
         private ImageView placeLogo;
+        private String appCategory;
 
-        private ViewHolder(View itemView) {
+        private ViewHolder(View itemView, String appCategory) {
             super(itemView);
             placeName = (TextView) itemView.findViewById(R.id.place_name);
             placeDirection = (TextView) itemView.findViewById(R.id.place_direction);
             placeLogo = (ImageView) itemView.findViewById(R.id.place_logo);
+            this.appCategory = appCategory;
         }
 
         public void bind(final Place item, final PlaceItemAdapter.OnItemClickListener listener) {
             placeName.setText(item.getName());
             placeDirection.setText(item.getVicinity());
-            //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
+            placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), appCategory));
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

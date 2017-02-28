@@ -145,7 +145,7 @@ public class Reporter {
      * String :)
      *
      * @param exception Exception que se quiera capturar en el catch
-     * @return String con todo el trace
+     * @return String con el trace completo
      */
     public static String stringStackTrace(Exception exception) {
         Writer writer = new StringWriter();

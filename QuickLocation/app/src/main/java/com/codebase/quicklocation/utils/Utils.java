@@ -140,4 +140,10 @@ public class Utils {
         JsonElement jsonElement = jsonObject.get("key");
         return jsonElement.getAsString();
     }
+
+    public static int getDrawableByName(Context ctx, String str) {
+        String name = "ic_" + str.toLowerCase();
+        System.out.println("Buscando drawable llamado : " + name);
+        return ctx.getResources().getIdentifier(name, "mipmap", ctx.getPackageName());
+    }
 }
