@@ -35,15 +35,14 @@ public class GPSTrackingService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(this.getClass().getCanonicalName(), "La coordenada ha cambiado!");
             LastLocation last = new LastLocation();
             last.setAccuracy(location.getAccuracy());
             last.setLatitude(location.getLatitude());
             last.setLongitude(location.getLongitude());
             last.setProvider(location.getProvider());
             last.setTime(System.currentTimeMillis());
-            Log.d(this.getClass().getCanonicalName(), Utils.objectToJson(last));
             Utils.writeJsonOnDisk(getApplication().getApplicationContext(), "location", new StringBuilder(Utils.objectToJson(last)));
+            logger.write(Utils.objectToJson(last));
         }
 
         @Override

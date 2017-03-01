@@ -21,7 +21,7 @@ import java.io.FileWriter;
 public class Utils {
     private static Gson gson;
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
-    public static final String DATA_NOT_FOUND = "Data Not Found";
+    private static final Reporter logger = Reporter.getInstance(Utils.class);
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
@@ -55,7 +55,7 @@ public class Utils {
 
             return data;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
             return null;
         }
     }
@@ -66,7 +66,7 @@ public class Utils {
             Filewriter.write(bigStr.toString());
             Filewriter.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
         }
     }
 
@@ -88,10 +88,16 @@ public class Utils {
             JsonElement json = new JsonParser().parse(br);
             return json.getAsJsonObject().toString();
         } catch (Exception e) {
+            logger.error(Reporter.stringStackTrace(e));
             return "no_location";
         }
     }
 
+    /**
+     * Simple traduccion al español de los resultados del API
+     * @param trama datos sobre el horario devueltos por el API
+     * @return Cadena formateada (traducida)
+     */
     public static StringBuilder formatDays(StringBuilder trama) {
         String origin = trama.toString();
         String result = trama.toString();
@@ -135,12 +141,24 @@ public class Utils {
      * @return Key del API autorizado
      */
     public static String getApplicationKey(Context context) {
-        StringBuilder keyJson = Utils.getJsonFromDisk(context, "api_key");
-        JsonObject jsonObject = new JsonParser().parse(keyJson.toString()).getAsJsonObject();
-        JsonElement jsonElement = jsonObject.get("key");
-        return jsonElement.getAsString();
+        try {
+            StringBuilder keyJson = Utils.getJsonFromDisk(context, "api_key");
+            JsonObject jsonObject = new JsonParser().parse(keyJson.toString()).getAsJsonObject();
+            JsonElement jsonElement = jsonObject.get("key");
+            return jsonElement.getAsString();
+        }catch (Exception e) {
+            logger.error(Reporter.stringStackTrace(e));
+            return null;
+        }
     }
 
+    /**
+     * Obtiene el recurso grafico a partir del nombre, en el directorio determinado
+     * @param ctx contexto de la aplicacion
+     * @param directorio directorio en donde se debe ubicar (drawable, mipmap)
+     * @param id nombre del recurso
+     * @return identificador numerico del recurso
+     */
     public static int getDrawableByName(Context ctx, String directorio, String id) {
         String name = "ic_" + id.toLowerCase();
         System.out.println("Buscando drawable llamado : " + name);

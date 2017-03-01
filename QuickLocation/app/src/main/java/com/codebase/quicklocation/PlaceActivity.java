@@ -33,6 +33,7 @@ public class PlaceActivity extends AppCompatActivity {
     static final String KEY_APP_CATEGORY = "app_categoria";
     static final String KEY_PLACE_ID = "placeId";
     static final String KEY_PLACE_NAME = "placeName";
+    private String key;
     private String categoria;
     private String appCategoria;
     private RecyclerView recyclerView;
@@ -59,12 +60,13 @@ public class PlaceActivity extends AppCompatActivity {
             if (!"no_location".equals(lastLocation)) {
                 LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
                 //Date date = new Date(userLocation.getTime()); //fecha de la ultima coordenada guardada
-                String key = Utils.getApplicationKey(this);
-                String url = getString(R.string.google_api_nearby_search_url) + "location=" + userLocation.getLatitude() + "," + userLocation.getLongitude()
-                        + "&rankby=distance" + "&type=" + categoria + "&key=" + key;
-
-                DownloadListOfPlaces downloader = new DownloadListOfPlaces();
-                downloader.execute(url);
+                key = Utils.getApplicationKey(this);
+                if(key != null) {
+                    String url = getString(R.string.google_api_nearby_search_url) + "location=" + userLocation.getLatitude() + "," + userLocation.getLongitude() + "&rankby=distance" + "&type=" + categoria + "&key=" + key;
+                    DownloadListOfPlaces downloader = new DownloadListOfPlaces();
+                    downloader.execute(url);
+                } else
+                    Snackbar.make(toolbar, "No se encontró el key de acceso al API", Snackbar.LENGTH_LONG).show();
             } else {
                 Snackbar.make(toolbar, "No fue posible determinar tu ubicacion actual", Snackbar.LENGTH_SHORT).show();
             }

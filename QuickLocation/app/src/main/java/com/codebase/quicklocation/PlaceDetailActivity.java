@@ -88,10 +88,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
             String strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
 
             String key = Utils.getApplicationKey(this);
-            String url = getString(R.string.google_api_place_details_url) + "placeid=" + strPlaceId + "&key=" + key;
 
-            DownloadDetailOfPlace downloader = new DownloadDetailOfPlace();
-            downloader.execute(url);
+            if(key != null) {
+                String url = getString(R.string.google_api_place_details_url) + "placeid=" + strPlaceId + "&key=" + key;
+                DownloadDetailOfPlace downloader = new DownloadDetailOfPlace();
+                downloader.execute(url);
+            } else
+                Snackbar.make(toolbar, "No se encontró el key de acceso al API", Snackbar.LENGTH_LONG).show();
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
@@ -184,16 +187,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     //Búsqueda de la foto del lugar en el API
                     if(detail.getPhotos() != null && detail.getPhotos().length > 0) {
-                        String photoUrl = getString(R.string.google_api_place_photo_url) +
-                                "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
-                                "&key=" + Utils.getApplicationKey(PlaceDetailActivity.this);
+                        String key = Utils.getApplicationKey(PlaceDetailActivity.this);
 
-                        logger.write("Photo place URL: " + photoUrl);
+                        if(key != null) {
+                            String photoUrl = getString(R.string.google_api_place_photo_url) +
+                                    "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
+                                    "&key=" + Utils.getApplicationKey(PlaceDetailActivity.this);
 
-                        Picasso.with(PlaceDetailActivity.this)
-                                .load(photoUrl)
-                                .error(R.drawable.default_img)
-                                .into(ivPlacePhoto);
+                            logger.write("Photo place URL: " + photoUrl);
+
+                            Picasso.with(PlaceDetailActivity.this)
+                                    .load(photoUrl)
+                                    .error(R.drawable.default_img)
+                                    .into(ivPlacePhoto);
+                        } else {
+                            logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
+                            ivPlacePhoto.setImageResource(R.drawable.default_img);
+                        }
                     } else {
                         ivPlacePhoto.setImageResource(R.drawable.default_img);
                     }

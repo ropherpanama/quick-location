@@ -10,5 +10,4 @@
     <string name="google_api_nearby_search_url">"https://maps.googleapis.com/maps/api/place/nearbysearch/json?"</string>
     <string name="google_api_place_details_url">"https://maps.googleapis.com/maps/api/place/details/json?"</string>
     <string name="google_api_place_photo_url">"https://maps.googleapis.com/maps/api/place/photo?"</string>
-
 </resources>
