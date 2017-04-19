@@ -38,7 +38,6 @@ public class PlaceActivity extends AppCompatActivity {
     private String appCategoria;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
 
@@ -59,8 +58,7 @@ public class PlaceActivity extends AppCompatActivity {
             String lastLocation = Utils.getSavedLocation(PlaceActivity.this);
             if (!"no_location".equals(lastLocation)) {
                 LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
-                //Date date = new Date(userLocation.getTime()); //fecha de la ultima coordenada guardada
-                key = Utils.getApplicationKey(this);
+                key = Utils.giveMeMyCandy();
                 if(key != null) {
                     String url = getString(R.string.google_api_nearby_search_url) + "location=" + userLocation.getLatitude() + "," + userLocation.getLongitude() + "&rankby=distance" + "&type=" + categoria + "&key=" + key;
                     DownloadListOfPlaces downloader = new DownloadListOfPlaces();
@@ -90,7 +88,7 @@ public class PlaceActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                logger.write("Calling places API ...");
+                //logger.write("Calling places API ...");
                 InputStream streamResponse = HTTPTasks.getJsonFromServer(params[0]);
                 return new Scanner(streamResponse).useDelimiter("\\A").next();
             } catch (Exception e) {

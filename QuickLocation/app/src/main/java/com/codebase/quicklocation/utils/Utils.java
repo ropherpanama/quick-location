@@ -22,6 +22,7 @@ public class Utils {
     private static Gson gson;
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
+    private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
@@ -39,12 +40,12 @@ public class Utils {
         return gson;
     }
 
-    public static StringBuilder getJsonFromDisk(Context context, String jsonFile) {
+    public static StringBuilder getJsonFromDiskAA(Context context, String jsonFile) {
         try {
             File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard, jsonFile + ".json");
-            //BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/" + jsonFile + ".json"));
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            //File file = new File(sdcard, jsonFile + ".json");
+            BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/" + jsonFile + ".json"));
+            //BufferedReader br = new BufferedReader(new FileReader(file));
             JsonElement json = new JsonParser().parse(br);
             StringBuilder data = null;
 
@@ -135,21 +136,8 @@ public class Utils {
         return new StringBuilder(result);
     }
 
-    /**
-     * Retorna el API Key de Google para que la app pueda conectarse al API
-     * @param context Contexto de la aplicacion
-     * @return Key del API autorizado
-     */
-    public static String getApplicationKey(Context context) {
-        try {
-            StringBuilder keyJson = Utils.getJsonFromDisk(context, "api_key");
-            JsonObject jsonObject = new JsonParser().parse(keyJson.toString()).getAsJsonObject();
-            JsonElement jsonElement = jsonObject.get("key");
-            return jsonElement.getAsString();
-        }catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
-            return null;
-        }
+    public static String giveMeMyCandy() {
+        return takeThisCandy;
     }
 
     /**
@@ -161,7 +149,7 @@ public class Utils {
      */
     public static int getDrawableByName(Context ctx, String directorio, String id) {
         String name = "ic_" + id.toLowerCase();
-        System.out.println("Buscando drawable llamado : " + name);
+        //System.out.println("Buscando drawable llamado : " + name);
         return ctx.getResources().getIdentifier(name, directorio, ctx.getPackageName());
     }
 }

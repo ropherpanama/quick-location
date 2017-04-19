@@ -29,7 +29,7 @@ public class GPSTrackingService extends Service {
         Location mLastLocation;
 
         public LocationListener(String provider) {
-            logger.write("LocationListener " + provider);
+            //logger.write("LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
@@ -42,7 +42,7 @@ public class GPSTrackingService extends Service {
             last.setProvider(location.getProvider());
             last.setTime(System.currentTimeMillis());
             Utils.writeJsonOnDisk(getApplication().getApplicationContext(), "location", new StringBuilder(Utils.objectToJson(last)));
-            logger.write(Utils.objectToJson(last));
+            //logger.write(Utils.objectToJson(last));
         }
 
         @Override
@@ -71,7 +71,7 @@ public class GPSTrackingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        logger.write("onStartCommand");
+        //logger.write("onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -95,7 +95,7 @@ public class GPSTrackingService extends Service {
 
     @Override
     public void onDestroy() {
-        logger.write("onDestroy");
+        //logger.write("onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -112,7 +112,7 @@ public class GPSTrackingService extends Service {
     }
 
     private void initializeLocationManager() {
-        logger.write("initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
+        //logger.write("initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

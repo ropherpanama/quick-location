@@ -30,8 +30,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<CategoryMenuItem> elements = new ArrayList();
-    private SearchView mSearchView;
-    private MenuItem searchMenuItem;
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
     private Reporter logger = Reporter.getInstance(WelcomeActivity.class);
 
@@ -57,7 +55,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         showSettingsAlert();
                     } else {
                         Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
-                        logger.write("Selected category : " + categorias.get(item.getItemName()));
+                        //logger.write("Selected category : " + categorias.get(item.getItemName()));
                         i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
                         i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
                         startActivity(i);
@@ -75,28 +73,6 @@ public class WelcomeActivity extends AppCompatActivity {
             logger.error(Reporter.stringStackTrace(e));
         }
     }
-
-    /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        searchMenuItem = menu.findItem(R.id.search);
-        mSearchView = (SearchView) searchMenuItem.getActionView();
-        //mSearchView.setOnQueryTextListener(listener);
-        return true;
-    }
-
-    SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }; */
 
     private void fillElementsData() {
         String[] arrayCategorias = getResources().getStringArray(R.array.categorias);
