@@ -1,24 +1,25 @@
 package com.codebase.quicklocation;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
-import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
@@ -31,7 +32,9 @@ public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<CategoryMenuItem> elements = new ArrayList();
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
-    private Reporter logger = Reporter.getInstance(WelcomeActivity.class);
+    private Reporter logger;
+    static final int PERMISSION_ALL = 1;
+    String[] permission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,18 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         try {
+            permission= new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CALL_PHONE
+            };
+
+            if(!hasPermissions(this, permission)){
+                ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
+            }
+
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-            startService(new Intent(this, GPSTrackingService.class));
             recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
             mLayoutManager = new GridLayoutManager(this, 2);
             recyclerView.setLayoutManager(mLayoutManager);
@@ -55,6 +67,10 @@ public class WelcomeActivity extends AppCompatActivity {
                         showSettingsAlert();
                     } else {
                         Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
+						
+                        if(!hasPermissions(WelcomeActivity.this, permission)){
+                            ActivityCompat.requestPermissions(WelcomeActivity.this, permission, 100);
+                        }
                         //logger.write("Selected category : " + categorias.get(item.getItemName()));
                         i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
                         i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
@@ -65,9 +81,6 @@ public class WelcomeActivity extends AppCompatActivity {
             });
 
             recyclerView.setAdapter(mAdapter);
-
-            if (!validarEstadoGps())
-                showSettingsAlert();
 
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
@@ -85,6 +98,17 @@ public class WelcomeActivity extends AppCompatActivity {
         categorias.put("HOSPITALES", "hospital");
         categorias.put("BOMBEROS", "fire_station");
         categorias.put("FARMACIAS", "pharmacy");
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void showSettingsAlert() {
@@ -112,6 +136,19 @@ public class WelcomeActivity extends AppCompatActivity {
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         if (isGPSEnabled) if (isNetworkEnabled) return true;
+
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_ALL && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            logger = Reporter.getInstance(WelcomeActivity.class);
+            if (!validarEstadoGps()){
+                showSettingsAlert();
+            }else{
+                startService(new Intent(this, GPSTrackingService.class));
+            }
+        }
     }
 }
