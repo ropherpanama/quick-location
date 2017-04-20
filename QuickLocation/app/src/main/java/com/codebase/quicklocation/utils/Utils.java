@@ -40,31 +40,15 @@ public class Utils {
         return gson;
     }
 
-    public static StringBuilder getJsonFromDiskAA(Context context, String jsonFile) {
+    /**
+     * Metodo usado para escribir la ultima coordenada registrada por el GPS
+     * en el almacenamiento interno del telefono
+     * @param fileName nombre del archivo en donde se debe escribir la informacion
+     * @param bigStr informacion que debe ser escrita en el archivo
+     */
+    public static void writeJsonOnDisk(String fileName, StringBuilder bigStr) {
         try {
-            File sdcard = Environment.getExternalStorageDirectory();
-            //File file = new File(sdcard, jsonFile + ".json");
-            BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/" + jsonFile + ".json"));
-            //BufferedReader br = new BufferedReader(new FileReader(file));
-            JsonElement json = new JsonParser().parse(br);
-            StringBuilder data = null;
-
-            if (json.isJsonArray())
-                data = new StringBuilder(json.getAsJsonArray().toString());
-            else if (json.isJsonObject())
-                data = new StringBuilder(json.getAsJsonObject().toString());
-
-            return data;
-        } catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
-            return null;
-        }
-    }
-
-    public static void writeJsonOnDisk(Context context, String fileName, StringBuilder bigStr) {
-        try {
-            String filePathName = context.getApplicationInfo().dataDir + "/" + fileName + ".json";
-            File file = new File(filePathName);
+            File file = new File(Environment.getDataDirectory(), fileName + ".json");
             
             if(!file.exists()) {
             	file.createNewFile();
