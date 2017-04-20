@@ -63,7 +63,14 @@ public class Utils {
 
     public static void writeJsonOnDisk(Context context, String fileName, StringBuilder bigStr) {
         try {
-            FileWriter Filewriter = new FileWriter(context.getApplicationInfo().dataDir + "/" + fileName + ".json");
+            String filePathName = context.getApplicationInfo().dataDir + "/" + fileName + ".json";
+            File file = new File(filePathName);
+            
+            if(!file.exists()) {
+            	file.createNewFile();
+            }
+            
+            FileWriter Filewriter = new FileWriter(file);
             Filewriter.write(bigStr.toString());
             Filewriter.close();
         } catch (Exception e) {
