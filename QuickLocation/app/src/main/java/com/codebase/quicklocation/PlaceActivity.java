@@ -11,12 +11,16 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.model.ResponseForPlaces;
+import com.codebase.quicklocation.sorters.RatingSorter;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
@@ -25,6 +29,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -40,6 +48,8 @@ public class PlaceActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
+    private List<Place> places = new ArrayList<>();
+    private List<Place> fakePlaces = new ArrayList<>();//Lista original para efectos de ordenamiento
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +115,13 @@ public class PlaceActivity extends AppCompatActivity {
             if (!result.contains("Error!")) {
                 ResponseForPlaces response = Utils.factoryGson().fromJson(result, ResponseForPlaces.class);
                 if ("OK".equals(response.getStatus())) {
-                    List<Place> places = response.getResults();
+                    //List<Place> places = response.getResults();
+                    places.clear();
+                    places = response.getResults();
+
+                    for (Place p : places)
+                        fakePlaces.add(p);
+
                     //Ajustar la data para mostrar en la lista de resultados
                     recyclerView = (RecyclerView) findViewById(R.id.list_of_places);
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
@@ -144,5 +160,31 @@ public class PlaceActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... text) {
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.place_menu, menu);
+        return true;
+    }
+
+    public void ordenarPorRating(MenuItem item) {
+        Collections.sort(places, new RatingSorter());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Como no tengo manera de ordenar por distancia,
+     * se restaura el array original que en teoria viene ordenado por distancia desde el API
+     * @param item menu item que activa el evento
+     */
+    public void ordenarPorDistancia(MenuItem item){
+        places.clear();
+
+        for(Place p: fakePlaces)
+            places.add(p);
+
+        mAdapter.notifyDataSetChanged();
     }
 }

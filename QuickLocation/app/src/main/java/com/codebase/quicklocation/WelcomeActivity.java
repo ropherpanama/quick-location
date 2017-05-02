@@ -32,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<CategoryMenuItem> elements = new ArrayList();
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
-    private Reporter logger;
+    private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
     String[] permission;
 
@@ -50,6 +50,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
             if(!hasPermissions(this, permission)){
                 ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
+            } else {
+                logger.write("Stating service with permissions");
+                startService(new Intent(this, GPSTrackingService.class));
             }
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -143,10 +146,10 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_ALL && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            logger = Reporter.getInstance(WelcomeActivity.class);
             if (!validarEstadoGps()){
                 showSettingsAlert();
             }else{
+                logger.write("Stating service without permissions");
                 startService(new Intent(this, GPSTrackingService.class));
             }
         }

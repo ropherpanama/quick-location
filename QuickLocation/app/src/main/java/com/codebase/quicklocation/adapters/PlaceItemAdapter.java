@@ -52,16 +52,19 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         private TextView placeDirection;
         private ImageView placeLogo;
         private String appCategory;
+        private TextView placeRating;
 
         private ViewHolder(View itemView, String appCategory) {
             super(itemView);
             placeName = (TextView) itemView.findViewById(R.id.place_name);
             placeDirection = (TextView) itemView.findViewById(R.id.place_direction);
             placeLogo = (ImageView) itemView.findViewById(R.id.place_logo);
+            placeRating = (TextView) itemView.findViewById(R.id.text_rating);
             this.appCategory = appCategory;
         }
 
         public void bind(final Place item, final PlaceItemAdapter.OnItemClickListener listener) {
+            placeRating.setText(String.valueOf(item.getRating()));
             placeName.setText(item.getName());
             placeDirection.setText(item.getVicinity());
             placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), "mipmap", appCategory));

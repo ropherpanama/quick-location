@@ -42,7 +42,8 @@ public class GPSTrackingService extends Service {
             last.setProvider(location.getProvider());
             last.setTime(System.currentTimeMillis());
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
-            //logger.write(Utils.objectToJson(last));
+            logger.write(Utils.objectToJson(last));
+            System.out.println(Utils.objectToJson(last));
         }
 
         @Override
