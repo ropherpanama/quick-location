@@ -30,7 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<CategoryMenuItem> elements = new ArrayList();
+    private ArrayList<CategoryMenuItem> elements = new ArrayList<>();
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
     private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
@@ -42,7 +42,7 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         try {
-            permission= new String[]{
+            permission = new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.CALL_PHONE

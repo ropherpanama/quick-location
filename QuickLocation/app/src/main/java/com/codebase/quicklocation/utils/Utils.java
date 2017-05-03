@@ -1,7 +1,10 @@
 package com.codebase.quicklocation.utils;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,8 +51,9 @@ public class Utils {
      */
     public static void writeJsonOnDisk(String fileName, StringBuilder bigStr) {
         try {
-            File file = new File(Environment.getDataDirectory(), fileName + ".json");
-            
+            //File file = new File(Environment.getDataDirectory(), fileName + ".json");
+            File file = new File(Environment.getExternalStorageDirectory(), fileName + ".json");
+
             if(!file.exists()) {
             	file.createNewFile();
             }
@@ -76,7 +80,8 @@ public class Utils {
      */
     public static String getSavedLocation(Context context) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
+            //BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
+            BufferedReader br = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + "/location.json"));
             JsonElement json = new JsonParser().parse(br);
             return json.getAsJsonObject().toString();
         } catch (Exception e) {
@@ -142,5 +147,19 @@ public class Utils {
         String name = "ic_" + id.toLowerCase();
         //System.out.println("Buscando drawable llamado : " + name);
         return ctx.getResources().getIdentifier(name, directorio, ctx.getPackageName());
+    }
+
+    public static void showMessage(String title, String message, final Context context) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public  void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

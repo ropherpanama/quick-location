@@ -76,7 +76,7 @@ public class PlaceActivity extends AppCompatActivity {
                 } else
                     Snackbar.make(toolbar, "No se encontró el key de acceso al API", Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(toolbar, "No fue posible determinar tu ubicacion actual", Snackbar.LENGTH_SHORT).show();
+                Utils.showMessage("Problemas", "No fue posible determinar tu ubicacion actual. Intentalo mas tarde.", this);
             }
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
@@ -145,8 +145,7 @@ public class PlaceActivity extends AppCompatActivity {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    //TODO: Caso probado colocar pantalla de informacion
-                    Snackbar.make(toolbar, response.getStatus(), Snackbar.LENGTH_SHORT).show();
+                    Utils.showMessage("Conexion", "En estos momentos no podemos ubicar tu informacion, intentalo mas tarde", PlaceActivity.this);
                 }
             }
         }
@@ -154,6 +153,7 @@ public class PlaceActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(PlaceActivity.this, "Buscando", "Por favor espere ...");
+            progressDialog.setCancelable(true);
         }
 
 
