@@ -18,12 +18,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
+import com.codebase.quicklocation.database.DBHelper;
+import com.codebase.quicklocation.database.Favorites;
+import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -35,6 +39,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
     String[] permission;
+    private DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,4 +159,17 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
     }
+
+//    public void dummyUseDatabase() {
+//        FavoritesDao dao = new FavoritesDao(this);
+//        Favorites f = new Favorites();
+//        f.setAddedFrom(new Date());
+//        f.setLocalName("Autoconcepto");
+//        f.setPlaceId("AAAsfkfkfe93iddkdfkdkd");
+//        f.setRating(4.3);
+//        dao.add(f);
+//
+//        for(Favorites fav : dao.getAll())
+//            System.out.println("Agregado lugar con nombre ==> " + fav.getLocalName());
+//    }
 }
