@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@mipmap/ic_launcher"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="5dp"
+        android:id="@+id/favorite_logo" />
+
+    <TextView
+        android:text="Este texto es muy largo para mostrarlo en este simple textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/favorite_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/favorite_logo"
+        android:layout_toEndOf="@+id/favorite_logo"
+        android:fontFamily="sans-serif"
+        android:textSize="18sp"
+        android:textColor="@color/primary_text"
+        android:lines="1"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/favorite_category"
+        android:layout_below="@+id/favorite_name"
+        android:layout_toRightOf="@+id/favorite_logo"
+        android:layout_toEndOf="@+id/favorite_logo"
+        android:textColor="@color/secondary_text"
+        android:lines="1"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/favorite_name"
+        android:layout_toStartOf="@+id/favorite_name">
+
+        <TextView
+            android:text="4.6"
+            android:padding="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_light"
+            android:id="@+id/favorite_rating"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="14sp"
+            android:textColor="@android:color/background_light" />
+    </FrameLayout>
+
+    <TextView
+        android:text="Comentario ingresado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/favorite_category"
+        android:layout_toRightOf="@+id/favorite_logo"
+        android:layout_toEndOf="@+id/favorite_logo"
+        android:id="@+id/favoriteComment" />
+
+</RelativeLayout>

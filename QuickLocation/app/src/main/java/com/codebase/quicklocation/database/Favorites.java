@@ -11,7 +11,7 @@ import java.util.Date;
 
 @DatabaseTable
 public class Favorites {
-    @DatabaseField
+    @DatabaseField(id = true)
     private String placeId;
     @DatabaseField
     private String localName;
@@ -19,6 +19,10 @@ public class Favorites {
     private Date addedFrom;
     @DatabaseField
     private double rating;
+    @DatabaseField
+    private String category;
+    @DatabaseField
+    private String comment;
 
     public Favorites(){}
 
@@ -52,5 +56,33 @@ public class Favorites {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "Favorites{" +
+                "placeId = '" + placeId + '\'' +
+                ", localName = '" + localName + '\'' +
+                ", addedFrom = " + addedFrom +
+                ", rating = " + rating +
+                ", category = '" + category + '\'' +
+                ", comment = '" + comment + '\'' +
+                '}';
     }
 }

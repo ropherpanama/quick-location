@@ -16,6 +16,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.database.DBHelper;
@@ -160,16 +163,19 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-//    public void dummyUseDatabase() {
-//        FavoritesDao dao = new FavoritesDao(this);
-//        Favorites f = new Favorites();
-//        f.setAddedFrom(new Date());
-//        f.setLocalName("Autoconcepto");
-//        f.setPlaceId("AAAsfkfkfe93iddkdfkdkd");
-//        f.setRating(4.3);
-//        dao.add(f);
-//
-//        for(Favorites fav : dao.getAll())
-//            System.out.println("Agregado lugar con nombre ==> " + fav.getLocalName());
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * Muestra la pantalla de favoritos al tocar el menu Favoritos
+     * @param item menu item que activa el evento
+     */
+    public void showFavorites(MenuItem item) {
+        Intent i = new Intent(WelcomeActivity.this, FavoritesActivity.class);
+        startActivity(i);
+    }
 }

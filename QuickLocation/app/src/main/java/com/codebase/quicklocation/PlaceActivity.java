@@ -41,6 +41,7 @@ public class PlaceActivity extends AppCompatActivity {
     static final String KEY_APP_CATEGORY = "app_categoria";
     static final String KEY_PLACE_ID = "placeId";
     static final String KEY_PLACE_NAME = "placeName";
+    static final String KEY_PLACE_RATING = "placeRating";
     private String key;
     private String categoria;
     private String appCategoria;
@@ -136,6 +137,8 @@ public class PlaceActivity extends AppCompatActivity {
                             Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
                             i.putExtra(KEY_PLACE_ID, item.getPlaceId());
                             i.putExtra(KEY_PLACE_NAME, item.getName());
+                            i.putExtra(KEY_PLACE_RATING, item.getRating());
+                            i.putExtra(KEY_APP_CATEGORY, appCategoria);
                             startActivity(i);
                         }
                     });

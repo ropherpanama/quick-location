@@ -94,6 +94,32 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
+                        android:tint="@android:color/holo_orange_light"
+                        android:src="@android:drawable/ic_menu_rotate" />
+
+                    <TextView
+                        android:id="@+id/tv_add_favorite"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:padding="5dp"
+                        android:text="Agregar a Favoritos"
+                        android:textColor="@color/primary_text"
+                        android:textSize="14sp"
+                        android:onClick="guardarFavorito"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:padding="5dp"
                         android:tint="@android:color/holo_green_dark"
                         android:src="@drawable/ic_call_black_48dp" />
 

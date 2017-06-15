@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
+import com.codebase.quicklocation.database.Favorites;
+import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.Place;
@@ -53,7 +55,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlaceName;
     private String strPlaceDirection;
     private String strPlacePhone;
+    private String strPlaceId;
     private String strOpeningStatus;
+    private String strCategory;
+    private Double doubleRating;
     private StringBuilder strOpeningHours;
     private ResponseForPlaceDetails response;
     private Toolbar toolbar;
@@ -85,11 +90,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
             strPlaceName = bundle.getString(PlaceActivity.KEY_PLACE_NAME);
             setTitle(strPlaceName);
 
-            String strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
+            strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
+            strCategory = bundle.getString(PlaceActivity.KEY_APP_CATEGORY);
+            doubleRating = bundle.getDouble(PlaceActivity.KEY_PLACE_RATING);
 
             String key = Utils.giveMeMyCandy();
 
-            if(key != null) {
+            if (key != null) {
                 String url = getString(R.string.google_api_place_details_url) + "placeid=" + strPlaceId + "&key=" + key;
                 DownloadDetailOfPlace downloader = new DownloadDetailOfPlace();
                 downloader.execute(url);
@@ -186,10 +193,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     PlaceDetail detail = response.getResult();
 
                     //Búsqueda de la foto del lugar en el API
-                    if(detail.getPhotos() != null && detail.getPhotos().length > 0) {
+                    if (detail.getPhotos() != null && detail.getPhotos().length > 0) {
                         String key = Utils.giveMeMyCandy();
 
-                        if(key != null) {
+                        if (key != null) {
                             String photoUrl = getString(R.string.google_api_place_photo_url) +
                                     "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
                                     "&key=" + Utils.giveMeMyCandy();
@@ -208,9 +215,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         ivPlacePhoto.setImageResource(R.drawable.default_img);
                     }
 
-                    if(detail.getFormattedPhoneNumber() != null) {
+                    if (detail.getFormattedPhoneNumber() != null) {
                         strPlacePhone = detail.getFormattedPhoneNumber();
-                        if("".equals(strPlacePhone)) {
+                        if ("".equals(strPlacePhone)) {
                             strPlacePhone = "Dato no disponible";
                             callButton.setEnabled(false);
                         }
@@ -219,10 +226,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         strPlacePhone = "Dato no disponible";
                     }
 
-                    if(detail.getFormattedAddress() != null)
+                    if (detail.getFormattedAddress() != null)
                         strPlaceDirection = detail.getFormattedAddress();
 
-                    if(detail.getOpeningHours() != null) {
+                    if (detail.getOpeningHours() != null) {
                         if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
                             strOpeningHours = new StringBuilder();
 
@@ -230,7 +237,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 strOpeningHours.append(str).append("\n");
                         }
 
-                        if(strOpeningHours.equals(""))
+                        if (strOpeningHours.equals(""))
                             tvPlaceOpeningHours.setText("Dato no disponible");
                         else
                             tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
@@ -265,5 +272,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... text) {
         }
+    }
+
+    /**
+     * Guarda la seleccion en la tabla de favoritos
+     *
+     * @param v parametro de vista
+     */
+    public void guardarFavorito(View v) {
+        Favorites favorite = new Favorites();
+        favorite.setLocalName(strPlaceName);
+        favorite.setRating(doubleRating);
+        favorite.setCategory(strCategory);
+        favorite.setAddedFrom(new Date());
+        favorite.setPlaceId(strPlaceId);
+        Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
+        String cdata = Utils.objectToJson(favorite);
+        i.putExtra("cdata", cdata);
+        startActivity(i);
     }
 }
