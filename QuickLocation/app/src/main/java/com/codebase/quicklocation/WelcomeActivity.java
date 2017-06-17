@@ -22,15 +22,12 @@ import android.view.MenuItem;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.database.DBHelper;
-import com.codebase.quicklocation.database.Favorites;
-import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 
 public class WelcomeActivity extends AppCompatActivity {
