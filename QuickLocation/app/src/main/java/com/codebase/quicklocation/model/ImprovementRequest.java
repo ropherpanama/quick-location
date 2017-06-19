@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ImprovementRequest {
     private String placeId;
+    private String author;
     private List<ImprovementInformation> informations;
 
     public String getPlaceId() {
@@ -26,5 +27,13 @@ public class ImprovementRequest {
 
     public void setInformations(List<ImprovementInformation> informations) {
         this.informations = informations;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }
