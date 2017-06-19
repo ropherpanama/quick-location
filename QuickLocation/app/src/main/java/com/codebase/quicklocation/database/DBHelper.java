@@ -17,10 +17,11 @@ import java.sql.SQLException;
 
 public class DBHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "quicklocation.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     private Dao<Users, Integer> usersDao;
     private Dao<Favorites, String> favoritesDao;
+    private Dao<FavoritesData, String> favoritesDataDao;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,6 +32,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.createTable(connectionSource, Users.class);
             TableUtils.createTable(connectionSource, Favorites.class);
+            TableUtils.createTable(connectionSource, FavoritesData.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -57,6 +59,12 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
         return favoritesDao;
     }
 
+    public Dao<FavoritesData, String> getFavoritesDataDao() throws SQLException {
+        if(favoritesDataDao == null)
+            favoritesDataDao = getDao(FavoritesData.class);
+        return favoritesDataDao;
+    }
+
     @Override
     public void close() {
         super.close();
@@ -68,6 +76,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.dropTable(connectionSource, Users.class, false);
             TableUtils.dropTable(connectionSource, Favorites.class, false);
+            TableUtils.dropTable(connectionSource, FavoritesData.class, false);
         } catch (SQLException e) {
             logger.error(Reporter.stringStackTrace(e));
         }
