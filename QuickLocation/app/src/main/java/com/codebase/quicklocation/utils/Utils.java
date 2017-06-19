@@ -1,6 +1,5 @@
 package com.codebase.quicklocation.utils;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;
@@ -9,7 +8,6 @@ import android.support.v7.app.AlertDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -26,6 +24,7 @@ public class Utils {
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
     private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
+    public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation";
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
