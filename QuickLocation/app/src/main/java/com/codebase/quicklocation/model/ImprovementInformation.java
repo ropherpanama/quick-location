@@ -14,9 +14,18 @@ public class ImprovementInformation {
     private String informationContent;
     private boolean isSchedule;
     private List<Schedule> schedules;
+    private String author;
 
     public boolean isSchedule() {
         return isSchedule;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public void setSchedule(boolean schedule) {

@@ -16,17 +16,9 @@ public class Users {
     @DatabaseField
     private String nickname;
     @DatabaseField
-    private String name;
-    @DatabaseField
-    private String lastname;
-    @DatabaseField
-    private String country;
-    @DatabaseField
     private String password;
     @DatabaseField
-    private Date signup;
-    @DatabaseField
-    private String deviceImei;
+    private String email;
 
     public Users() {
     }
@@ -47,30 +39,6 @@ public class Users {
         this.nickname = nickname;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -79,19 +47,11 @@ public class Users {
         this.password = password;
     }
 
-    public Date getSignup() {
-        return signup;
+    public String getEmail() {
+        return email;
     }
 
-    public void setSignup(Date signup) {
-        this.signup = signup;
-    }
-
-    public String getDeviceImei() {
-        return deviceImei;
-    }
-
-    public void setDeviceImei(String deviceImei) {
-        this.deviceImei = deviceImei;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
