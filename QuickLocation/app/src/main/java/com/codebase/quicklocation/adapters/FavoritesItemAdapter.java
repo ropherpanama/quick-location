@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -73,6 +74,9 @@ public class FavoritesItemAdapter extends RecyclerView.Adapter<FavoritesItemAdap
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    final Animation anim = AnimationUtils.loadAnimation(v.getContext(),
+                            R.anim.anim_alpha);
+                    v.startAnimation(anim);
                     listener.onItemClick(item);
                 }
             });
@@ -108,9 +112,11 @@ public class FavoritesItemAdapter extends RecyclerView.Adapter<FavoritesItemAdap
                 }
             });
         }
+
     }
 
     public interface OnItemClickListener {
         void onItemClick(Favorites item);
+
     }
 }

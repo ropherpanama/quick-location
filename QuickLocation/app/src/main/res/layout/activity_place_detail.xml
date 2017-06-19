@@ -27,9 +27,9 @@
             <ImageView
                 android:id="@+id/iv_place_photo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
-                android:scaleType="fitCenter"
+                android:scaleType="centerInside"
                 android:src="@drawable/default_img"
                 app:layout_collapseMode="parallax" />
 
@@ -85,8 +85,9 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/llayoutFavorite"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -94,6 +95,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
+                        android:layout_gravity="center"
                         android:tint="@android:color/holo_orange_light"
                         android:src="@android:drawable/ic_menu_rotate" />
 
@@ -104,6 +106,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="20dp"
                         android:padding="5dp"
+
                         android:text="Agregar a Favoritos"
                         android:textColor="@color/primary_text"
                         android:textSize="14sp"
@@ -112,7 +115,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -120,6 +123,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
+                        android:layout_gravity="center"
                         android:tint="@android:color/holo_green_dark"
                         android:src="@drawable/ic_call_black_48dp" />
 
@@ -137,7 +141,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -145,6 +149,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
+                        android:layout_gravity="center"
                         android:tint="@android:color/holo_red_dark"
                         android:src="@drawable/ic_location_on_black_48dp" />
 
@@ -173,7 +178,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -181,6 +186,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
+                        android:layout_gravity="center"
                         android:tint="@android:color/holo_blue_dark"
                         android:src="@drawable/ic_schedule_black_48dp" />
 
@@ -197,7 +203,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 

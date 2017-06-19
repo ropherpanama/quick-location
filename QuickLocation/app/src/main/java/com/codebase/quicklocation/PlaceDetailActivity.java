@@ -276,6 +276,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         favorite.setPlaceId(strPlaceId);
         Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
         String cdata = Utils.objectToJson(favorite);
+        String detailsResponse = Utils.objectToJson(response);
+        i.putExtra("placeDetails",detailsResponse);
         i.putExtra("cdata", cdata);
         startActivity(i);
     }

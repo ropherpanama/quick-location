@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.codebase.quicklocation.database.DBHelper;
 import com.codebase.quicklocation.database.FavoritesData;
-import com.codebase.quicklocation.database.Users;
 import com.j256.ormlite.dao.Dao;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,6 +57,20 @@ public class FavoritesDataDao {
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+
+    public FavoritesData getByPlaceId(String placeId){
+        try {
+            List<FavoritesData> retorno = dao.queryForEq("placeId", placeId);
+
+            if(retorno.isEmpty())
+                return null;
+            else
+                return retorno.get(0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
