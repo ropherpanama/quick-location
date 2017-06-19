@@ -2,17 +2,13 @@ package com.codebase.quicklocation;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -23,28 +19,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.codebase.quicklocation.adapters.PlaceItemAdapter;
 import com.codebase.quicklocation.database.Favorites;
-import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
-import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
-import com.codebase.quicklocation.model.ResponseForPlaces;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {

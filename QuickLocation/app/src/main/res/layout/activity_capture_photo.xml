@@ -1,23 +1,28 @@
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CapturePhotoActivity">
-
+    <TextureView
+        android:id="@+id/texture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/camera_view" />
     <FrameLayout
         android:id="@+id/camera_view"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="112dp"
+        android:layout_alignParentLeft="true">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imgClose"
+            android:layout_gravity="center"
+            android:background="@android:drawable/ic_menu_camera"
+            android:padding="20dp" />
     </FrameLayout>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imgClose"
-        android:layout_gravity="bottom|center"
-        android:background="@android:drawable/ic_menu_camera"
-        android:padding="20dp" />
-
-</FrameLayout>
+</RelativeLayout>
