@@ -26,6 +26,7 @@ import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.FavoritesData;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.database.dao.FavoritesDataDao;
+import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.io.File;
@@ -50,10 +51,11 @@ public class AddFavoritesActivity extends AppCompatActivity {
     //private ResponseForPlaceDetails placeDetails;
     private String targetPath = Utils.targetPath;
     /**
-     * resultado de la camar cuando se toma una foto.
+     * resultado de la camara cuando se toma una foto.
      */
     public int CAMERA_RESULT = 100;
     File directImge = null;
+    private Reporter logger = Reporter.getInstance(AddFavoritesActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +79,15 @@ public class AddFavoritesActivity extends AppCompatActivity {
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 takePictureButton.setEnabled(false);
-                ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
             }
             directImge = new File(targetPath);
             //directImge = directImge.getParentFile();
             if (!directImge.exists()) {
                 directImge.mkdirs();
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
         }
     }
 
@@ -150,7 +151,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
                 if (directImge != null) {
-                    if(data != null) {
+                    if (data != null) {
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             Bitmap photo = extras.getParcelable("data");
@@ -166,27 +167,23 @@ public class AddFavoritesActivity extends AppCompatActivity {
                                 outStream.close();
                                 Log.d("guardando bitmap", "finalizando " + file.getName());
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                logger.error(Reporter.stringStackTrace(e));
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.error(Reporter.stringStackTrace(e));
                             }
                             imageView.setImageBitmap(photo);
-
                         }
-                    }else
-                    {
+                    } else {
                         try {
                             imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), getImageUri()));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error(Reporter.stringStackTrace(e));
                         }
                     }
                 }
             }
         }
     }
-
-
 
     public void takePicture(View view) {
         Intent camaraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -195,20 +192,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
 
     }
 
-    private static File getOutputMediaFile(){
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "CameraDemo");
-
-        if (!mediaStorageDir.exists()){
-            if (!mediaStorageDir.mkdirs()){
-                return null;
-            }
-        }
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_"+ timeStamp + ".jpg");
-    }
     /**
      * Método que crea el nombre con la ruta de la imagen tomada con la cámara.
      *
