@@ -293,5 +293,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     public void showCommentsScreen(MenuItem item) {
         Intent i = new Intent(PlaceDetailActivity.this, ReportActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        startActivity(i);
     }
 }
