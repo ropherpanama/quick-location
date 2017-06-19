@@ -23,8 +23,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.codebase.quicklocation.database.Favorites;
+import com.codebase.quicklocation.database.FavoritesData;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
-import com.codebase.quicklocation.model.ResponseForPlaceDetails;
+import com.codebase.quicklocation.database.dao.FavoritesDataDao;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.io.File;
@@ -39,13 +40,14 @@ public class AddFavoritesActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private FavoritesDao dao;
+    private FavoritesDataDao favoritesData;
     private String cdata;
     private Favorites favorite;
     private EditText editTextComment;
     private Button takePictureButton;
     private ImageView imageView;
     private String placeDetailsJSON;
-    private ResponseForPlaceDetails placeDetails;
+    //private ResponseForPlaceDetails placeDetails;
     private String targetPath = Utils.targetPath;
     /**
      * resultado de la camar cuando se toma una foto.
@@ -63,11 +65,12 @@ public class AddFavoritesActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             dao = new FavoritesDao(this);
+            favoritesData = new FavoritesDataDao(this);
             Bundle incomming = getIntent().getExtras();
             cdata = incomming.getString("cdata");
-            placeDetailsJSON = getIntent().getExtras().getString("PlaceDetails");
+            placeDetailsJSON = getIntent().getExtras().getString("placeDetails");
             favorite = Utils.factoryGson().fromJson(cdata, Favorites.class);
-            placeDetails = Utils.factoryGson().fromJson(placeDetailsJSON,ResponseForPlaceDetails.class);
+            //placeDetails = Utils.factoryGson().fromJson(placeDetailsJSON,ResponseForPlaceDetails.class);
 
             takePictureButton = (Button) findViewById(R.id.button_image);
             imageView = (ImageView) findViewById(R.id.imageview);
@@ -116,7 +119,13 @@ public class AddFavoritesActivity extends AppCompatActivity {
                     if (editTextComment.getText().length() > 0)
                         favorite.setComment(editTextComment.getText().toString());
                     dao.add(favorite);
-
+                    FavoritesData favoriteData = new FavoritesData();
+                    favoriteData.setPlaceId(favorite.getPlaceId());
+                    favoriteData.setCdata(placeDetailsJSON);
+                    favoritesData.add(favoriteData);
+                    /**
+                     * TODO: G
+                     */
                     Snackbar.make(toolbar, "Favorito guardado", Snackbar.LENGTH_SHORT).show();
                     finish();
                 }

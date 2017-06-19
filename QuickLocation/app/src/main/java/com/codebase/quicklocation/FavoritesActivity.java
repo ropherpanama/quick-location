@@ -2,10 +2,10 @@ package com.codebase.quicklocation;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.codebase.quicklocation.adapters.FavoritesItemAdapter;
 import com.codebase.quicklocation.database.Favorites;
@@ -56,8 +55,10 @@ public class FavoritesActivity extends AppCompatActivity {
                 mAdapter = new FavoritesItemAdapter(favorites, new FavoritesItemAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(Favorites item) {
-                        //Intent i = new Intent(FavoritesActivity.this, PlaceDetailActivity.class);
-                        //startActivity(i);
+                        String cdata = Utils.objectToJson(item);
+                        Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
+                        itentfavoritoDetails.putExtra("favorito",cdata);
+                        startActivity(itentfavoritoDetails);
                     }
                 });
 

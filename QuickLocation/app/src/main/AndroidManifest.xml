@@ -43,6 +43,8 @@
         <activity
             android:name=".FavoritesActivity"
             android:label="@string/place_favorites_activity_label" />
+        <activity android:name=".FavoriteDetailsActivity"
+            android:label="@string/place_detail_activity_label"/>
         <activity
             android:name=".AddFavoritesActivity"
             android:label="@string/place_add_fav_label" />
