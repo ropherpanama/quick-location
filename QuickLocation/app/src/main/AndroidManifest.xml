@@ -49,6 +49,8 @@
         <activity
             android:name=".CapturePhotoActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".ImprovementActivity" />
+        <activity android:name=".ReportActivity"></activity>
     </application>
 
 </manifest>

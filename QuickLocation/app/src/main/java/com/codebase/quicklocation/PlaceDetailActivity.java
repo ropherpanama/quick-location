@@ -15,6 +15,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -290,5 +292,20 @@ public class PlaceDetailActivity extends AppCompatActivity {
         String cdata = Utils.objectToJson(favorite);
         i.putExtra("cdata", cdata);
         startActivity(i);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.place_detail_menu, menu);
+        return true;
+    }
+
+    public void showImprovementScreen(MenuItem item) {
+
+    }
+
+    public void showCommentsScreen(MenuItem item) {
+        Intent i = new Intent(PlaceDetailActivity.this, ReportActivity.class);
     }
 }
