@@ -32,6 +32,7 @@ import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -97,6 +98,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
+        File directImge = new File(Utils.targetPath);
+        if (!directImge.exists()) {
+            directImge.mkdirs();
+        }
+
     }
 
     @Override
