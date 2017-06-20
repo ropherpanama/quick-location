@@ -289,10 +289,21 @@ public class PlaceDetailActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Este metodo despliega la ventana de Mejora de Informacion
+     * @param item menu item que debe ser clickeado
+     */
     public void showImprovementScreen(MenuItem item) {
-
+        Intent i = new Intent(PlaceDetailActivity.this, ImprovementActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        startActivity(i);
     }
 
+    /**
+     * Este metodo responde ante el evento click sobre el item de menu
+     * Quejas o Sugerencias, despliega la ventana de Reportes
+     * @param item menu item que debe ser clickeado
+     */
     public void showCommentsScreen(MenuItem item) {
         Intent i = new Intent(PlaceDetailActivity.this, ReportActivity.class);
         i.putExtra("place_id", strPlaceId);

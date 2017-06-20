@@ -213,5 +213,4 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             logger.error(Reporter.stringStackTrace(e));
         }
     }
-
 }

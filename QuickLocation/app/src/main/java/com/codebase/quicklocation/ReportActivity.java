@@ -2,6 +2,8 @@ package com.codebase.quicklocation;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -21,6 +23,7 @@ public class ReportActivity extends AppCompatActivity {
     private EditText reportContent;
     private RatingBar ratingBar;
     private String placeID;
+    private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(ReportActivity.class);
 
     @Override
@@ -31,6 +34,9 @@ public class ReportActivity extends AppCompatActivity {
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         Bundle bundle = getIntent().getExtras();
         placeID = bundle.getString("place_id");
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void sendReport(View view) {
@@ -64,9 +70,18 @@ public class ReportActivity extends AppCompatActivity {
                 request.setInformations(informations);
                 //enviar trama al servidor
                 System.out.println(Utils.objectToJson(request));
+                finish();
             }
         }catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
