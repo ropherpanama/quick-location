@@ -64,7 +64,6 @@ public class ImprovementActivity extends AppCompatActivity {
      * @param item menu item
      */
     public void sendImprovementRequest(MenuItem item) {
-        System.out.println("Click en menu send data");
         try {
             UsersDao dao = new UsersDao(this);
             List<Users> usuarios = dao.getAll();
