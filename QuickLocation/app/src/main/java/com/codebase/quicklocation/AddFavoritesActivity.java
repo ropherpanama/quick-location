@@ -39,8 +39,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
     private Button takePictureButton;
     private ImageView imageView;
     private String placeDetailsJSON;
-    private Utils utils;
-    //private ResponseForPlaceDetails placeDetails;
     private String targetPath = Utils.targetPath;
     /**
      * resultado de la camara cuando se toma una foto.
@@ -59,7 +57,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             dao = new FavoritesDao(this);
-            utils = new Utils(this);
             favoritesData = new FavoritesDataDao(this);
             Bundle incomming = getIntent().getExtras();
             cdata = incomming.getString("cdata");
@@ -94,7 +91,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            utils.deleteImage(favorite.getPlaceId());
+            Utils.deleteImage(favorite.getPlaceId());
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -102,7 +99,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        utils.deleteImage(favorite.getPlaceId());
+        Utils.deleteImage(favorite.getPlaceId());
         finish();
         super.onBackPressed();
     }
@@ -120,6 +117,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
                 } else {
                     if (editTextComment.getText().length() > 0)
                         favorite.setComment(editTextComment.getText().toString());
+
                     dao.add(favorite);
                     FavoritesData favoriteData = new FavoritesData();
                     favoriteData.setPlaceId(favorite.getPlaceId());
@@ -154,7 +152,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
         if (requestCode == 100) {
 
             try {
-                imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), utils.getImageUri(favorite.getPlaceId())));
+                imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), Utils.getImageUri(favorite.getPlaceId())));
             } catch (IOException e) {
                 logger.error(Reporter.stringStackTrace(e));
             }

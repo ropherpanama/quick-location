@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.database.Favorites;
+import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
@@ -269,11 +270,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private void verificarBitmapLocal() {
         Bitmap opcImagePlace = null;
         try {
-            opcImagePlace = MediaStore.Images.Media.getBitmap(PlaceDetailActivity.this.getContentResolver(), new Utils(PlaceDetailActivity.this).getImageUri(strPlaceId));
+            opcImagePlace = MediaStore.Images.Media.getBitmap(PlaceDetailActivity.this.getContentResolver(), Utils.getImageUri(strPlaceId));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
         }
-        if (opcImagePlace!=null)
+        if (opcImagePlace != null)
             ivPlacePhoto.setImageBitmap(opcImagePlace);
         else
             ivPlacePhoto.setImageResource(R.drawable.default_img);
@@ -285,18 +286,24 @@ public class PlaceDetailActivity extends AppCompatActivity {
      * @param v parametro de vista
      */
     public void guardarFavorito(View v) {
-        Favorites favorite = new Favorites();
-        favorite.setLocalName(strPlaceName);
-        favorite.setRating(doubleRating);
-        favorite.setCategory(strCategory);
-        favorite.setAddedFrom(new Date());
-        favorite.setPlaceId(strPlaceId);
-        Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
-        String cdata = Utils.objectToJson(favorite);
-        String detailsResponse = Utils.objectToJson(response);
-        i.putExtra("placeDetails",detailsResponse);
-        i.putExtra("cdata", cdata);
-        startActivity(i);
+        FavoritesDao dao = new FavoritesDao(this);
+        Favorites f = dao.getByPlaceId(strPlaceId);
+        if (f == null) {
+            Favorites favorite = new Favorites();
+            favorite.setLocalName(strPlaceName);
+            favorite.setRating(doubleRating);
+            favorite.setCategory(strCategory);
+            favorite.setAddedFrom(new Date());
+            favorite.setPlaceId(strPlaceId);
+            Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
+            String cdata = Utils.objectToJson(favorite);
+            String detailsResponse = Utils.objectToJson(response);
+            i.putExtra("placeDetails", detailsResponse);
+            i.putExtra("cdata", cdata);
+            startActivity(i);
+        } else {
+            Snackbar.make(toolbar, "Favorito ya existe", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override

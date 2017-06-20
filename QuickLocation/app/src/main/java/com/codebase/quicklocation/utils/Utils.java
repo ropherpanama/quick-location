@@ -22,13 +22,13 @@ import java.io.FileWriter;
  */
 
 public class Utils {
-    private Context context;
-
     private static Gson gson;
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
     private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
     public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation";
+
+    private Utils(){}
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
@@ -44,10 +44,6 @@ public class Utils {
                     .setPrettyPrinting().setVersion(1.0).create();
         }
         return gson;
-    }
-
-    public Utils(Context context) {
-        this.context = context;
     }
 
     /**
@@ -175,19 +171,17 @@ public class Utils {
      *
      * @return
      */
-    public Uri getImageUri(String favoriteId) {
+    public static Uri getImageUri(String favoriteId) {
         File file = new File(targetPath, favoriteId + ".jpg");
         Uri imgUri = Uri.fromFile(file);
         return imgUri;
     }
 
-    public void deleteImage(String favoriteID)
-    {
-        File file = new File(targetPath,favoriteID+".jpg");
-        if (file.exists())
-        {
+    public static void deleteImage(String favoriteID) {
+        File file = new File(targetPath, favoriteID + ".jpg");
+        if (file.exists()) {
             file.delete();
-            Log.d("Delete","Se elmina imagen "+favoriteID);
+            Log.d("Delete","Se elmina imagen " + favoriteID);
         }
     }
 

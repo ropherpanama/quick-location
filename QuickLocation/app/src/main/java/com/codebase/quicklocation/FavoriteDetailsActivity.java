@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -62,7 +63,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
-    private Context context;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +82,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        context =  this;
 
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
@@ -94,8 +93,9 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         try {
             ivPlacePhoto.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), getImageUri()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(Reporter.stringStackTrace(e));
         }
+
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
@@ -122,7 +122,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             strPlacePhone = "Dato no disponible";
         }
 
-
         if (placeDetail.getFormattedAddress() != null)
             strPlaceDirection = placeDetail.getFormattedAddress();
 
@@ -141,10 +140,10 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
             if (placeDetail.getOpeningHours().isOpenNow()) {
                 tvOpeningStatus.setText("Abierto en este momento");
-                tvOpeningStatus.setTextColor(ContextCompat.getColor(context, R.color.accent));
+                tvOpeningStatus.setTextColor(ContextCompat.getColor(this, R.color.accent));
             } else {
                 tvOpeningStatus.setText("Cerrado en este momento");
-                tvOpeningStatus.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+                tvOpeningStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
             }
         } else
             tvPlaceOpeningHours.setText("Dato no disponible");
@@ -216,5 +215,14 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
