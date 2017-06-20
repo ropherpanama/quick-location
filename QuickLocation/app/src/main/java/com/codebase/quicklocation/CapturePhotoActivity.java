@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.io.File;
@@ -54,13 +55,15 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
     private TextureView txtViewPhoto;
     private Button btnSavePhoto;
     private Button btnDeletePhoto;
+    private Reporter reporter = Reporter.getInstance(CapturePhotoActivity.class);
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    static  {
+
+    static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90,0);
-        ORIENTATIONS.append(Surface.ROTATION_180,270);
-        ORIENTATIONS.append(Surface.ROTATION_270,180);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
     private CaptureRequest.Builder mPreviewRequestBuilder;
@@ -81,6 +84,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
     private TextureView mTextureView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,52 +96,56 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
         btnTakePhoto = (ImageButton) findViewById(R.id.imgClose);
         assert btnTakePhoto != null;
         btnTakePhoto.setOnClickListener(this);
-        btnSavePhoto = (Button)findViewById(R.id.btnSavePhoto);
+        btnSavePhoto = (Button) findViewById(R.id.btnSavePhoto);
         btnSavePhoto.setVisibility(View.GONE);
-        btnDeletePhoto= (Button)findViewById(R.id.btnDeletePhoto);
+        btnDeletePhoto = (Button) findViewById(R.id.btnDeletePhoto);
         btnDeletePhoto.setVisibility(View.GONE);
 
         btnSavePhoto.setOnClickListener(this);
         btnDeletePhoto.setOnClickListener(this);
         filePhotoName = getIntent().getExtras().getString("placeID");
     }
-        TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                //open your camera here
-                openCamera();
-            }
-            @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-                // Transform you image captured size according to the surface width and height
-            }
-            @Override
-            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                return false;
-            }
-            @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-            }
-        };
 
-        private final  CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
-            @Override
-            public void onOpened(@NonNull CameraDevice camera) {
-                cameraDevice = camera;
-                createCameraPreview();
-            }
+    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            //open your camera here
+            openCamera();
+        }
 
-            @Override
-            public void onDisconnected(@NonNull CameraDevice camera) {
-                cameraDevice.close();
-            }
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            // Transform you image captured size according to the surface width and height
+        }
 
-            @Override
-            public void onError(@NonNull CameraDevice camera, int error) {
-                cameraDevice.close();
-                cameraDevice = null;
-            }
-        };
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        }
+    };
+
+    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            cameraDevice = camera;
+            createCameraPreview();
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            cameraDevice.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
+    };
 
 
     protected void startBackgroundThread() {
@@ -153,7 +161,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             mBackgroundThread = null;
             mBackgroundHandler = null;
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            reporter.error(Reporter.stringStackTrace(e));
         }
     }
 
@@ -173,7 +181,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             }
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            reporter.error(Reporter.stringStackTrace(e));
         }
     }
 
@@ -186,7 +194,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             Surface surface = new Surface(texture);
             mPreviewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
-            cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
+            cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
 
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession_) {
@@ -198,14 +206,16 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
                     cameraCaptureSession = cameraCaptureSession_;
                     updatePreview();
                 }
+
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
                 }
             }, null);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            reporter.error(Reporter.stringStackTrace(e));
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -222,6 +232,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
         }
 
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -241,8 +252,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.imgClose:
                 takePhoto();
                 break;
@@ -259,13 +269,11 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void deletePhoto() {
-
     }
 
     private void takePhoto() {
-        if (cameraDevice == null)
-        {
-            Log.d(TAG,"cameraDevice null");
+        if (cameraDevice == null) {
+            Log.d(TAG, "cameraDevice null");
             return;
         }
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -303,15 +311,16 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
                         buffer.get(bytes);
                         save(bytes);
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        reporter.error(Reporter.stringStackTrace(e));
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        reporter.error(Reporter.stringStackTrace(e));
                     } finally {
                         if (image != null) {
                             image.close();
                         }
                     }
                 }
+
                 private void save(byte[] bytes) throws IOException {
                     OutputStream output = null;
                     try {
@@ -328,13 +337,12 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
 
 
-
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
                     Toast.makeText(CapturePhotoActivity.this, "La foto se ha guardado con exito", Toast.LENGTH_SHORT).show();
                     createCameraPreview();
-
+                    finish();
                 }
 
             };
@@ -344,28 +352,31 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
                     try {
                         session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
                     } catch (CameraAccessException e) {
-                        e.printStackTrace();
+                        reporter.error(Reporter.stringStackTrace(e));
                     }
                 }
+
                 @Override
                 public void onConfigureFailed(CameraCaptureSession session) {
                 }
             }, mBackgroundHandler);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            reporter.error(Reporter.stringStackTrace(e));
         }
     }
+
     protected void updatePreview() {
-        if(null == cameraDevice) {
+        if (null == cameraDevice) {
             Log.e(TAG, "updatePreview error, return");
         }
-         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         try {
             cameraCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            reporter.error(Reporter.stringStackTrace(e));
         }
     }
+
     private void closeCamera() {
         if (null != cameraDevice) {
             cameraDevice.close();
@@ -376,6 +387,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             imageReade = null;
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
