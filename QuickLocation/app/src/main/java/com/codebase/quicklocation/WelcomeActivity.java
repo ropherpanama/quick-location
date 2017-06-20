@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.database.DBHelper;
@@ -26,6 +28,7 @@ import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,12 +43,13 @@ public class WelcomeActivity extends AppCompatActivity {
     static final int PERMISSION_ALL = 1;
     String[] permission;
     private DBHelper dbHelper;
-
+    private FirebaseAuth mAuth;
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
+        context = this;
         try {
             permission = new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -93,6 +97,7 @@ public class WelcomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
+        mAuth = FirebaseAuth.getInstance();
     }
 
     private void fillElementsData() {
@@ -175,4 +180,45 @@ public class WelcomeActivity extends AppCompatActivity {
         Intent i = new Intent(WelcomeActivity.this, FavoritesActivity.class);
         startActivity(i);
     }
+
+    /**
+     * Método para finalizar la sesión con firebase.
+     * @param item
+     */
+    public void logout(MenuItem item){
+        dialogLogout();
+    }
+
+    private void dialogLogout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.warning));
+        builder.setMessage(context.getString(R.string.salir));
+        builder.setCancelable(false);
+        builder.setPositiveButton(context.getString(R.string.aceptar), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                mAuth.signOut();
+                Intent intent = new Intent(context, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            }
+        }).setNegativeButton(context.getString(R.string.cancelar),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button pbtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        pbtn.setTextColor(Color.parseColor("#da1919"));
+        Button nbtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nbtn.setTextColor(Color.parseColor("#da1919"));
+    }
+
 }

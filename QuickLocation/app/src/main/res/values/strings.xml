@@ -13,4 +13,24 @@
     <string name="google_api_place_details_url">"https://maps.googleapis.com/maps/api/place/details/json?"</string>
     <string name="google_api_place_photo_url">"https://maps.googleapis.com/maps/api/place/photo?"</string>
     <string name="title_activity_login">LoginActivity</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Correo electrónico</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_sign_in_short">Iniciar sesión</string>
+    <string name="error_invalid_email">Esta dirección de correo electrónico es inválida</string>
+    <string name="error_invalid_password">La contraseña es muy corta</string>
+    <string name="error_incorrect_password">La contraseña es incorecta</string>
+    <string name="error_field_required">Este campo es necesario</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="action_register">Registrarse</string>
+    <string name="title_activity_resgistrase">Registro</string>
+    <string name="uuser_name">Nombre completo</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="warning">Advertencia</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salir">¿Desea salir de la aplicación?</string>
 </resources>
