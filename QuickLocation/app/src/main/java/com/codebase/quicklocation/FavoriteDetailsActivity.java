@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -59,6 +60,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private StringBuilder strOpeningHours;
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     private Context context;
     @Override
@@ -74,6 +76,8 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         favoritesDataDao = new FavoritesDataDao(this);
         favorite = Utils.factoryGson().fromJson(cdata, Favorites.class);
 
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
+        collapsingToolbarLayout.setTitleEnabled(false);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -2,8 +2,10 @@ package com.codebase.quicklocation.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,6 +22,8 @@ import java.io.FileWriter;
  */
 
 public class Utils {
+    private Context context;
+
     private static Gson gson;
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
@@ -40,6 +44,10 @@ public class Utils {
                     .setPrettyPrinting().setVersion(1.0).create();
         }
         return gson;
+    }
+
+    public Utils(Context context) {
+        this.context = context;
     }
 
     /**
@@ -161,4 +169,28 @@ public class Utils {
                 })
                 .show();
     }
+
+    /**
+     * Método que crea el nombre con la ruta de la imagen tomada con la cámara.
+     *
+     * @return
+     */
+    public Uri getImageUri(String favoriteId) {
+        File file = new File(targetPath, favoriteId + ".jpg");
+        Uri imgUri = Uri.fromFile(file);
+        return imgUri;
+    }
+
+    public void deleteImage(String favoriteID)
+    {
+        File file = new File(targetPath,favoriteID+".jpg");
+        if (file.exists())
+        {
+            file.delete();
+            Log.d("Delete","Se elmina imagen "+favoriteID);
+        }
+    }
+
+
+
 }

@@ -19,7 +19,6 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -32,7 +31,11 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.codebase.quicklocation.utils.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,11 +48,12 @@ import java.util.Arrays;
 import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-@Deprecated
 public class CapturePhotoActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "CapturePhotoActivity";
     private ImageButton btnTakePhoto;
     private TextureView txtViewPhoto;
+    private Button btnSavePhoto;
+    private Button btnDeletePhoto;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static  {
@@ -70,7 +74,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
 
     private Size imageDimension;
     private ImageReader imageReade;
-    private File filePhoto;
+    private String filePhotoName;
 
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private boolean mFlashSupported;
@@ -88,6 +92,14 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
         btnTakePhoto = (ImageButton) findViewById(R.id.imgClose);
         assert btnTakePhoto != null;
         btnTakePhoto.setOnClickListener(this);
+        btnSavePhoto = (Button)findViewById(R.id.btnSavePhoto);
+        btnSavePhoto.setVisibility(View.GONE);
+        btnDeletePhoto= (Button)findViewById(R.id.btnDeletePhoto);
+        btnDeletePhoto.setVisibility(View.GONE);
+
+        btnSavePhoto.setOnClickListener(this);
+        btnDeletePhoto.setOnClickListener(this);
+        filePhotoName = getIntent().getExtras().getString("placeID");
     }
         TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
             @Override
@@ -175,6 +187,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             mPreviewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
+
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession_) {
                     //The camera is already closed
@@ -233,7 +246,20 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             case R.id.imgClose:
                 takePhoto();
                 break;
+            case R.id.btnDeletePhoto:
+                deletePhoto();
+                createCameraPreview();
+                btnDeletePhoto.setVisibility(View.GONE);
+                btnSavePhoto.setVisibility(View.GONE);
+                break;
+            case R.id.btnSavePhoto:
+                finish();
+                break;
         }
+    }
+
+    private void deletePhoto() {
+
     }
 
     private void takePhoto() {
@@ -265,7 +291,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation", System.currentTimeMillis() / 1000L + ".jpg");
+            final File file = new File(Utils.targetPath, filePhotoName + ".jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -301,13 +327,14 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
             reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
             final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
 
+
+
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
+                    Toast.makeText(CapturePhotoActivity.this, "La foto se ha guardado con exito", Toast.LENGTH_SHORT).show();
+                    createCameraPreview();
 
-
-                    // Toast.makeText(CapturePhotoActivity.this, "Saved:" + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                   // createCameraPreview();
                 }
 
             };

@@ -3,17 +3,13 @@ package com.codebase.quicklocation;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,12 +26,7 @@ import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class AddFavoritesActivity extends AppCompatActivity {
 
@@ -48,6 +39,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
     private Button takePictureButton;
     private ImageView imageView;
     private String placeDetailsJSON;
+    private Utils utils;
     //private ResponseForPlaceDetails placeDetails;
     private String targetPath = Utils.targetPath;
     /**
@@ -67,6 +59,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             dao = new FavoritesDao(this);
+            utils = new Utils(this);
             favoritesData = new FavoritesDataDao(this);
             Bundle incomming = getIntent().getExtras();
             cdata = incomming.getString("cdata");
@@ -101,9 +94,17 @@ public class AddFavoritesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            utils.deleteImage(favorite.getPlaceId());
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        utils.deleteImage(favorite.getPlaceId());
+        finish();
+        super.onBackPressed();
     }
 
     /**
@@ -128,6 +129,8 @@ public class AddFavoritesActivity extends AppCompatActivity {
                      * TODO: G
                      */
                     Snackbar.make(toolbar, "Favorito guardado", Snackbar.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
             }
@@ -149,6 +152,13 @@ public class AddFavoritesActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 100) {
+
+            try {
+                imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), utils.getImageUri(favorite.getPlaceId())));
+            } catch (IOException e) {
+                logger.error(Reporter.stringStackTrace(e));
+            }
+            /*
             if (resultCode == RESULT_OK) {
                 if (directImge != null) {
                     if (data != null) {
@@ -181,14 +191,17 @@ public class AddFavoritesActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }
+            }*/
         }
     }
 
     public void takePicture(View view) {
-        Intent camaraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        camaraItent.putExtra(MediaStore.EXTRA_OUTPUT, getImageUri());
-        this.startActivityForResult(camaraItent, CAMERA_RESULT);
+        Intent intent = new Intent(AddFavoritesActivity.this,CapturePhotoActivity.class);
+        intent.putExtra("placeID",favorite.getPlaceId());
+        startActivityForResult(intent,CAMERA_RESULT);
+        //Intent camaraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //camaraItent.putExtra(MediaStore.EXTRA_OUTPUT, getImageUri());
+        //this.startActivityForResult(camaraItent, CAMERA_RESULT);
 
     }
 
@@ -197,9 +210,9 @@ public class AddFavoritesActivity extends AppCompatActivity {
      *
      * @return
      */
-    private Uri getImageUri() {
+    /*private Uri getImageUri() {
         File file = new File(targetPath, favorite.getPlaceId() + ".jpg");
         Uri imgUri = Uri.fromFile(file);
         return imgUri;
-    }
+    }*/
 }

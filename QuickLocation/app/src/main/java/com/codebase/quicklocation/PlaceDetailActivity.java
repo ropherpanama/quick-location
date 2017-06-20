@@ -2,9 +2,11 @@ package com.codebase.quicklocation;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +31,7 @@ import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Scanner;
@@ -197,10 +200,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                     .into(ivPlacePhoto);
                         } else {
                             //logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
-                            ivPlacePhoto.setImageResource(R.drawable.default_img);
+                            verificarBitmapLocal();
+
                         }
                     } else {
-                        ivPlacePhoto.setImageResource(R.drawable.default_img);
+                        verificarBitmapLocal();
                     }
 
                     if (detail.getFormattedPhoneNumber() != null) {
@@ -262,6 +266,19 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void verificarBitmapLocal() {
+        Bitmap opcImagePlace = null;
+        try {
+            opcImagePlace = MediaStore.Images.Media.getBitmap(PlaceDetailActivity.this.getContentResolver(), new Utils(PlaceDetailActivity.this).getImageUri(strPlaceId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (opcImagePlace!=null)
+            ivPlacePhoto.setImageBitmap(opcImagePlace);
+        else
+            ivPlacePhoto.setImageResource(R.drawable.default_img);
+    }
+
     /**
      * Guarda la seleccion en la tabla de favoritos
      *
@@ -280,6 +297,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
         i.putExtra("placeDetails",detailsResponse);
         i.putExtra("cdata", cdata);
         startActivity(i);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        verificarBitmapLocal();
     }
 
     @Override

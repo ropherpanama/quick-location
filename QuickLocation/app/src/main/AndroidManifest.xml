@@ -43,8 +43,9 @@
         <activity
             android:name=".FavoritesActivity"
             android:label="@string/place_favorites_activity_label" />
-        <activity android:name=".FavoriteDetailsActivity"
-            android:label="@string/place_detail_activity_label"/>
+        <activity
+            android:name=".FavoriteDetailsActivity"
+            android:label="@string/place_detail_activity_label" />
         <activity
             android:name=".AddFavoritesActivity"
             android:label="@string/place_add_fav_label" />
@@ -52,7 +53,11 @@
             android:name=".CapturePhotoActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".ImprovementActivity" />
-        <activity android:name=".ReportActivity"></activity>
+        <activity android:name=".ReportActivity" />
+        <activity
+            android:name=".view.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
