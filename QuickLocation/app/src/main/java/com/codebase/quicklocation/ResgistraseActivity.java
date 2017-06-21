@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -61,10 +60,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -83,7 +79,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         username = (AutoCompleteTextView)findViewById(R.id.username);
-        populateAutoComplete();
+       // populateAutoComplete();
         context = this;
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -162,10 +158,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -176,7 +168,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         String userName = username.getText().toString();
         boolean cancel = false;
         View focusView = null;
-
         if (TextUtils.isEmpty(userName))
         {
             username.setError(getString(R.string.error_field_required));
@@ -207,6 +198,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+
             showProgress(true);
             createAccount(userName,email,password);
             //mAuthTask = new UserLoginTask(email, password);
@@ -228,6 +220,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
                     usersDao.add(users);
                     Toast.makeText(context,"Creación de usuario exitoso.",Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ResgistraseActivity.this,WelcomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                     finish();
                 }else
@@ -352,63 +345,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
-
-    /**
      * Dialog de advertencia.
      *
      * @param msg mensaje de advertencia
@@ -431,6 +367,15 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
             pbtn.setTextColor(Color.parseColor("#da1919"));
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ResgistraseActivity.this,LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+        finish();
     }
 }
 
