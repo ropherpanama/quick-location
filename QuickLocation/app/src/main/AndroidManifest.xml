@@ -71,6 +71,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.codebase.quicklocation.LoginActivity" />-->
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c2379599f64b5248ea128193f447e2c87653802e" />
     </application>
 
 </manifest>

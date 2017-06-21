@@ -28,10 +28,13 @@ import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import io.fabric.sdk.android.Fabric;
 
 public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -48,10 +51,12 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser()!=null) {
             setContentView(R.layout.activity_welcome);
             context = this;
+            logUser();
             try {
                 permission = new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -228,5 +233,16 @@ public class WelcomeActivity extends AppCompatActivity {
         Button nbtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         nbtn.setTextColor(Color.parseColor("#da1919"));
     }
+    /**
+     * Registra al usuario en la plataforma  Crashlytics de Fabric.
+     */
+    private void logUser() {
+        // TODO: Use the current user's information
+        // You can call any combination of these three methods
+        Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getEmail()+"");
+        //Crashlytics.setUserEmail(utils.getUserLogin().di_correo);
+        //Crashlytics.setUserName(utils.getUserLogin().nm_usuario);
+        //Crashlytics.log("Registro de usuario a Crashlytics");
 
+    }
 }
