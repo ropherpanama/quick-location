@@ -1,8 +1,8 @@
 package com.codebase.quicklocation;
 
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +19,11 @@ import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.ImprovementInformation;
 import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.LastLocation;
-import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.Schedule;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,6 +204,9 @@ public class ImprovementActivity extends AppCompatActivity {
             if(shouldSendData) {
                 //enviar trama al servidor
                 System.out.println(Utils.objectToJson(request));
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                database.getReference().child("places/new/report-issue").child(placeId).push().setValue(request);
+
                 finish();
             } else {
                 Snackbar.make(toolbar, "No se ha ingresado nueva data", Snackbar.LENGTH_SHORT).show();
