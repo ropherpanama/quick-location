@@ -48,56 +48,64 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
-        context = this;
-        try {
-            permission = new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CALL_PHONE
-            };
-
-            if(!hasPermissions(this, permission)){
-                ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
-            } else {
-                logger.write("Stating service with permissions");
-                startService(new Intent(this, GPSTrackingService.class));
-            }
-
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            mLayoutManager = new GridLayoutManager(this, 2);
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.setHasFixedSize(true);
-            fillElementsData();
-
-            mAdapter = new CategoryMenuItemAdapter(elements, new CategoryMenuItemAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(CategoryMenuItem item) {
-                    if (!validarEstadoGps()) {
-                        showSettingsAlert();
-                    } else {
-                        Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
-						
-                        if(!hasPermissions(WelcomeActivity.this, permission)){
-                            ActivityCompat.requestPermissions(WelcomeActivity.this, permission, 100);
-                        }
-                        //logger.write("Selected category : " + categorias.get(item.getItemName()));
-                        i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
-                        i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
-                        startActivity(i);
-                        //No se llama a finish porque la actividad debe estar disponible
-                    }
-                }
-            });
-
-            recyclerView.setAdapter(mAdapter);
-
-        } catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
-        }
         mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser()!=null) {
+            setContentView(R.layout.activity_welcome);
+            context = this;
+            try {
+                permission = new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.CALL_PHONE
+                };
+
+                if (!hasPermissions(this, permission)) {
+                    ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
+                } else {
+                    logger.write("Stating service with permissions");
+                    startService(new Intent(this, GPSTrackingService.class));
+                }
+
+                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+                recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+                mLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setHasFixedSize(true);
+                fillElementsData();
+
+                mAdapter = new CategoryMenuItemAdapter(elements, new CategoryMenuItemAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(CategoryMenuItem item) {
+                        if (!validarEstadoGps()) {
+                            showSettingsAlert();
+                        } else {
+                            Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
+
+                            if (!hasPermissions(WelcomeActivity.this, permission)) {
+                                ActivityCompat.requestPermissions(WelcomeActivity.this, permission, 100);
+                            }
+                            //logger.write("Selected category : " + categorias.get(item.getItemName()));
+                            i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
+                            i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
+                            startActivity(i);
+                            //No se llama a finish porque la actividad debe estar disponible
+                        }
+                    }
+                });
+
+                recyclerView.setAdapter(mAdapter);
+
+            } catch (Exception e) {
+                logger.error(Reporter.stringStackTrace(e));
+            }
+        }else
+        {
+            Intent intent = new Intent(this,LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void fillElementsData() {
@@ -200,7 +208,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 dialog.cancel();
                 mAuth.signOut();
                 Intent intent = new Intent(context, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 finish();
             }
