@@ -39,7 +39,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/edit_new_address"
-            android:text="Teléfono" />
+            android:text="Teléfono"
+            android:textStyle="normal|bold" />
 
         <EditText
             android:id="@+id/edit_new_phone"
@@ -60,17 +61,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/button_new_location"
-            android:text="Horario" />
-
-        <Button
-            android:id="@+id/button2"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView3"
-            android:layout_centerHorizontal="true"
-            android:text="Agregar día de atención"
-            android:textColor="@color/primary" />
+            android:text="Horario"
+            android:textStyle="normal|bold" />
 
         <TextView
             android:id="@+id/textView"
@@ -80,7 +72,8 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginTop="57dp"
-            android:text="Dirección" />
+            android:text="Dirección"
+            android:textStyle="normal|bold" />
 
         <Button
             android:id="@+id/button_new_location"
@@ -91,5 +84,110 @@
             android:layout_centerHorizontal="true"
             android:text="Adjuntar mi localización actual"
             android:onClick="attachMyLocation"/>
+
+        <TextView
+            android:text="Lunes a Viernes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView4"
+            android:layout_below="@+id/textView3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <LinearLayout
+            android:id="@+id/spinnersLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView4">
+
+            <Spinner
+                android:id="@+id/spinner_from"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"/>
+
+            <Spinner
+                android:id="@+id/spinner_to"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/checkboxWeekendClosed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrado fines de semana"
+            android:layout_below="@id/spinnersLayout"/>
+
+        <TextView
+            android:text="Sábado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/checkboxWeekendClosed"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textView7" />
+
+        <LinearLayout
+            android:id="@+id/spinnersLayout2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView7">
+
+            <Spinner
+                android:id="@+id/spinner_from_sat"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"/>
+
+            <Spinner
+                android:id="@+id/spinner_to_sat"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/checkboxSundayClosed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrado Domingos"
+            android:layout_below="@id/spinnersLayout2"/>
+
+        <TextView
+            android:text="Domingo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/checkboxSundayClosed"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textView8" />
+
+        <LinearLayout
+            android:id="@+id/spinnersLayout3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView8">
+
+            <Spinner
+                android:id="@+id/spinner_from_sun"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"/>
+
+            <Spinner
+                android:id="@+id/spinner_to_sun"
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </RelativeLayout>
 </RelativeLayout>
