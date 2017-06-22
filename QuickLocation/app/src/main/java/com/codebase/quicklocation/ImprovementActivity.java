@@ -19,11 +19,14 @@ import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.ImprovementInformation;
 import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.LastLocation;
+import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.Schedule;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class ImprovementActivity extends AppCompatActivity {
     private EditText telefono;
     private String locationData = "";
     private boolean shouldSendData = false;
+    private boolean shouldSendSchedule = false;
     private String placeId;
     private Spinner spinnerFrom;
     private Spinner spinnerTo;
@@ -43,7 +47,9 @@ public class ImprovementActivity extends AppCompatActivity {
     private Spinner spinnerSunTo;
     private CheckBox closedSunday;
     private CheckBox closedWeekend;
-    private String [] weekdays = {"LU", "MA", "MI", "JU", "VI"};
+    private CheckBox enableScheduleForm;
+    private String [] weekdays = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
+    private String firebasePlaceRecord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +62,10 @@ public class ImprovementActivity extends AppCompatActivity {
         telefono = (EditText) findViewById(R.id.edit_new_phone);
         Bundle bundle = getIntent().getExtras();
         placeId = bundle.getString("place_id");
+        firebasePlaceRecord = bundle.getString("api_response");
         closedSunday  = (CheckBox) findViewById(R.id.checkboxSundayClosed);
         closedWeekend = (CheckBox) findViewById(R.id.checkboxWeekendClosed);
+        enableScheduleForm = (CheckBox) findViewById(R.id.checkbox_schedule_form);
 
         //Adapter para todos los spinners
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.schedule_hours, android.R.layout.simple_spinner_item);
@@ -74,6 +82,8 @@ public class ImprovementActivity extends AppCompatActivity {
         spinnerSunFrom.setAdapter(adapter);
         spinnerSunTo = (Spinner) findViewById(R.id.spinner_to_sun);
         spinnerSunTo.setAdapter(adapter);
+        //el formulario de horarios debe estar deshabilitado por default
+        scheduleFormStatus(false);
 
         closedSunday.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,11 +106,26 @@ public class ImprovementActivity extends AppCompatActivity {
                     spinnerSatTo.setEnabled(false);
                     spinnerSunFrom.setEnabled(false);
                     spinnerSunTo.setEnabled(false);
+                    closedSunday.setEnabled(false);
                 } else {
                     spinnerSatFrom.setEnabled(true);
                     spinnerSatTo.setEnabled(true);
                     spinnerSunFrom.setEnabled(true);
                     spinnerSunTo.setEnabled(true);
+                    closedSunday.setEnabled(true);
+                }
+            }
+        });
+
+        enableScheduleForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((CheckBox) v).isChecked()) {
+                    scheduleFormStatus(true);
+                    shouldSendSchedule = true;
+                } else {
+                    scheduleFormStatus(false);
+                    shouldSendSchedule = false;
                 }
             }
         });
@@ -167,54 +192,69 @@ public class ImprovementActivity extends AppCompatActivity {
                 shouldSendData = true;
             }
 
-            ImprovementInformation i = new ImprovementInformation();
-            i.setInformationTag("schedule");
-            i.setSchedule(true);
+            //proceso informacion de horarios si el formulario esta habilitado
+            if(shouldSendSchedule) {
+                ImprovementInformation i = new ImprovementInformation();
+                i.setInformationTag("schedule");
+                i.setSchedule(true);
 
-            List<Schedule> schedules = new ArrayList<>();
-            //Se agrega lunes a viernes
-            String hourFrom = spinnerFrom.getSelectedItem().toString();
-            String hourTo = spinnerTo.getSelectedItem().toString();
+                List<Schedule> schedules = new ArrayList<>();
+                //Se agrega lunes a viernes
+                String hourFrom = spinnerFrom.getSelectedItem().toString();
+                String hourTo = spinnerTo.getSelectedItem().toString();
 
-            for(String s : weekdays) {
-                schedules.add(new Schedule(s, hourFrom, hourTo, true));
+                for(String s : weekdays) {
+                    schedules.add(new Schedule(s, hourFrom, hourTo, true));
+                }
+                //se agregan los fines de semana
+                if(closedWeekend.isChecked()) {
+                    schedules.add(new Schedule("Sabado", "", "", false));
+                } else {
+                    schedules.add(new Schedule("Sabado", spinnerSatFrom.getSelectedItem().toString(), spinnerSatTo.getSelectedItem().toString(), true));
+                }
+
+                if(!closedSunday.isChecked() && !closedWeekend.isChecked()) {
+                    schedules.add(new Schedule("Domingo", spinnerSunFrom.getSelectedItem().toString(), spinnerSunTo.getSelectedItem().toString(), true));
+                } else {
+                    schedules.add(new Schedule("Domingo", "", "", false));
+                }
+
+                i.setSchedules(schedules);
+                informations.add(i);
+                shouldSendData = true;
             }
-            //se agregan los fines de semana
-            if(closedWeekend.isChecked()) {
-                schedules.add(new Schedule("SA", "", "", false));
-            } else {
-                schedules.add(new Schedule("SA", spinnerSatFrom.getSelectedItem().toString(), spinnerSatTo.getSelectedItem().toString(), true));
-            }
-
-            if(!closedSunday.isChecked() && !closedWeekend.isChecked()) {
-                schedules.add(new Schedule("DO", spinnerSunFrom.getSelectedItem().toString(), spinnerSunTo.getSelectedItem().toString(), true));
-            } else {
-                schedules.add(new Schedule("DO", "", "", false));
-            }
-
-            i.setSchedules(schedules);
-            informations.add(i);
 
             request.setInformations(informations);
 
-            //Se valida que se ingreso algo en los horarios
-            if(!schedules.isEmpty())
-                shouldSendData = true;
-
             if(shouldSendData) {
                 //enviar trama al servidor
-                System.out.println(Utils.objectToJson(request));
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                database.getReference().child("places/new/report-issue").child(placeId).push().setValue(request);
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
+                database.getReference().child("places/data").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(!dataSnapshot.exists()) {
+                            //Si no existe se envia el registro padre
+                            if(firebasePlaceRecord != null) {
+                                System.out.println(firebasePlaceRecord);
+                                ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
+                                database.getReference().child("places/data").child(placeId).push().setValue(responseForPlaceDetails.getResult());//Envia un PlaceDetail
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+
+                database.getReference().child("places/new/report-issue").child(placeId).push().setValue(request);
                 finish();
             } else {
-                Snackbar.make(toolbar, "No se ha ingresado nueva data", Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, "No se ha ingresado nueva data", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Reporter.getInstance(ImprovementActivity.class).error(Reporter.stringStackTrace(e));
-            Snackbar.make(toolbar, "No se puede procesar el envio", Snackbar.LENGTH_SHORT);
+            Toast.makeText(this, "No se puede procesar el envio", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -234,5 +274,18 @@ public class ImprovementActivity extends AppCompatActivity {
         } catch(Exception e) {
             Reporter.getInstance(ImprovementActivity.class).error(Reporter.stringStackTrace(e));
         }
+    }
+
+    private void scheduleFormStatus(boolean status) {
+        spinnerFrom.setEnabled(status);
+        spinnerTo.setEnabled(status);
+        spinnerSatFrom.setEnabled(status);
+        spinnerSatTo.setEnabled(status);
+        spinnerSunFrom.setEnabled(status);
+        spinnerSunTo.setEnabled(status);
+        spinnerSunFrom.setEnabled(status);
+        spinnerSunTo.setEnabled(status);
+        closedSunday.setEnabled(status);
+        closedWeekend.setEnabled(status);
     }
 }

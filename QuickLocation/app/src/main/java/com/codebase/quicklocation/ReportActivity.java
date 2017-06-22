@@ -15,6 +15,7 @@ import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.UserReport;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,8 @@ public class ReportActivity extends AppCompatActivity {
                 request.setPlaceId(placeID);
                 request.setInformations(informations);
                 //enviar trama al servidor
-                System.out.println(Utils.objectToJson(request));
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
                 finish();
             }
         }catch (Exception e) {

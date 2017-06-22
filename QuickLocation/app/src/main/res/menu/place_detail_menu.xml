@@ -9,7 +9,7 @@
         android:onClick="showImprovementScreen"/>
     <item
         android:id="@+id/problem_menu_item"
-        android:title="Quejas"
+        android:title="Opinar"
         app:showAsAction="never"
         android:onClick="showCommentsScreen"/>
 </menu>

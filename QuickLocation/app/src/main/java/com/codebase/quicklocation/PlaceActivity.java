@@ -105,6 +105,7 @@ public class PlaceActivity extends AppCompatActivity {
             } catch (Exception e) {
                 apiResponse = "Error! : " + e.getMessage();
                 logger.error(Reporter.stringStackTrace(e));
+                Toast.makeText(PlaceActivity.this, "Error de conexion", Toast.LENGTH_SHORT).show();
             }
             return apiResponse;
         }

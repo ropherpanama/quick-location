@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingresa un comentario (opcional)" />
+            android:text="¿Porqué te gustó este lugar?" />
 
         <EditText
             android:id="@+id/edit_favorite_comment"

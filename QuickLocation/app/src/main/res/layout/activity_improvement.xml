@@ -54,13 +54,30 @@
             android:ems="10"
             android:inputType="phone" />
 
+        <Button
+            android:id="@+id/button_new_location"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_new_phone"
+            android:layout_centerHorizontal="true"
+            android:text="Adjuntar mi localización actual"
+            android:onClick="attachMyLocation"/>
+
+        <CheckBox
+            android:id="@+id/checkbox_schedule_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Incluir horario"
+            android:layout_below="@id/button_new_location"/>
+
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/button_new_location"
+            android:layout_below="@+id/checkbox_schedule_form"
             android:text="Horario"
             android:textStyle="normal|bold" />
 
@@ -74,16 +91,6 @@
             android:layout_marginTop="57dp"
             android:text="Dirección"
             android:textStyle="normal|bold" />
-
-        <Button
-            android:id="@+id/button_new_location"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/edit_new_phone"
-            android:layout_centerHorizontal="true"
-            android:text="Adjuntar mi localización actual"
-            android:onClick="attachMyLocation"/>
 
         <TextView
             android:text="Lunes a Viernes"

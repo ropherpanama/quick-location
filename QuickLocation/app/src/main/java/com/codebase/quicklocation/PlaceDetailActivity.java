@@ -57,12 +57,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Reporter logger = Reporter.getInstance(PlaceDetailActivity.class);
+    private FavoritesDao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
-
+        dao = new FavoritesDao(this);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
         collapsingToolbarLayout.setTitleEnabled(false);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,6 +88,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
             strCategory = bundle.getString(PlaceActivity.KEY_APP_CATEGORY);
             doubleRating = bundle.getDouble(PlaceActivity.KEY_PLACE_RATING);
 
+            Button button = (Button) findViewById(R.id.button_add_favorite);
+            ImageView imageView = (ImageView) findViewById(R.id.image_add_favorite);
+            Favorites f = dao.getByPlaceId(strPlaceId);
+
+            if(f != null) {
+                button.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
+            }
+
             String key = Utils.giveMeMyCandy();
 
             if (key != null) {
@@ -102,7 +112,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
         if (!directImge.exists()) {
             directImge.mkdirs();
         }
-
     }
 
     @Override
@@ -292,7 +301,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
      * @param v parametro de vista
      */
     public void guardarFavorito(View v) {
-        FavoritesDao dao = new FavoritesDao(this);
+        dao = new FavoritesDao(this);
         Favorites f = dao.getByPlaceId(strPlaceId);
         if (f == null) {
             Favorites favorite = new Favorites();
@@ -332,6 +341,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     public void showImprovementScreen(MenuItem item) {
         Intent i = new Intent(PlaceDetailActivity.this, ImprovementActivity.class);
         i.putExtra("place_id", strPlaceId);
+        i.putExtra("api_response", Utils.objectToJson(response));
         startActivity(i);
     }
 

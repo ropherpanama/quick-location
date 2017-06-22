@@ -92,6 +92,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/image_add_favorite"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:padding="5dp"
@@ -100,7 +101,7 @@
                         android:src="@android:drawable/ic_menu_rotate" />
 
                     <Button
-                        android:id="@+id/tv_add_favorite"
+                        android:id="@+id/button_add_favorite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"

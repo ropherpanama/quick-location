@@ -28,7 +28,7 @@
     </string>
     <string name="action_register">Registrarse</string>
     <string name="title_activity_resgistrase">Registro</string>
-    <string name="uuser_name">Nombre completo</string>
+    <string name="uuser_name">Nickname</string>
     <string name="aceptar">Aceptar</string>
     <string name="warning">Advertencia</string>
     <string name="cancelar">Cancelar</string>
