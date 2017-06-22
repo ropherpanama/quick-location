@@ -126,7 +126,8 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             strPlaceDirection = placeDetail.getFormattedAddress();
 
         if (placeDetail.getOpeningHours() != null) {
-            if (placeDetail.getOpeningHours().getWeekdayText() != null && placeDetail.getOpeningHours().getWeekdayText().length > 0) {
+            //if (placeDetail.getOpeningHours().getWeekdayText() != null && placeDetail.getOpeningHours().getWeekdayText().length > 0) {
+            if (placeDetail.getOpeningHours().getWeekdayText() != null && placeDetail.getOpeningHours().getWeekdayText().size() > 0) {
                 strOpeningHours = new StringBuilder();
 
                 for (String str : placeDetail.getOpeningHours().getWeekdayText())

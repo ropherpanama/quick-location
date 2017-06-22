@@ -2,6 +2,8 @@ package com.codebase.quicklocation.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by Spanky on 23/01/2017.
  * Representa la informacion de detalle a cerca del lugar basado en su ID de lugar
@@ -18,13 +20,14 @@ public class PlaceDetail {
     private String vicinity;
     private String website;
     private Geometry geometry;
-    private Photo[] photos;
+    //private Photo[] photos;
+    private List<Photo> photos;
 
-    public Photo[] getPhotos() {
+    public List<Photo> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(Photo[] photos) {
+    public void setPhotos(List<Photo> photos) {
         this.photos = photos;
     }
 

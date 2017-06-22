@@ -5,14 +5,14 @@
         android:id="@+id/order_by_rating"
         android:title="Rating"
         android:visible="true"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:icon="@mipmap/ic_order_rating"
         android:onClick="ordenarPorRating"
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
         android:id="@+id/order_by_distance"
         android:title="Distancia"
-        android:icon="@android:drawable/ic_menu_directions"
+        android:icon="@mipmap/ic_order_distance"
         android:onClick="ordenarPorDistancia"
         android:visible="true"
         app:showAsAction="ifRoom|collapseActionView" />

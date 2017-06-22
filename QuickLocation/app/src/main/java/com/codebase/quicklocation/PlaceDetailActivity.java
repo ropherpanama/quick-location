@@ -200,12 +200,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     PlaceDetail detail = response.getResult();
 
                     //Búsqueda de la foto del lugar en el API
-                    if (detail.getPhotos() != null && detail.getPhotos().length > 0) {
+                    //if (detail.getPhotos() != null && detail.getPhotos().length > 0) {
+                    if (detail.getPhotos() != null && detail.getPhotos().size() > 0) {
                         String key = Utils.giveMeMyCandy();
 
                         if (key != null) {
                             String photoUrl = getString(R.string.google_api_place_photo_url) +
-                                    "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
+                                    "maxwidth=900&photoreference=" + detail.getPhotos().get(0).getPhotoReference() +
                                     "&key=" + Utils.giveMeMyCandy();
 
                             //logger.write("Photo place URL: " + photoUrl);
@@ -238,7 +239,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         strPlaceDirection = detail.getFormattedAddress();
 
                     if (detail.getOpeningHours() != null) {
-                        if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
+                        //if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
+                        if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().size() > 0) {
                             strOpeningHours = new StringBuilder();
 
                             for (String str : detail.getOpeningHours().getWeekdayText())
@@ -252,7 +254,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                         if (detail.getOpeningHours().isOpenNow()) {
                             tvOpeningStatus.setText("Abierto en este momento");
-                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.accent));
+                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.primary_dark));
                         } else {
                             tvOpeningStatus.setText("Cerrado en este momento");
                             tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));

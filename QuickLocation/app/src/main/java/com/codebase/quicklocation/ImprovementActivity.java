@@ -19,6 +19,7 @@ import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.ImprovementInformation;
 import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.LastLocation;
+import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.Schedule;
 import com.codebase.quicklocation.utils.Reporter;
@@ -238,7 +239,8 @@ public class ImprovementActivity extends AppCompatActivity {
                             if(firebasePlaceRecord != null) {
                                 System.out.println(firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
-                                database.getReference().child("places/data").child(placeId).push().setValue(responseForPlaceDetails.getResult());//Envia un PlaceDetail
+                                PlaceDetail placeDetail = responseForPlaceDetails.getResult();
+                                database.getReference().child("places/new/data").child(placeId).setValue(placeDetail);
                             }
                         }
                     }
