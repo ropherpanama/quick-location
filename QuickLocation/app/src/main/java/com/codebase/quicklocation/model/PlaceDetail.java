@@ -22,6 +22,7 @@ public class PlaceDetail {
     private Geometry geometry;
     //private Photo[] photos;
     private List<Photo> photos;
+    private String name;
 
     public List<Photo> getPhotos() {
         return photos;
@@ -85,5 +86,13 @@ public class PlaceDetail {
 
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
