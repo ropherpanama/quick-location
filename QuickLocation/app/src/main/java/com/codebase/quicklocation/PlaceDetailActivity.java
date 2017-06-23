@@ -42,6 +42,7 @@ import java.util.Scanner;
 public class PlaceDetailActivity extends AppCompatActivity {
     private ImageView ivPlacePhoto;
     private TextView tvPlaceDirection;
+    private TextView tvWebsite;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
     private TextView tvOpeningStatus;
@@ -50,7 +51,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlaceDirection;
     private String strPlacePhone;
     private String strPlaceId;
-    private String strOpeningStatus;
     private String strCategory;
     private Double doubleRating;
     private StringBuilder strOpeningHours;
@@ -76,6 +76,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
+        tvWebsite = (TextView) findViewById(R.id.tv_website);
         tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
 
@@ -271,6 +272,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
+
+                    if (detail.getWebsite() == null)
+                        tvWebsite.setText("Dato no disponible");
+                    else
+                        tvWebsite.setText(detail.getWebsite());
+
+
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
@@ -288,6 +296,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(String... text) {
+        }
+    }
+
+    public void goToWebsite(View view){
+        if (!tvWebsite.getText().equals("Dato no disponible")){
+            String url = tvWebsite.getText().toString();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         }
     }
 

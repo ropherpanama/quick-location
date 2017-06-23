@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +52,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private TextView tvPlaceDirection;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
+    private TextView tvWebsite;
     private TextView tvOpeningStatus;
     private String targetPath = Utils.targetPath;
     private ResponseForPlaceDetails placeDetails;
@@ -88,13 +91,19 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
         tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
+        tvWebsite = (TextView) findViewById(R.id.tv_website);
 
 
-        try {
-            ivPlacePhoto.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), getImageUri()));
-        } catch (IOException e) {
-            logger.error(Reporter.stringStackTrace(e));
-        }
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int height = (int) (metrics.heightPixels * 0.158);
+
+        Picasso.with(FavoriteDetailsActivity.this)
+                .load(getImageUri())
+                .error(R.drawable.default_img)
+                .resize(metrics.widthPixels, height)
+                .into(ivPlacePhoto);
 
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
@@ -151,6 +160,20 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
         tvPlacePhone.setText(strPlacePhone);
         tvPlaceDirection.setText(strPlaceDirection);
+
+        if (placeDetail.getWebsite() == null)
+            tvWebsite.setText("Dato no disponible");
+        else
+            tvWebsite.setText(placeDetail.getWebsite());
+    }
+
+    public void goToWebsite(View view){
+        if (!tvWebsite.getText().equals("Dato no disponible")){
+            String url = tvWebsite.getText().toString();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
     }
 
     @Override
