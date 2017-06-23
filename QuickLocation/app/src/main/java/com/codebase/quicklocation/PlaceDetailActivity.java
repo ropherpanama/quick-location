@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -211,9 +212,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                             //logger.write("Photo place URL: " + photoUrl);
 
+                            DisplayMetrics metrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                            int height = (int) (metrics.heightPixels * 0.50);
+
                             Picasso.with(PlaceDetailActivity.this)
                                     .load(photoUrl)
                                     .error(R.drawable.default_img)
+                                    .resize(metrics.widthPixels, height)
                                     .into(ivPlacePhoto);
                         } else {
                             //logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
@@ -291,10 +298,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
         } catch (IOException e) {
             logger.error(Reporter.stringStackTrace(e));
         }
-        if (opcImagePlace != null)
-            ivPlacePhoto.setImageBitmap(opcImagePlace);
-        else
+        if (opcImagePlace != null) {
+            //ivPlacePhoto.setImageBitmap(opcImagePlace);
+
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            int height = (int) (metrics.heightPixels * 0.158);
+
+            Picasso.with(PlaceDetailActivity.this)
+                    .load(Utils.getImageUri(strPlaceId))
+                    .error(R.drawable.default_img)
+                    .resize(metrics.widthPixels, height)
+                    .into(ivPlacePhoto);
+
+        }else {
             ivPlacePhoto.setImageResource(R.drawable.default_img);
+        }
     }
 
     /**
@@ -326,7 +346,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        verificarBitmapLocal();
+        //verificarBitmapLocal();
     }
 
     @Override
