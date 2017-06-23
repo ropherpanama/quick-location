@@ -23,13 +23,13 @@ public class GPSTrackingService extends Service {
     private Reporter logger = Reporter.getInstance(GPSTrackingService.class);
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 3000;
-    private static final float LOCATION_DISTANCE = 0f;
+    private static final float LOCATION_DISTANCE = 0;
 
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
         public LocationListener(String provider) {
-            logger.write("LocationListener " + provider);
+            //logger.write("LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
@@ -41,8 +41,9 @@ public class GPSTrackingService extends Service {
             last.setLongitude(location.getLongitude());
             last.setProvider(location.getProvider());
             last.setTime(System.currentTimeMillis());
-            Utils.writeJsonOnDisk(getApplication().getApplicationContext(), "location", new StringBuilder(Utils.objectToJson(last)));
-            logger.write(Utils.objectToJson(last));
+            Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
+            //logger.write(Utils.objectToJson(last));
+            System.out.println(Utils.objectToJson(last));
         }
 
         @Override
@@ -71,7 +72,7 @@ public class GPSTrackingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        logger.write("onStartCommand");
+        //logger.write("onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -80,22 +81,17 @@ public class GPSTrackingService extends Service {
     public void onCreate() {
         initializeLocationManager();
         try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.PASSIVE_PROVIDER,
-                    LOCATION_INTERVAL,
-                    LOCATION_DISTANCE,
-                    mLocationListeners[0]
-            );
-        } catch (java.lang.SecurityException ex) {
-            logger.error(Reporter.stringStackTrace(ex));
-        } catch (IllegalArgumentException ex) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[0]);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[1]);
+            mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[2]);
+        } catch (SecurityException | IllegalArgumentException ex) {
             logger.error(Reporter.stringStackTrace(ex));
         }
     }
 
     @Override
     public void onDestroy() {
-        logger.write("onDestroy");
+        //logger.write("onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -112,7 +108,7 @@ public class GPSTrackingService extends Service {
     }
 
     private void initializeLocationManager() {
-        logger.write("initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
+        //logger.write("initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

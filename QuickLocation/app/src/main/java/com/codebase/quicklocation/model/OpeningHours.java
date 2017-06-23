@@ -2,21 +2,24 @@ package com.codebase.quicklocation.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by Spanky on 23/01/2017.
  */
 
 public class OpeningHours {
     @SerializedName("weekday_text")
-    private String[] weekdayText;
+    //private String[] weekdayText;
+    private List<String> weekdayText;
     @SerializedName("open_now")
     private boolean openNow;
 
-    public String[] getWeekdayText() {
+    public List<String> getWeekdayText() {
         return weekdayText;
     }
 
-    public void setWeekdayText(String[] weekdayText) {
+    public void setWeekdayText(List<String> weekdayText) {
         this.weekdayText = weekdayText;
     }
 

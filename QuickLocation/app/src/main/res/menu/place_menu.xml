@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/order_by_rating"
+        android:title="Rating"
+        android:visible="true"
+        android:icon="@mipmap/ic_order_rating"
+        android:onClick="ordenarPorRating"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/order_by_distance"
+        android:title="Distancia"
+        android:icon="@mipmap/ic_order_distance"
+        android:onClick="ordenarPorDistancia"
+        android:visible="true"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>

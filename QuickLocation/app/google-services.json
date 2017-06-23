@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "228380076563",
+    "firebase_url": "https://quick-location.firebaseio.com",
+    "project_id": "quick-location",
+    "storage_bucket": "quick-location.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228380076563:android:8a8c0ef9e75385a5",
+        "android_client_info": {
+          "package_name": "com.codebase.quicklocation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "228380076563-cq6mehgmr126g9pj0ohrh9j9agldfu1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwpp_kopfZgLYgowtlLUZ5rDhgkbUriDQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

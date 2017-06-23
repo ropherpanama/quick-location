@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,98 +17,101 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Button;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
+import com.codebase.quicklocation.database.DBHelper;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.crashlytics.android.Crashlytics;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import io.fabric.sdk.android.Fabric;
 
 public class WelcomeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<CategoryMenuItem> elements = new ArrayList();
+    private ArrayList<CategoryMenuItem> elements = new ArrayList<>();
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
-    private Reporter logger;
+    private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
     String[] permission;
-
+    private DBHelper dbHelper;
+    private FirebaseAuth mAuth;
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        Fabric.with(this, new Crashlytics());
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser()!=null) {
+            setContentView(R.layout.activity_welcome);
+            context = this;
+            logUser();
+            try {
+                permission = new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.CALL_PHONE
+                };
 
-        try {
-            permission= new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CALL_PHONE
-            };
-
-            if(!hasPermissions(this, permission)){
-                ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
-            }
-
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            mLayoutManager = new GridLayoutManager(this, 2);
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.setHasFixedSize(true);
-            fillElementsData();
-
-            mAdapter = new CategoryMenuItemAdapter(elements, new CategoryMenuItemAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(CategoryMenuItem item) {
-                    if (!validarEstadoGps()) {
-                        showSettingsAlert();
-                    } else {
-                        Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
-
-                        if(!hasPermissions(WelcomeActivity.this, permission)){
-                            ActivityCompat.requestPermissions(WelcomeActivity.this, permission, 100);
-                        }
-                        //logger.write("Selected category : " + categorias.get(item.getItemName()));
-                        i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
-                        i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
-                        startActivity(i);
-                        //No se llama a finish porque la actividad debe estar disponible
-                    }
+                if (!hasPermissions(this, permission)) {
+                    ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
+                } else {
+                    logger.write("Stating service with permissions");
+                    startService(new Intent(this, GPSTrackingService.class));
                 }
-            });
 
-            recyclerView.setAdapter(mAdapter);
+                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+                recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+                mLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setHasFixedSize(true);
+                fillElementsData();
 
-        } catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
+                mAdapter = new CategoryMenuItemAdapter(elements, new CategoryMenuItemAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(CategoryMenuItem item) {
+                        if (!validarEstadoGps()) {
+                            showSettingsAlert();
+                        } else {
+                            Intent i = new Intent(WelcomeActivity.this, PlaceActivity.class);
+
+                            if (!hasPermissions(WelcomeActivity.this, permission)) {
+                                ActivityCompat.requestPermissions(WelcomeActivity.this, permission, 100);
+                            }
+                            //logger.write("Selected category : " + categorias.get(item.getItemName()));
+                            i.putExtra(PlaceActivity.KEY_CATEGORY, categorias.get(item.getItemName()));
+                            i.putExtra(PlaceActivity.KEY_APP_CATEGORY, item.getItemName());
+                            startActivity(i);
+                            //No se llama a finish porque la actividad debe estar disponible
+                        }
+                    }
+                });
+
+                recyclerView.setAdapter(mAdapter);
+
+            } catch (Exception e) {
+                logger.error(Reporter.stringStackTrace(e));
+            }
+        }else
+        {
+            Intent intent = new Intent(this,LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent);
+            finish();
         }
     }
-
-    /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        searchMenuItem = menu.findItem(R.id.search);
-        mSearchView = (SearchView) searchMenuItem.getActionView();
-        //mSearchView.setOnQueryTextListener(listener);
-        return true;
-    }
-
-    SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }; */
 
     private void fillElementsData() {
         String[] arrayCategorias = getResources().getStringArray(R.array.categorias);
@@ -165,12 +169,80 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_ALL && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            logger = Reporter.getInstance(WelcomeActivity.class);
             if (!validarEstadoGps()){
                 showSettingsAlert();
             }else{
+                logger.write("Stating service without permissions");
                 startService(new Intent(this, GPSTrackingService.class));
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * Muestra la pantalla de favoritos al tocar el menu Favoritos
+     * @param item menu item que activa el evento
+     */
+    public void showFavorites(MenuItem item) {
+        Intent i = new Intent(WelcomeActivity.this, FavoritesActivity.class);
+        startActivity(i);
+    }
+
+    /**
+     * Método para finalizar la sesión con firebase.
+     * @param item
+     */
+    public void logout(MenuItem item){
+        dialogLogout();
+    }
+
+    private void dialogLogout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.warning));
+        builder.setMessage(context.getString(R.string.salir));
+        builder.setCancelable(false);
+        builder.setPositiveButton(context.getString(R.string.aceptar), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                mAuth.signOut();
+                Intent intent = new Intent(context, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+                finish();
+            }
+        }).setNegativeButton(context.getString(R.string.cancelar),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button pbtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        pbtn.setTextColor(Color.parseColor("#da1919"));
+        Button nbtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nbtn.setTextColor(Color.parseColor("#da1919"));
+    }
+    /**
+     * Registra al usuario en la plataforma  Crashlytics de Fabric.
+     */
+    private void logUser() {
+        // TODO: Use the current user's information
+        // You can call any combination of these three methods
+        Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getEmail()+"");
+        //Crashlytics.setUserEmail(utils.getUserLogin().di_correo);
+        //Crashlytics.setUserName(utils.getUserLogin().nm_usuario);
+        //Crashlytics.log("Registro de usuario a Crashlytics");
+
     }
 }

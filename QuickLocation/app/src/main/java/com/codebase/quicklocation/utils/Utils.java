@@ -1,12 +1,18 @@
 package com.codebase.quicklocation.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.util.Size;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
@@ -22,6 +28,10 @@ public class Utils {
     private static Gson gson;
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
+    private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
+    public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation";
+
+    private Utils(){}
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
@@ -39,30 +49,22 @@ public class Utils {
         return gson;
     }
 
-    public static StringBuilder getJsonFromDisk(Context context, String jsonFile) {
+    /**
+     * Metodo usado para escribir la ultima coordenada registrada por el GPS
+     * en el almacenamiento interno del telefono
+     * @param fileName nombre del archivo en donde se debe escribir la informacion
+     * @param bigStr informacion que debe ser escrita en el archivo
+     */
+    public static void writeJsonOnDisk(String fileName, StringBuilder bigStr) {
         try {
-            File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard, jsonFile + ".json");
-            //BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/" + jsonFile + ".json"));
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            JsonElement json = new JsonParser().parse(br);
-            StringBuilder data = null;
+            //File file = new File(Environment.getDataDirectory(), fileName + ".json");
+            File file = new File(Environment.getExternalStorageDirectory(), fileName + ".json");
 
-            if (json.isJsonArray())
-                data = new StringBuilder(json.getAsJsonArray().toString());
-            else if (json.isJsonObject())
-                data = new StringBuilder(json.getAsJsonObject().toString());
-
-            return data;
-        } catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
-            return null;
-        }
-    }
-
-    public static void writeJsonOnDisk(Context context, String fileName, StringBuilder bigStr) {
-        try {
-            FileWriter Filewriter = new FileWriter(context.getApplicationInfo().dataDir + "/" + fileName + ".json");
+            if(!file.exists()) {
+            	file.createNewFile();
+            }
+            
+            FileWriter Filewriter = new FileWriter(file);
             Filewriter.write(bigStr.toString());
             Filewriter.close();
         } catch (Exception e) {
@@ -84,7 +86,8 @@ public class Utils {
      */
     public static String getSavedLocation(Context context) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
+            //BufferedReader br = new BufferedReader(new FileReader(context.getApplicationInfo().dataDir + "/location.json"));
+            BufferedReader br = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + "/location.json"));
             JsonElement json = new JsonParser().parse(br);
             return json.getAsJsonObject().toString();
         } catch (Exception e) {
@@ -135,21 +138,8 @@ public class Utils {
         return new StringBuilder(result);
     }
 
-    /**
-     * Retorna el API Key de Google para que la app pueda conectarse al API
-     * @param context Contexto de la aplicacion
-     * @return Key del API autorizado
-     */
-    public static String getApplicationKey(Context context) {
-        try {
-            StringBuilder keyJson = Utils.getJsonFromDisk(context, "api_key");
-            JsonObject jsonObject = new JsonParser().parse(keyJson.toString()).getAsJsonObject();
-            JsonElement jsonElement = jsonObject.get("key");
-            return jsonElement.getAsString();
-        }catch (Exception e) {
-            logger.error(Reporter.stringStackTrace(e));
-            return null;
-        }
+    public static String giveMeMyCandy() {
+        return takeThisCandy;
     }
 
     /**
@@ -161,7 +151,58 @@ public class Utils {
      */
     public static int getDrawableByName(Context ctx, String directorio, String id) {
         String name = "ic_" + id.toLowerCase();
-        System.out.println("Buscando drawable llamado : " + name);
+        //System.out.println("Buscando drawable llamado : " + name);
         return ctx.getResources().getIdentifier(name, directorio, ctx.getPackageName());
+    }
+
+    public static void showMessage(String title, String message, final Context context) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public  void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Método que crea el nombre con la ruta de la imagen tomada con la cámara.
+     *
+     * @return
+     */
+    public static Uri getImageUri(String favoriteId) {
+        File file = new File(targetPath, favoriteId + ".jpg");
+        Uri imgUri = Uri.fromFile(file);
+        return imgUri;
+    }
+
+    public static void deleteImage(String favoriteID) {
+        File file = new File(targetPath, favoriteID + ".jpg");
+        if (file.exists()) {
+            file.delete();
+            Log.d("Delete","Se elmina imagen " + favoriteID);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static Integer[] chooseBestPhotoDimension(Size[] sizes) {
+        int minWidth = 640;
+        int minHeigth = 480;
+        Integer [] retorno = new Integer[2];
+        int average = sizes.length / 2;
+
+        if(sizes[average].getWidth() > minWidth) {
+            retorno[0] = sizes[average].getWidth();
+            retorno[1] = sizes[average].getHeight();
+        } else {
+            retorno[0] = minWidth;
+            retorno[1] = minHeigth;
+        }
+        System.out.println("Selected size " + retorno[0] + "x" + retorno[1]);
+        return retorno;
     }
 }

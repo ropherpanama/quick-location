@@ -2,45 +2,40 @@ package com.codebase.quicklocation;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Canvas;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.codebase.quicklocation.adapters.PlaceItemAdapter;
+import com.codebase.quicklocation.database.Favorites;
+import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
-import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
-import com.codebase.quicklocation.model.ResponseForPlaces;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -53,18 +48,22 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlaceName;
     private String strPlaceDirection;
     private String strPlacePhone;
+    private String strPlaceId;
     private String strOpeningStatus;
+    private String strCategory;
+    private Double doubleRating;
     private StringBuilder strOpeningHours;
     private ResponseForPlaceDetails response;
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Reporter logger = Reporter.getInstance(PlaceDetailActivity.class);
+    private FavoritesDao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
-
+        dao = new FavoritesDao(this);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
         collapsingToolbarLayout.setTitleEnabled(false);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,11 +84,22 @@ public class PlaceDetailActivity extends AppCompatActivity {
             strPlaceName = bundle.getString(PlaceActivity.KEY_PLACE_NAME);
             setTitle(strPlaceName);
 
-            String strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
+            strPlaceId = bundle.getString(PlaceActivity.KEY_PLACE_ID);
+            strCategory = bundle.getString(PlaceActivity.KEY_APP_CATEGORY);
+            doubleRating = bundle.getDouble(PlaceActivity.KEY_PLACE_RATING);
 
-            String key = Utils.getApplicationKey(this);
+            Button button = (Button) findViewById(R.id.button_add_favorite);
+            ImageView imageView = (ImageView) findViewById(R.id.image_add_favorite);
+            Favorites f = dao.getByPlaceId(strPlaceId);
 
-            if(key != null) {
+            if(f != null) {
+                button.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
+            }
+
+            String key = Utils.giveMeMyCandy();
+
+            if (key != null) {
                 String url = getString(R.string.google_api_place_details_url) + "placeid=" + strPlaceId + "&key=" + key;
                 DownloadDetailOfPlace downloader = new DownloadDetailOfPlace();
                 downloader.execute(url);
@@ -97,6 +107,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 Snackbar.make(toolbar, "No se encontró el key de acceso al API", Snackbar.LENGTH_LONG).show();
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
+        }
+        File directImge = new File(Utils.targetPath);
+        if (!directImge.exists()) {
+            directImge.mkdirs();
         }
     }
 
@@ -186,31 +200,33 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     PlaceDetail detail = response.getResult();
 
                     //Búsqueda de la foto del lugar en el API
-                    if(detail.getPhotos() != null && detail.getPhotos().length > 0) {
-                        String key = Utils.getApplicationKey(PlaceDetailActivity.this);
+                    //if (detail.getPhotos() != null && detail.getPhotos().length > 0) {
+                    if (detail.getPhotos() != null && detail.getPhotos().size() > 0) {
+                        String key = Utils.giveMeMyCandy();
 
-                        if(key != null) {
+                        if (key != null) {
                             String photoUrl = getString(R.string.google_api_place_photo_url) +
-                                    "maxwidth=900&photoreference=" + detail.getPhotos()[0].getPhotoReference() +
-                                    "&key=" + Utils.getApplicationKey(PlaceDetailActivity.this);
+                                    "maxwidth=12040&photoreference=" + detail.getPhotos().get(0).getPhotoReference() +
+                                    "&key=" + Utils.giveMeMyCandy();
 
-                            logger.write("Photo place URL: " + photoUrl);
+                            //logger.write("Photo place URL: " + photoUrl);
 
                             Picasso.with(PlaceDetailActivity.this)
                                     .load(photoUrl)
                                     .error(R.drawable.default_img)
                                     .into(ivPlacePhoto);
                         } else {
-                            logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
-                            ivPlacePhoto.setImageResource(R.drawable.default_img);
+                            //logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
+                            verificarBitmapLocal();
+
                         }
                     } else {
-                        ivPlacePhoto.setImageResource(R.drawable.default_img);
+                        verificarBitmapLocal();
                     }
 
-                    if(detail.getFormattedPhoneNumber() != null) {
+                    if (detail.getFormattedPhoneNumber() != null) {
                         strPlacePhone = detail.getFormattedPhoneNumber();
-                        if("".equals(strPlacePhone)) {
+                        if ("".equals(strPlacePhone)) {
                             strPlacePhone = "Dato no disponible";
                             callButton.setEnabled(false);
                         }
@@ -219,25 +235,26 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         strPlacePhone = "Dato no disponible";
                     }
 
-                    if(detail.getFormattedAddress() != null)
+                    if (detail.getFormattedAddress() != null)
                         strPlaceDirection = detail.getFormattedAddress();
 
-                    if(detail.getOpeningHours() != null) {
-                        if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
+                    if (detail.getOpeningHours() != null) {
+                        //if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
+                        if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().size() > 0) {
                             strOpeningHours = new StringBuilder();
 
                             for (String str : detail.getOpeningHours().getWeekdayText())
                                 strOpeningHours.append(str).append("\n");
                         }
 
-                        if(strOpeningHours.equals(""))
+                        if (strOpeningHours.equals(""))
                             tvPlaceOpeningHours.setText("Dato no disponible");
                         else
                             tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
 
                         if (detail.getOpeningHours().isOpenNow()) {
                             tvOpeningStatus.setText("Abierto en este momento");
-                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.accent));
+                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.primary_dark));
                         } else {
                             tvOpeningStatus.setText("Cerrado en este momento");
                             tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));
@@ -265,5 +282,79 @@ public class PlaceDetailActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... text) {
         }
+    }
+
+    private void verificarBitmapLocal() {
+        Bitmap opcImagePlace = null;
+        try {
+            opcImagePlace = MediaStore.Images.Media.getBitmap(PlaceDetailActivity.this.getContentResolver(), Utils.getImageUri(strPlaceId));
+        } catch (IOException e) {
+            logger.error(Reporter.stringStackTrace(e));
+        }
+        if (opcImagePlace != null)
+            ivPlacePhoto.setImageBitmap(opcImagePlace);
+        else
+            ivPlacePhoto.setImageResource(R.drawable.default_img);
+    }
+
+    /**
+     * Guarda la seleccion en la tabla de favoritos
+     *
+     * @param v parametro de vista
+     */
+    public void guardarFavorito(View v) {
+        dao = new FavoritesDao(this);
+        Favorites f = dao.getByPlaceId(strPlaceId);
+        if (f == null) {
+            Favorites favorite = new Favorites();
+            favorite.setLocalName(strPlaceName);
+            favorite.setRating(doubleRating);
+            favorite.setCategory(strCategory);
+            favorite.setAddedFrom(new Date());
+            favorite.setPlaceId(strPlaceId);
+            Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
+            String cdata = Utils.objectToJson(favorite);
+            String detailsResponse = Utils.objectToJson(response);
+            i.putExtra("placeDetails", detailsResponse);
+            i.putExtra("cdata", cdata);
+            startActivity(i);
+        } else {
+            Snackbar.make(toolbar, "Favorito ya existe", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        verificarBitmapLocal();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.place_detail_menu, menu);
+        return true;
+    }
+
+    /**
+     * Este metodo despliega la ventana de Mejora de Informacion
+     * @param item menu item que debe ser clickeado
+     */
+    public void showImprovementScreen(MenuItem item) {
+        Intent i = new Intent(PlaceDetailActivity.this, ImprovementActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        i.putExtra("api_response", Utils.objectToJson(response));
+        startActivity(i);
+    }
+
+    /**
+     * Este metodo responde ante el evento click sobre el item de menu
+     * Quejas o Sugerencias, despliega la ventana de Reportes
+     * @param item menu item que debe ser clickeado
+     */
+    public void showCommentsScreen(MenuItem item) {
+        Intent i = new Intent(PlaceDetailActivity.this, ReportActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        startActivity(i);
     }
 }

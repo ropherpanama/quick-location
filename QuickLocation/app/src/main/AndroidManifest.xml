@@ -5,9 +5,20 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +29,7 @@
         <activity android:name=".WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,6 +45,35 @@
             android:name=".gps.GPSTrackingService"
             android:process=":gps_tracking" />
 
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/place_favorites_activity_label" />
+        <activity
+            android:name=".FavoriteDetailsActivity"
+            android:label="@string/place_detail_activity_label" />
+        <activity
+            android:name=".AddFavoritesActivity"
+            android:label="@string/place_add_fav_label" />
+        <activity
+            android:name=".CapturePhotoActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".ImprovementActivity" />
+        <activity android:name=".ReportActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/login"
+
+            />
+        <activity
+            android:name=".ResgistraseActivity"
+            android:label="@string/title_activity_resgistrase">
+          <!--  <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.codebase.quicklocation.LoginActivity" />-->
+        </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c2379599f64b5248ea128193f447e2c87653802e" />
     </application>
 
 </manifest>
