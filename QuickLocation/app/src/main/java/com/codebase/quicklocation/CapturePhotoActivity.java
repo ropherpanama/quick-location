@@ -279,16 +279,20 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
-            Size[] jpegSizes = null;
+            Size[] jpegSizes;
+            Integer[] bestPhotoSize;
+            int width = 0;
+            int height = 0;
+
             if (characteristics != null) {
                 jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+                if(jpegSizes != null) {
+                    bestPhotoSize = Utils.chooseBestPhotoDimension(jpegSizes);
+                    width = bestPhotoSize[0];
+                    height = bestPhotoSize[1];
+                }
             }
-            int width = 640;
-            int height = 480;
-            if (jpegSizes != null && 0 < jpegSizes.length) {
-                width = jpegSizes[0].getWidth();
-                height = jpegSizes[0].getHeight();
-            }
+
             ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<>(2);
             outputSurfaces.add(reader.getSurface());
@@ -310,8 +314,6 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes);
                         save(bytes);
-                    } catch (FileNotFoundException e) {
-                        reporter.error(Reporter.stringStackTrace(e));
                     } catch (IOException e) {
                         reporter.error(Reporter.stringStackTrace(e));
                     } finally {
@@ -340,7 +342,7 @@ public class CapturePhotoActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(CapturePhotoActivity.this, "La foto se ha guardado con exito", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CapturePhotoActivity.this, "Foto adjuntada", Toast.LENGTH_SHORT).show();
                     createCameraPreview();
                     finish();
                 }

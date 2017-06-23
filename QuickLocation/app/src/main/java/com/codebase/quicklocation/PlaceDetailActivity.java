@@ -206,7 +206,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                         if (key != null) {
                             String photoUrl = getString(R.string.google_api_place_photo_url) +
-                                    "maxwidth=900&photoreference=" + detail.getPhotos().get(0).getPhotoReference() +
+                                    "maxwidth=12040&photoreference=" + detail.getPhotos().get(0).getPhotoReference() +
                                     "&key=" + Utils.giveMeMyCandy();
 
                             //logger.write("Photo place URL: " + photoUrl);

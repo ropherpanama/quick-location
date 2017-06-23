@@ -1,11 +1,14 @@
 package com.codebase.quicklocation.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.Size;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -185,6 +188,21 @@ public class Utils {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static Integer[] chooseBestPhotoDimension(Size[] sizes) {
+        int minWidth = 640;
+        int minHeigth = 480;
+        Integer [] retorno = new Integer[2];
+        int average = sizes.length / 2;
 
-
+        if(sizes[average].getWidth() > minWidth) {
+            retorno[0] = sizes[average].getWidth();
+            retorno[1] = sizes[average].getHeight();
+        } else {
+            retorno[0] = minWidth;
+            retorno[1] = minHeigth;
+        }
+        System.out.println("Selected size " + retorno[0] + "x" + retorno[1]);
+        return retorno;
+    }
 }
