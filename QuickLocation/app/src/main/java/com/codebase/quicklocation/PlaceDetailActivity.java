@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +42,7 @@ import java.util.Scanner;
 public class PlaceDetailActivity extends AppCompatActivity {
     private ImageView ivPlacePhoto;
     private TextView tvPlaceDirection;
+    private TextView tvWebsite;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
     private TextView tvOpeningStatus;
@@ -49,7 +51,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlaceDirection;
     private String strPlacePhone;
     private String strPlaceId;
-    private String strOpeningStatus;
     private String strCategory;
     private Double doubleRating;
     private StringBuilder strOpeningHours;
@@ -75,6 +76,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
+        tvWebsite = (TextView) findViewById(R.id.tv_website);
         tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
 
@@ -211,9 +213,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                             //logger.write("Photo place URL: " + photoUrl);
 
+                            DisplayMetrics metrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                            int height = (int) (metrics.heightPixels * 0.50);
+
                             Picasso.with(PlaceDetailActivity.this)
                                     .load(photoUrl)
                                     .error(R.drawable.default_img)
+                                    .resize(metrics.widthPixels, height)
                                     .into(ivPlacePhoto);
                         } else {
                             //logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
@@ -264,6 +272,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
+
+                    if (detail.getWebsite() == null)
+                        tvWebsite.setText("Dato no disponible");
+                    else
+                        tvWebsite.setText(detail.getWebsite());
+
+
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
@@ -284,6 +299,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
+    public void goToWebsite(View view){
+        if (!tvWebsite.getText().equals("Dato no disponible")){
+            String url = tvWebsite.getText().toString();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
+    }
+
     private void verificarBitmapLocal() {
         Bitmap opcImagePlace = null;
         try {
@@ -291,10 +315,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
         } catch (IOException e) {
             logger.error(Reporter.stringStackTrace(e));
         }
-        if (opcImagePlace != null)
-            ivPlacePhoto.setImageBitmap(opcImagePlace);
-        else
+        if (opcImagePlace != null) {
+            //ivPlacePhoto.setImageBitmap(opcImagePlace);
+
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            int height = (int) (metrics.heightPixels * 0.158);
+
+            Picasso.with(PlaceDetailActivity.this)
+                    .load(Utils.getImageUri(strPlaceId))
+                    .error(R.drawable.default_img)
+                    .resize(metrics.widthPixels, height)
+                    .into(ivPlacePhoto);
+
+        }else {
             ivPlacePhoto.setImageResource(R.drawable.default_img);
+        }
     }
 
     /**
@@ -326,7 +363,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        verificarBitmapLocal();
+        //verificarBitmapLocal();
     }
 
     @Override

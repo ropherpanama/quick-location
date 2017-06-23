@@ -18,7 +18,7 @@
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <Button
@@ -187,6 +187,32 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:onClick="goToWebsite"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:padding="5dp"
+                        android:layout_gravity="center"
+                        android:tint="@color/primary"
+                        android:src="@drawable/castle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:id="@+id/tv_website"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:padding="5dp"
+                        android:textColor="@color/primary_text"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
@@ -195,14 +221,12 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -210,9 +234,8 @@
                 android:id="@+id/iv_place_photo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
                 android:src="@drawable/default_img"
-                android:scaleType="centerInside"
+                android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 app:layout_collapseMode="parallax" />
 
