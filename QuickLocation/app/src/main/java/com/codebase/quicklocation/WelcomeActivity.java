@@ -194,6 +194,13 @@ public class WelcomeActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+
+    public void listChats(MenuItem item)
+    {
+        Intent intent = new Intent(WelcomeActivity.this, ChatsListActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * Método para finalizar la sesión con firebase.
      * @param item

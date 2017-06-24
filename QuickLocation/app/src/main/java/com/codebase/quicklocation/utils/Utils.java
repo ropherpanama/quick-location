@@ -31,6 +31,15 @@ public class Utils {
     private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
     public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation";
 
+
+    /**
+     * Firebase
+     */
+    public static final String messages = "messages";
+    public static final String groups = "groups";
+    public static final String users = "users";
+
+
     private Utils(){}
 
     public static Gson factoryGson(final String pattern) {

@@ -14,4 +14,11 @@
         android:onClick="logout"
         app:showAsAction="collapseActionView"
     />
+    <item
+        android:id="@+id/list_chats"
+        android:title="Chats"
+        android:onClick="listChats"
+        android:visible="true"
+        app:showAsAction="collapseActionView"
+    />
 </menu>

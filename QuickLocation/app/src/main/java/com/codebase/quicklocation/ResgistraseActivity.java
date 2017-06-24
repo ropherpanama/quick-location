@@ -33,13 +33,18 @@ import android.widget.Toast;
 
 import com.codebase.quicklocation.database.Users;
 import com.codebase.quicklocation.database.dao.UsersDao;
+import com.codebase.quicklocation.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -66,11 +71,13 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private EditText username;
+    private EditText fullname;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth firebaseAuth;
     private Context context;
     private UsersDao usersDao;
+    private DatabaseReference root =  FirebaseDatabase.getInstance().getReference().child(Utils.users);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +86,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         username = (AutoCompleteTextView)findViewById(R.id.username);
+        fullname= (AutoCompleteTextView)findViewById(R.id.fullname);
        // populateAutoComplete();
         context = this;
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -166,8 +174,16 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String userName = username.getText().toString();
+        String funllName = fullname.getText().toString();
         boolean cancel = false;
         View focusView = null;
+
+        if (TextUtils.isEmpty(funllName))
+        {
+            username.setError(getString(R.string.error_field_required));
+
+        }
+
         if (TextUtils.isEmpty(userName))
         {
             username.setError(getString(R.string.error_field_required));
@@ -200,13 +216,13 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
             // perform the user login attempt.
 
             showProgress(true);
-            createAccount(userName,email,password);
+            createAccount(funllName, userName,email,password);
             //mAuthTask = new UserLoginTask(email, password);
             //mAuthTask.execute((Void) null);
         }
     }
 
-    private void createAccount(String userName, String email, String password) {
+    private void createAccount(final String funllName, final String userName, final String email, String password) {
         final Users users = new Users();
         users.setNickname(userName);
         users.setEmail(email);
@@ -217,7 +233,16 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
                 if (task.isSuccessful())
                 {
                     showProgress(false);
+
                     usersDao.add(users);
+                    //Save user in Firebase.
+                    String key_user = root.push().getKey();
+                    DatabaseReference user_referemce = root.child(key_user);
+                    Map<String,Object> params = new HashMap<>();
+                    params.put("full_user_name",funllName);
+                    params.put("email",email);
+                    params.put("username",userName);
+                    user_referemce.updateChildren(params);
                     Toast.makeText(context,"Creación de usuario exitoso.",Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ResgistraseActivity.this,WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
