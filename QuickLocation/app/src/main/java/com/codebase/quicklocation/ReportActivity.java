@@ -12,10 +12,15 @@ import com.codebase.quicklocation.database.Users;
 import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.ImprovementInformation;
 import com.codebase.quicklocation.model.ImprovementRequest;
+import com.codebase.quicklocation.model.PlaceDetail;
+import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.UserReport;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,7 @@ public class ReportActivity extends AppCompatActivity {
     private String placeID;
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(ReportActivity.class);
+    private String firebasePlaceRecord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,7 @@ public class ReportActivity extends AppCompatActivity {
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         Bundle bundle = getIntent().getExtras();
         placeID = bundle.getString("place_id");
+        firebasePlaceRecord = bundle.getString("api_response");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -70,7 +77,24 @@ public class ReportActivity extends AppCompatActivity {
                 request.setPlaceId(placeID);
                 request.setInformations(informations);
                 //enviar trama al servidor
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                database.getReference().child("places/data").child(placeID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(!dataSnapshot.exists()) {
+                            if(firebasePlaceRecord != null) {
+                                System.out.println(firebasePlaceRecord);
+                                ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
+                                PlaceDetail placeDetail = responseForPlaceDetails.getResult();
+                                database.getReference().child("places/new/data").child(placeID).setValue(placeDetail);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+
                 database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
                 finish();
             }

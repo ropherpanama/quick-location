@@ -23,6 +23,15 @@ public class PlaceDetail {
     //private Photo[] photos;
     private List<Photo> photos;
     private String name;
+    private List<Review> reviews;
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 
     public List<Photo> getPhotos() {
         return photos;

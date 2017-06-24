@@ -22,7 +22,7 @@ import com.codebase.quicklocation.utils.Utils;
 public class GPSTrackingService extends Service {
     private Reporter logger = Reporter.getInstance(GPSTrackingService.class);
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 3000;
+    private static final int LOCATION_INTERVAL = 300000; //5 minutos
     private static final float LOCATION_DISTANCE = 0;
 
     private class LocationListener implements android.location.LocationListener {

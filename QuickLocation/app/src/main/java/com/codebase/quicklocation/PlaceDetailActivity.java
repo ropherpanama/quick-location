@@ -3,6 +3,7 @@ package com.codebase.quicklocation;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,13 +15,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
@@ -28,6 +32,7 @@ import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
+import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
@@ -36,7 +41,9 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -45,7 +52,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private TextView tvWebsite;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
-    private TextView tvOpeningStatus;
     private Button callButton;
     private String strPlaceName;
     private String strPlaceDirection;
@@ -59,6 +65,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private Reporter logger = Reporter.getInstance(PlaceDetailActivity.class);
     private FavoritesDao dao;
+    private View layoutReviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +84,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
         tvWebsite = (TextView) findViewById(R.id.tv_website);
-        tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
+        layoutReviews = findViewById(R.id.layout_reviews);
 
         try {
             Bundle bundle = getIntent().getExtras();
@@ -259,14 +266,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             tvPlaceOpeningHours.setText("Dato no disponible");
                         else
                             tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
-
-                        if (detail.getOpeningHours().isOpenNow()) {
-                            tvOpeningStatus.setText("Abierto en este momento");
-                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, R.color.primary_dark));
-                        } else {
-                            tvOpeningStatus.setText("Cerrado en este momento");
-                            tvOpeningStatus.setTextColor(ContextCompat.getColor(PlaceDetailActivity.this, android.R.color.holo_red_dark));
-                        }
                     } else
                         tvPlaceOpeningHours.setText("Dato no disponible");
 
@@ -278,7 +277,32 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     else
                         tvWebsite.setText(detail.getWebsite());
 
-
+                    if(response.getResult().getReviews() != null && !response.getResult().getReviews().isEmpty()) {
+                        for(Review r : response.getResult().getReviews()){
+                            TextView authorTextView = new TextView(PlaceDetailActivity.this);
+                            TextView commentTextView = new TextView(PlaceDetailActivity.this);
+                            TextView ratingView = new TextView(PlaceDetailActivity.this);
+                            commentTextView.setText(r.getText());
+                            authorTextView.setText(r.getAuthor());
+                            ratingView.setText(String.valueOf(r.getRating()));
+                            ratingView.setGravity(Gravity.RIGHT);
+                            ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
+                            commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            commentTextView.setPadding(0, 5, 0, 5);
+                            authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            authorTextView.setTypeface(null, Typeface.BOLD);
+                            ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            ((LinearLayout) layoutReviews).addView(authorTextView);
+                            ((LinearLayout) layoutReviews).addView(commentTextView);
+                            ((LinearLayout) layoutReviews).addView(ratingView);
+                            View separator = new View(PlaceDetailActivity.this);
+                            separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                            separator.setBackgroundColor(getResources().getColor(R.color.accent));
+                            ((LinearLayout) layoutReviews).addView(separator);
+                        }
+                    } else {
+                        Toast.makeText(PlaceDetailActivity.this, "No se puedo procesar tu solicitud", Toast.LENGTH_LONG).show();
+                    }
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
@@ -392,6 +416,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     public void showCommentsScreen(MenuItem item) {
         Intent i = new Intent(PlaceDetailActivity.this, ReportActivity.class);
         i.putExtra("place_id", strPlaceId);
+        i.putExtra("api_response", Utils.objectToJson(response));
         startActivity(i);
     }
 }

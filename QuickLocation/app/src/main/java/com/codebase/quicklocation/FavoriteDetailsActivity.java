@@ -44,16 +44,12 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     LinearLayout llayoutFavorite;
     private ImageView ivPlacePhoto;
     private Button callButton;
-    private String strPlaceName;
     private String strPlaceDirection;
     private String strPlacePhone;
-    private String strPlaceId;
-    private String strCategory;
     private TextView tvPlaceDirection;
     private TextView tvPlacePhone;
     private TextView tvPlaceOpeningHours;
     private TextView tvWebsite;
-    private TextView tvOpeningStatus;
     private String targetPath = Utils.targetPath;
     private ResponseForPlaceDetails placeDetails;
     private FavoritesDataDao favoritesDataDao;
@@ -89,10 +85,8 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
-        tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
         tvWebsite = (TextView) findViewById(R.id.tv_website);
-
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -108,7 +102,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
         tvPlaceDirection = (TextView) findViewById(R.id.tv_place_direction);
         tvPlaceOpeningHours = (TextView) findViewById(R.id.tv_opening_hours);
-        tvOpeningStatus = (TextView) findViewById(R.id.tv_opening_status);
         callButton = (Button) findViewById(R.id.call_action_button);
 
         favoritesData = favoritesDataDao.getByPlaceId(favorite.getPlaceId());
@@ -116,7 +109,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         placeDetail =  placeDetails.getResult();
         setTitle(favorite.getLocalName());
         showViewDetails();
-
     }
 
     private void showViewDetails() {
@@ -147,14 +139,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
                 tvPlaceOpeningHours.setText("Dato no disponible");
             else
                 tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
-
-            if (placeDetail.getOpeningHours().isOpenNow()) {
-                tvOpeningStatus.setText("Abierto en este momento");
-                tvOpeningStatus.setTextColor(ContextCompat.getColor(this, R.color.accent));
-            } else {
-                tvOpeningStatus.setText("Cerrado en este momento");
-                tvOpeningStatus.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
-            }
         } else
             tvPlaceOpeningHours.setText("Dato no disponible");
 
@@ -234,7 +218,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
                 }
             } else {
                 //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
-                Snackbar.make(findViewById(android.R.id.content), "Had a snack at Snackbar", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "No puedo ubicarte ...", Snackbar.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
