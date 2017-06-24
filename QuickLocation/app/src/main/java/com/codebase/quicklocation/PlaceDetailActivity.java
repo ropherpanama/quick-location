@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.LastLocation;
@@ -36,6 +38,10 @@ import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -66,6 +72,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(PlaceDetailActivity.class);
     private FavoritesDao dao;
     private View layoutReviews;
+    private boolean missingInformation = false;
+    private boolean missingReviews = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,14 +252,19 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         if ("".equals(strPlacePhone)) {
                             strPlacePhone = "Dato no disponible";
                             callButton.setEnabled(false);
+                            missingInformation = true;
                         }
                     } else {
                         callButton.setEnabled(false);
                         strPlacePhone = "Dato no disponible";
+                        missingInformation = true;
                     }
 
                     if (detail.getFormattedAddress() != null)
                         strPlaceDirection = detail.getFormattedAddress();
+                    else {
+                        missingInformation = true;
+                    }
 
                     if (detail.getOpeningHours() != null) {
                         //if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
@@ -266,8 +279,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             tvPlaceOpeningHours.setText("Dato no disponible");
                         else
                             tvPlaceOpeningHours.setText(Utils.formatDays(strOpeningHours));
-                    } else
+                    } else {
                         tvPlaceOpeningHours.setText("Dato no disponible");
+                        missingInformation = true;
+                    }
 
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
@@ -279,30 +294,38 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     if(response.getResult().getReviews() != null && !response.getResult().getReviews().isEmpty()) {
                         for(Review r : response.getResult().getReviews()){
-                            TextView authorTextView = new TextView(PlaceDetailActivity.this);
-                            TextView commentTextView = new TextView(PlaceDetailActivity.this);
-                            TextView ratingView = new TextView(PlaceDetailActivity.this);
-                            commentTextView.setText(r.getText());
-                            authorTextView.setText(r.getAuthor());
-                            ratingView.setText(String.valueOf(r.getRating()));
-                            ratingView.setGravity(Gravity.RIGHT);
-                            ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
-                            commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                            commentTextView.setPadding(0, 5, 0, 5);
-                            authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                            authorTextView.setTypeface(null, Typeface.BOLD);
-                            ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                            ((LinearLayout) layoutReviews).addView(authorTextView);
-                            ((LinearLayout) layoutReviews).addView(commentTextView);
-                            ((LinearLayout) layoutReviews).addView(ratingView);
-                            View separator = new View(PlaceDetailActivity.this);
-                            separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                            separator.setBackgroundColor(getResources().getColor(R.color.accent));
-                            ((LinearLayout) layoutReviews).addView(separator);
+                            if(!"".equals(r.getText().trim())) {
+                                TextView authorTextView = new TextView(PlaceDetailActivity.this);
+                                TextView commentTextView = new TextView(PlaceDetailActivity.this);
+                                TextView ratingView = new TextView(PlaceDetailActivity.this);
+                                commentTextView.setText(r.getText());
+                                authorTextView.setText(r.getAuthor());
+                                ratingView.setText(String.valueOf(r.getRating()));
+                                ratingView.setGravity(Gravity.RIGHT);
+                                ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
+                                commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                commentTextView.setPadding(0, 5, 0, 5);
+                                authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                authorTextView.setTypeface(null, Typeface.BOLD);
+                                ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                ((LinearLayout) layoutReviews).addView(authorTextView);
+                                ((LinearLayout) layoutReviews).addView(commentTextView);
+                                ((LinearLayout) layoutReviews).addView(ratingView);
+                                View separator = new View(PlaceDetailActivity.this);
+                                separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                                separator.setBackgroundColor(getResources().getColor(R.color.accent));
+                                ((LinearLayout) layoutReviews).addView(separator);
+                            }
                         }
                     } else {
                         Toast.makeText(PlaceDetailActivity.this, "No se puedo procesar tu solicitud", Toast.LENGTH_LONG).show();
+                        missingReviews = true;
                     }
+
+                    System.out.println("Missing information " + missingInformation + ", Missing Review " + missingReviews);
+                    if(missingInformation)
+                        getPlaceDataFromPlatform(strPlaceId);
+
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
@@ -418,5 +441,42 @@ public class PlaceDetailActivity extends AppCompatActivity {
         i.putExtra("place_id", strPlaceId);
         i.putExtra("api_response", Utils.objectToJson(response));
         startActivity(i);
+    }
+
+    private void getPlaceDataFromPlatform(String placeId) {
+        try {
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database.getReference().child("places/data").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    setScreenForNewData(dataSnapshot.getValue(PlaceDetail.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }catch (Exception e) {
+        }
+    }
+
+    /**
+     * Coloca en pantalla la data retornada desde el Firebase por ausencia en Google
+     * @param place lugar retornado por el API
+     */
+    private void setScreenForNewData(PlaceDetail place) {
+        if(place != null) {
+            System.out.println("********************** " + place);
+            if(place.getFormattedAddress() != null && place.getFormattedAddress().length() > 0)
+                tvPlaceDirection.setText(place.getFormattedAddress());
+            if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0)
+                tvPlacePhone.setText(place.getFormattedPhoneNumber());
+
+            if(place.getOpeningHours().getWeekdayText() != null && place.getOpeningHours().getWeekdayText().isEmpty()) {
+                StringBuilder builder = new StringBuilder();
+                for (String str : place.getOpeningHours().getWeekdayText())
+                    builder.append(str).append("\n");
+                tvPlaceOpeningHours.setText(Utils.formatDays(builder));
+            }
+        }
     }
 }
