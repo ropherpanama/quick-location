@@ -22,12 +22,20 @@
         android:layout_alignParentBottom="true">
 
         <TextView
-            android:id="@+id/txtNameChats"
+            android:id="@+id/txtTituloGroupo"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/primary"
             android:paddingRight="16dp"
             android:text="Sample Text" />
+
+        <TextView
+            android:id="@+id/txtDescripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="12dp"
+            android:text="Sample Text"
+            android:textColor="@color/primary_text" />
 
     </LinearLayout>
 

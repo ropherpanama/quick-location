@@ -1,4 +1,9 @@
-package com.codebase.quicklocation.model;
+package com.codebase.quicklocation.firebasedb;
+
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by AUrriola on 6/20/17.
@@ -8,7 +13,7 @@ public class ChatMessage {
     private String message;
     private String userMessage;
     private long timeOfMessage;
-
+    private TypeGroup users;
     public ChatMessage() {
     }
 
@@ -18,6 +23,15 @@ public class ChatMessage {
         this.timeOfMessage = timeOfMessage;
     }
 
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("message",message);
+        result.put("userMessage",userMessage);
+        result.put("timeOfMessage",timeOfMessage);
+        result.put("users",users);
+        return result;
+    }
     public String getMessage() {
         return message;
     }

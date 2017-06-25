@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.R;
-import com.codebase.quicklocation.model.MainChildChat;
+import com.codebase.quicklocation.firebasedb.Group;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ import java.util.List;
  */
 
 public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdapter.ViewHolder>  {
-    private final List<MainChildChat> listChats;
+    private final List<Group> groupList;
     private final ChatsFirebaseAdapter.OnItemClickListener listener;
 
-    public ChatsFirebaseAdapter(List<MainChildChat> listChats, OnItemClickListener listener) {
-        this.listChats = listChats;
+    public ChatsFirebaseAdapter(List<Group> groups, OnItemClickListener listener) {
+        this.groupList = groups;
         this.listener = listener;
     }
 
@@ -35,41 +35,42 @@ public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdap
 
     @Override
     public void onBindViewHolder(ChatsFirebaseAdapter.ViewHolder holder, int position) {
-        holder.bind(listChats.get(position), listener);
+        holder.bind(groupList.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return listChats.size();
+        return groupList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imgPerfil;
         private TextView txtTitle;
+        private TextView txtDescription;
         public ViewHolder(View itemView) {
             super(itemView);
             imgPerfil = (ImageView)itemView.findViewById(R.id.imgPerfilchat);
-            txtTitle = (TextView)itemView.findViewById(R.id.txtNameChats);
-
-
+            txtTitle = (TextView)itemView.findViewById(R.id.txtTituloGroupo);
+            txtDescription = (TextView)itemView.findViewById(R.id.txtDescripcion);
         }
 
-        public void bind(final MainChildChat mainChildChat, final OnItemClickListener listener) {
-            txtTitle.setText(mainChildChat.getTitle());
+        public void bind(final Group group, final OnItemClickListener listener) {
+            txtTitle.setText(group.getTitle());
+            txtDescription.setText(group.getDescription());
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final Animation anim = AnimationUtils.loadAnimation(v.getContext(),
                             R.anim.anim_alpha);
                     v.startAnimation(anim);
-                    listener.onItemClick(mainChildChat);
+                    listener.onItemClick(group);
                 }
             });
         }
     }
 
     public interface OnItemClickListener {
-        void onItemClick(MainChildChat item);
+        void onItemClick(Group item);
 
 
     }

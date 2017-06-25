@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.codebase.quicklocation.database.Users;
 import com.codebase.quicklocation.database.dao.UsersDao;
+import com.codebase.quicklocation.firebasedb.UserStructure;
 import com.codebase.quicklocation.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,7 +43,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -180,13 +180,18 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
 
         if (TextUtils.isEmpty(funllName))
         {
-            username.setError(getString(R.string.error_field_required));
+            fullname.setError(getString(R.string.error_field_required));
+            focusView = fullname;
+            cancel = true;
 
         }
 
         if (TextUtils.isEmpty(userName))
         {
             username.setError(getString(R.string.error_field_required));
+            focusView = username;
+            cancel = true;
+
         }
 
         // Check for a valid password, if the user entered one.
@@ -235,14 +240,12 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
                     showProgress(false);
 
                     usersDao.add(users);
-                    //Save user in Firebase.
+                    /*TODO: Save user in Firebase.*/
                     String key_user = root.push().getKey();
                     DatabaseReference user_referemce = root.child(key_user);
-                    Map<String,Object> params = new HashMap<>();
-                    params.put("full_user_name",funllName);
-                    params.put("email",email);
-                    params.put("username",userName);
-                    user_referemce.updateChildren(params);
+                    UserStructure userStructure = new UserStructure(key_user,userName,funllName);
+                    Map<String, Object> postValues = userStructure.toMap();
+                    user_referemce.updateChildren(postValues);
                     Toast.makeText(context,"Creación de usuario exitoso.",Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ResgistraseActivity.this,WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
