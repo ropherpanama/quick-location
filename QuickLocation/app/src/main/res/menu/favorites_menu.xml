@@ -4,6 +4,5 @@
 
     <item android:title="Eliminar"
         android:id="@+id/delete_all"
-        android:icon="@mipmap/ic_delete"
-        app:showAsAction="ifRoom|collapseActionView"/>
+        app:showAsAction="ifRoom|withText"/>
 </menu>

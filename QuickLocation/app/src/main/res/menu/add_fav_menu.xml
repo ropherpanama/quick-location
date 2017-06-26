@@ -4,7 +4,6 @@
 
     <item android:title="Guardar"
         android:id="@+id/fav_menu_save"
-        android:icon="@mipmap/ic_save"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="ifRoom|withText"
         android:onClick="guardarFavoritoBD"/>
 </menu>
