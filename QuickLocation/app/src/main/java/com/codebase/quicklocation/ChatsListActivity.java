@@ -106,8 +106,8 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
            // TypeGroup typeGroup = dataSnapshot.getValue(TypeGroup.class);
             group = dataSnapshot.getValue(Group.class);   //mainChildChat.setTitle(dataSnapshot.getKey());
 
-            assert group != null;
-            if (group.getMembers().containsKey(user_ui))
+            //assert group != null;
+           // if (group.getMembers().containsKey(user_ui))
                 groups.add(group);
         }
 

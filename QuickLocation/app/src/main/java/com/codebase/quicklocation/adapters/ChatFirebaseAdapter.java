@@ -82,6 +82,11 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
         viewHolder.setTxtMessage(model.getMessage());
         viewHolder.setTvTimestamp(model.getTimeStamp());
         viewHolder.tvIsLocation(View.GONE);
+        //if (position == LEFT_MSG)
+        //{
+            if (model.getUserModel() != null)
+            viewHolder.settxtsendusername(model.getUserModel().getName());
+        //}
        /* if (model.getFile() != null) {
             viewHolder.tvIsLocation(View.GONE);
             viewHolder.setIvChatPhoto(model.getFile().getUrl_file());
@@ -94,13 +99,14 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
     public class MyChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView tvTimestamp, tvLocation;
-          TextView txtMessage;
+          TextView txtMessage, txtsendusername;
         ImageView ivUser, ivChatPhoto;
 
         public MyChatViewHolder(View itemView) {
             super(itemView);
             tvTimestamp = (TextView) itemView.findViewById(R.id.timestamp);
             txtMessage = (TextView)itemView.findViewById(R.id.txtMessage);
+            txtsendusername = (TextView)itemView.findViewById(R.id.txtsendusername);
             tvLocation = (TextView) itemView.findViewById(R.id.tvLocation);
             ivChatPhoto = (ImageView) itemView.findViewById(R.id.img_chat);
             ivUser = (ImageView) itemView.findViewById(R.id.ivUserChat);
@@ -144,6 +150,11 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
         public void tvIsLocation(int visible) {
             if (tvLocation == null) return;
             tvLocation.setVisibility(visible);
+        }
+        public void settxtsendusername(String fullname)
+        {
+            if (txtsendusername == null)return;
+            txtsendusername.setText(fullname);
         }
 
     }
