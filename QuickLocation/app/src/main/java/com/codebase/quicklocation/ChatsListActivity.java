@@ -2,6 +2,7 @@ package com.codebase.quicklocation;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.codebase.quicklocation.adapters.ChatsFirebaseAdapter;
 import com.codebase.quicklocation.firebasedb.Group;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,11 +42,12 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
     private List<Group> groups = new ArrayList<>();
     private Context context;
     private DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.groups);
-
+    private String user_ui = FirebaseAuth.getInstance().getCurrentUser().getUid();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context= this;
+        Log.d("ChatsListActivity",user_ui);
         setContentView(R.layout.activity_chats_list);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -75,6 +78,9 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onItemClick(Group item) {
                 Log.d("Item... "," "+item.getTitle());
+                Intent intent = new Intent(ChatsListActivity.this, ChatFirebaseActivity.class);
+                intent.putExtra("group_id", item.getId_gruop());
+                startActivity(intent);
             }
         });
         recyclerView = (RecyclerView) findViewById(R.id.lstFirebaseChats);
@@ -93,11 +99,16 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
      */
     private void maplist(DataSnapshot map) {
         groups.clear();
+
+
         for (DataSnapshot dataSnapshot: map.getChildren()) {
             Group group = new Group();
            // TypeGroup typeGroup = dataSnapshot.getValue(TypeGroup.class);
             group = dataSnapshot.getValue(Group.class);   //mainChildChat.setTitle(dataSnapshot.getKey());
-            groups.add(group);
+
+            assert group != null;
+            if (group.getMembers().containsKey(user_ui))
+                groups.add(group);
         }
 
     }
@@ -171,27 +182,16 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                     dialog.dismiss();
                     //Map<String, Object> params = new HashMap<>();
                     //params.put("-KnSpnnQOwRNP4I44Oms", true);
-                    TypeGroup member = new TypeGroup("-KnSpnnQOwRNP4I44Oms",true);
+                    TypeGroup member = new TypeGroup(user_ui,true);
+                    Map<String, Object> typeValue = member.toMap();
+
                     String key_group = rootDataBase.push().getKey();
                     DatabaseReference group_refer = rootDataBase.child(key_group);
-                    Group groupNew = new Group(title,description,member);
+                    Group groupNew = new Group(title,description,key_group,typeValue);
                     Map<String, Object> groupValue = groupNew.toMap();
                     group_refer.updateChildren(groupValue);
 
-                    /*Map<String, Object> params = new HashMap<>();
-                    params.put("title", title);
-                    params.put("description", description);
-                   // params.put("men",userName);
-                   // group_refer.updateChildren(params);
-                    UsersDao usersDao = new UsersDao(context);
-                    //save menbers
-                    //DatabaseReference menReference = group_refer.child(Utils.menbers);
-                    Map<String, Object> menbers = new HashMap<>();
-                    //menbers.put(usersDao.getAll().get(0).getEmail(),true);
-                    menbers.put("/"+key_group+"/",params);
-                    menbers.put("/"+Utils.menbers+"/"+usersDao.getAll().get(0).getEmail(), true);
-                    group_refer.updateChildren(menbers);*/
-                    //  group_refer.child("members").updateChildren(usersDao);
+                    addGruopToUser(key_group);
 
                 }
 
@@ -206,5 +206,12 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         android.support.v7.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+
+    private void addGruopToUser(String title) {
+        DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.users).child(user_ui).child(Utils.groups);
+        TypeGroup typeGroup = new TypeGroup(title,true);
+        Map<String, Object> typeValue = typeGroup.toMap();
+        rootDataBase.updateChildren(typeValue);
     }
 }

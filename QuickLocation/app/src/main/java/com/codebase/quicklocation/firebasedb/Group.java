@@ -12,16 +12,17 @@ import java.util.Map;
 public class Group {
     private String title;
     private String description;
-   // public Map<String, Boolean> stars = new HashMap<>();
-     private TypeGroup members;
+    public String id_gruop;
+     private Map<String, Object> members;
 
     public Group() {
     }
 
-    public Group(String titleGroup, String detailGroup, TypeGroup members_) {
-        this.title = titleGroup;
-        this.description = detailGroup;
-        this.members = members_;
+    public Group(String title, String description, String id_gruop, Map<String, Object> members) {
+        this.title = title;
+        this.description = description;
+        this.id_gruop = id_gruop;
+        this.members = members;
     }
 
     public String getTitle() {
@@ -40,12 +41,20 @@ public class Group {
         this.description = description;
     }
 
-    public TypeGroup getMembers() {
+    public Map<String, Object> getMembers() {
         return members;
     }
 
-    public void setMembers(TypeGroup members) {
+    public void setMembers(Map<String, Object> members) {
         this.members = members;
+    }
+
+    public String getId_gruop() {
+        return id_gruop;
+    }
+
+    public void setId_gruop(String id_gruop) {
+        this.id_gruop = id_gruop;
     }
 
     @Exclude
@@ -54,7 +63,7 @@ public class Group {
         result.put("title", title);
         result.put("description", description);
         result.put("members", members);
-        // result.put("group", group);
+        result.put("id_gruop", id_gruop);
         return result;
     }
 }

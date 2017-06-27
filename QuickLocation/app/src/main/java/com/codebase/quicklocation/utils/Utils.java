@@ -39,6 +39,7 @@ public class Utils {
     public static final String groups = "groups";
     public static final String users = "users";
     public static final String menbers = "menbers";
+    public static final String chats = "chats";
 
 
     private Utils(){}

@@ -11,22 +11,31 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.codebase.quicklocation.firebasedb.ChatMessage;
+import com.codebase.quicklocation.firebasedb.TypeGroup;
+import com.codebase.quicklocation.utils.Utils;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Map;
 
 public class ChatFirebaseActivity extends AppCompatActivity implements View.OnClickListener {
 
     FirebaseListAdapter<ChatMessage> adapter;
     FloatingActionButton fab;
     private EditText input;
-
+    private String group_id;
+    private String chats_node;
+    private DatabaseReference msgDBRoot = FirebaseDatabase.getInstance().getReference().child(Utils.messages);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,29 +45,51 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
 
         fab = (FloatingActionButton) findViewById(R.id.fab_send);
         input = (EditText) findViewById(R.id.input);
-       /* fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(this);
+
+        group_id = getIntent().getExtras().getString("group_id");
+
+        addChatToGruop();
+    }
+
+    private void addChatToGruop() {
+
+        FirebaseDatabase.getInstance().getReference().child(Utils.groups).child(group_id).child("chats").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                EditText input = (EditText) findViewById(R.id.input);
-                 if (!"".equals(input.getText().toString()))
-                    FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(input.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis()/1000));
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Iterable<DataSnapshot> dsChildData = dataSnapshot.getChildren();
+                    for(DataSnapshot dsChild : dsChildData){
+                        chats_node = dsChild.getKey();
+                    }
+                }else {
+                    //Log.e("test","value = null");
+                    chats_node =  msgDBRoot.child(Utils.groups).child(group_id).child(Utils.chats).push().getKey();
+                    DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.groups).child(group_id).child(Utils.chats);
+                    TypeGroup typeGroup = new TypeGroup(chats_node,true);
+                    Map<String, Object> typeValue = typeGroup.toMap();
+                    rootDataBase.updateChildren(typeValue);
+                }
 
-                input.setText("");
+                displayChatMessage();
+
             }
-        });*/
-       fab.setOnClickListener(this);
-        displayChatMessage();
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     private void displayChatMessage()
     {
         ListView  listView = (ListView)findViewById(R.id.list_of_messages);
 
 
-        adapter = new FirebaseListAdapter<ChatMessage>(this,ChatMessage.class, R.layout.message_right, FirebaseDatabase.getInstance().getReference().child("messages").child("chats")) {
+        adapter = new FirebaseListAdapter<ChatMessage>(this,ChatMessage.class, R.layout.message_right, msgDBRoot.child(chats_node)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                if (model.getUserMessage().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+//                if (model.getUserMessage().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
 
 
                     TextView txtMessage, txtUser, txtTime;
@@ -73,10 +104,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
                         txtUser.setText(model.getUserMessage());
                         txtTime.setText(getTimestamp(model.getTimeOfMessage()));
                     }
-                }else
-                {
 
-                }
             }
 
             @Override
@@ -106,7 +134,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
             case R.id.fab_send:
                 String msg = input.getText().toString();
                 if (!"".equals(msg)) {
-                    FirebaseDatabase.getInstance().getReference().child("messages").child("chats").push().setValue(new ChatMessage(msg, FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() / 1000));
+                    msgDBRoot.child(chats_node).push().setValue(new ChatMessage(msg, FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() / 1000));
                     adapter.notifyDataSetChanged();
                     input.setText("");
                 }
