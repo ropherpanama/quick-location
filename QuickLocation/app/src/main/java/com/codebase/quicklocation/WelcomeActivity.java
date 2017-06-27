@@ -25,6 +25,8 @@ import android.widget.Button;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
 import com.codebase.quicklocation.database.DBHelper;
+import com.codebase.quicklocation.database.Users;
+import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
@@ -39,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -51,7 +54,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
     String[] permission;
-    private DBHelper dbHelper;
     private FirebaseAuth mAuth;
     private Context context;
     @Override
@@ -59,6 +61,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         mAuth = FirebaseAuth.getInstance();
+
         if (mAuth.getCurrentUser()!=null) {
             setContentView(R.layout.activity_welcome);
             context = this;
@@ -106,14 +109,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 });
 
                 recyclerView.setAdapter(mAdapter);
-
             } catch (Exception e) {
                 logger.error(Reporter.stringStackTrace(e));
             }
             validateUser();
-
-        }else
-        {
+        } else {
             Intent intent = new Intent(this,LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
@@ -246,8 +246,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
 
-    public void listChats(MenuItem item)
-    {
+    public void listChats(MenuItem item) {
         Intent intent = new Intent(WelcomeActivity.this, ChatsListActivity.class);
         startActivity(intent);
     }

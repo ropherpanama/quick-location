@@ -57,16 +57,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-
-
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -77,7 +67,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     private FirebaseAuth firebaseAuth;
     private Context context;
     private UsersDao usersDao;
-    private DatabaseReference root =  FirebaseDatabase.getInstance().getReference().child(Utils.users);
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +75,9 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         setContentView(R.layout.activity_resgistrase);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        username = (AutoCompleteTextView)findViewById(R.id.username);
-        fullname= (AutoCompleteTextView)findViewById(R.id.fullname);
-       // populateAutoComplete();
+        username = (AutoCompleteTextView) findViewById(R.id.username);
+        fullname = (AutoCompleteTextView) findViewById(R.id.fullname);
+        // populateAutoComplete();
         context = this;
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -103,13 +93,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
 
         Button btnUserRegister = (Button) findViewById(R.id.btnUserRegister);
         btnUserRegister.setOnClickListener(this);
-        /*btnUserRegister.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });*/
-
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -120,7 +103,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         if (!mayRequestContacts()) {
             return;
         }
-
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -159,7 +141,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -178,20 +159,16 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(funllName))
-        {
+        if (TextUtils.isEmpty(funllName)) {
             fullname.setError(getString(R.string.error_field_required));
             focusView = fullname;
             cancel = true;
-
         }
 
-        if (TextUtils.isEmpty(userName))
-        {
+        if (TextUtils.isEmpty(userName)) {
             username.setError(getString(R.string.error_field_required));
             focusView = username;
             cancel = true;
-
         }
 
         // Check for a valid password, if the user entered one.
@@ -219,40 +196,34 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-
             showProgress(true);
-            createAccount(funllName, userName,email,password);
-            //mAuthTask = new UserLoginTask(email, password);
-            //mAuthTask.execute((Void) null);
+            createAccount(funllName, userName, email, password);
         }
     }
 
     private void createAccount(final String funllName, final String userName, final String email, String password) {
         final Users users = new Users();
-        users.setNickname(funllName);
+        users.setNickname(userName);
         users.setEmail(email);
         users.setPassword(password);
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful())
-                {
+                if (task.isSuccessful()) {
                     showProgress(false);
-
                     usersDao.add(users);
                     /*TODO: Save user in Firebase.*/
                     //String key_user = root.push().getKey();
                     DatabaseReference user_referemce = root.child(task.getResult().getUser().getUid());
-                    UserStructure userStructure = new UserStructure(task.getResult().getUser().getUid(),userName,funllName);
+                    UserStructure userStructure = new UserStructure(task.getResult().getUser().getUid(), userName, funllName);
                     Map<String, Object> postValues = userStructure.toMap();
                     user_referemce.updateChildren(postValues);
-                    Toast.makeText(context,"Creación de usuario exitoso.",Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(ResgistraseActivity.this,WelcomeActivity.class);
+                    Toast.makeText(context, "Creación de usuario exitoso.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(ResgistraseActivity.this, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                     finish();
-                }else
-                {
+                } else {
                     showProgress(false);
                     //Toast.makeText(context,"Fallo la creación del usario.",Toast.LENGTH_LONG).show();
                     String msg = task.getException().getMessage();
@@ -339,7 +310,6 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
     }
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
@@ -347,14 +317,12 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(ResgistraseActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
         mEmailView.setAdapter(adapter);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.btnUserRegister:
                 attemptLogin();
                 break;
@@ -382,7 +350,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
         builder.setTitle(context.getString(R.string.warning));
         builder.setMessage(msg);
         builder.setCancelable(false);
-        builder.setPositiveButton(context.getString(R.string.aceptar), new DialogInterface.OnClickListener(){
+        builder.setPositiveButton(context.getString(R.string.aceptar), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -394,16 +362,14 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
             Button pbtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
             pbtn.setTextColor(Color.parseColor("#da1919"));
         }
-
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(ResgistraseActivity.this,LoginActivity.class);
+        Intent intent = new Intent(ResgistraseActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         finish();
     }
 }
-

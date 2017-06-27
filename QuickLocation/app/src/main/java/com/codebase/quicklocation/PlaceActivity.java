@@ -17,13 +17,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
+import com.codebase.quicklocation.database.Users;
+import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.model.ResponseForPlaces;
+import com.codebase.quicklocation.model.UserUseStatistic;
 import com.codebase.quicklocation.sorters.RatingSorter;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -33,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -51,6 +56,7 @@ public class PlaceActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Place> places = new ArrayList<>();
     private List<Place> fakePlaces = new ArrayList<>();//Lista original para efectos de ordenamiento
+    private UsersDao usersDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class PlaceActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         try {
+            usersDao = new UsersDao(this);
             //descargar data
             String lastLocation = Utils.getSavedLocation(PlaceActivity.this);
             if (!"no_location".equals(lastLocation)) {
@@ -135,6 +142,19 @@ public class PlaceActivity extends AppCompatActivity {
                     mAdapter = new PlaceItemAdapter(places, appCategoria, new PlaceItemAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(Place item) {
+                            //guardar cada acceso del usuario en firebase, para reporte web
+                            List<Users> usuarios = usersDao.getAll();
+
+                            if(!usuarios.isEmpty()) {
+                                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                Users u = usuarios.get(0);
+                                UserUseStatistic statistic = new UserUseStatistic();
+                                statistic.setLoginDate(new Date());
+                                statistic.setNickname(u.getNickname());
+                                statistic.setPlaceId(item.getPlaceId());
+                                database.getReference().child("places/statistics").child(u.getNickname()).push().setValue(statistic);
+                            }
+
                             Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);
                             i.putExtra(KEY_PLACE_ID, item.getPlaceId());
                             i.putExtra(KEY_PLACE_NAME, item.getName());
