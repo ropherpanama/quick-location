@@ -1,61 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contentRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"></LinearLayout>
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/white"
-        android:background="?attr/colorPrimary"/>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:src="@drawable/send_action"
-        android:id="@+id/fab_send"
-        android:tint="@android:color/white"
-        android:layout_marginBottom="8dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_alignParentRight="true" />
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <android.support.design.widget.TextInputLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/messageRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/shadow_top" />
+    </FrameLayout>
+    <RelativeLayout
+        android:background="#fff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/fab_send"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="8dp"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/textInputLayout">
-
+        android:padding="2dp">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Input"
-            android:id="@+id/input"
+            android:id="@+id/editTextMessage"
+            android:layout_toStartOf="@+id/buttonMessage"
+            android:layout_toRightOf="@+id/buttonEmoji"
+            android:layout_toEndOf="@+id/buttonEmoji"
+            android:layout_toLeftOf="@+id/buttonMessage" />
+        <ImageView
+            android:id="@+id/buttonMessage"
+            android:src="@drawable/send_action"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="4dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             />
-    </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
+</LinearLayout>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:divider="@null"
-        android:id="@+id/list_of_messages"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/toolbar"
-        android:layout_above="@+id/textInputLayout" />
-</RelativeLayout>

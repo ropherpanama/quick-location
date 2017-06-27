@@ -52,7 +52,9 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
-
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    //CHAT UI
+    compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.3'
     compile 'com.google.firebase:firebase-auth:11.0.1'
     compile 'com.google.firebase:firebase-database:11.0.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
