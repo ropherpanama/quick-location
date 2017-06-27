@@ -241,9 +241,9 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
 
                     usersDao.add(users);
                     /*TODO: Save user in Firebase.*/
-                    String key_user = root.push().getKey();
-                    DatabaseReference user_referemce = root.child(key_user);
-                    UserStructure userStructure = new UserStructure(key_user,userName,funllName);
+                    //String key_user = root.push().getKey();
+                    DatabaseReference user_referemce = root.child(task.getResult().getUser().getUid());
+                    UserStructure userStructure = new UserStructure(task.getResult().getUser().getUid(),userName,funllName);
                     Map<String, Object> postValues = userStructure.toMap();
                     user_referemce.updateChildren(postValues);
                     Toast.makeText(context,"Creación de usuario exitoso.",Toast.LENGTH_LONG).show();
