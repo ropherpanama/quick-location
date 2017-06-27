@@ -14,7 +14,7 @@ public class UserStructure {
     private String key;
     private String username;
     private String fullname;
-    private TypeGroup group;
+    private TypeGroup groups;
 
     public UserStructure() {
     }
@@ -23,11 +23,11 @@ public class UserStructure {
         this.key = key_;
         this.username = userName_;
         this.fullname = fullName_;
-        //this.group = group_;
+        //this.groups = group_;
     }
 
     public UserStructure(TypeGroup group) {
-        this.group = group;
+        this.groups = group;
     }
 
     @Exclude
@@ -36,8 +36,40 @@ public class UserStructure {
         result.put("key", key);
         result.put("fullname", fullname);
         result.put("username", username);
-       // result.put("group", group);
+       // result.put("groups", groups);
 
         return result;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public TypeGroup getGroups() {
+        return groups;
+    }
+
+    public void setGroups(TypeGroup groups) {
+        this.groups = groups;
     }
 }
