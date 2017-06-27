@@ -79,7 +79,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
             public void onItemClick(Group item) {
                 Log.d("Item... "," "+item.getTitle());
                 Intent intent = new Intent(ChatsListActivity.this, ChatFirebaseActivity.class);
-                intent.putExtra("group_id", item.getId_gruop());
+                intent.putExtra("group_id", item.getGruop_id());
                 startActivity(intent);
             }
         });

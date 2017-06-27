@@ -229,7 +229,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
 
     private void createAccount(final String funllName, final String userName, final String email, String password) {
         final Users users = new Users();
-        users.setNickname(userName);
+        users.setNickname(funllName);
         users.setEmail(email);
         users.setPassword(password);
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

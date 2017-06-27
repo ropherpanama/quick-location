@@ -80,7 +80,7 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
     protected void populateViewHolder(MyChatViewHolder viewHolder, ChatModel model, int position) {
         viewHolder.setIvUser(model.getUserModel().getPhoto_profile());
         viewHolder.setTxtMessage(model.getMessage());
-        viewHolder.setTvTimestamp(model.getTimeOfMessage());
+        viewHolder.setTvTimestamp(model.getTimeStamp());
         viewHolder.tvIsLocation(View.GONE);
        /* if (model.getFile() != null) {
             viewHolder.tvIsLocation(View.GONE);

@@ -9,7 +9,7 @@ public class ChatModel {
     private String id;
     private UserModel userModel;
     private String message;
-    private String timeOfMessage;
+    private String timeStamp;
     private FileModel file;
     private MapModel mapModel;
 
@@ -19,13 +19,13 @@ public class ChatModel {
     public ChatModel(UserModel userModel, String message, String timeStamp, FileModel file) {
         this.userModel = userModel;
         this.message = message;
-        this.timeOfMessage = timeStamp;
+        this.timeStamp = timeStamp;
         this.file = file;
     }
 
     public ChatModel(UserModel userModel, String timeStamp, MapModel mapModel) {
         this.userModel = userModel;
-        this.timeOfMessage = timeStamp;
+        this.timeStamp = timeStamp;
         this.mapModel = mapModel;
     }
 
@@ -53,12 +53,12 @@ public class ChatModel {
         this.message = message;
     }
 
-    public String getTimeOfMessage() {
-        return timeOfMessage;
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTimeOfMessage(String timeOfMessage) {
-        this.timeOfMessage = timeOfMessage;
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public FileModel getFile() {
@@ -82,7 +82,7 @@ public class ChatModel {
         return "ChatModel{" +
                 "mapModel=" + mapModel +
                 ", file=" + file +
-                ", timeOfMessage='" + timeOfMessage + '\'' +
+                ", timeStamp='" + timeStamp + '\'' +
                 ", message='" + message + '\'' +
                 ", userModel=" + userModel +
                 '}';

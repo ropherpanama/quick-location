@@ -12,8 +12,8 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class UserStructure {
     private String key;
-    private String userName;
-    private String fullName;
+    private String username;
+    private String fullname;
     private TypeGroup group;
 
     public UserStructure() {
@@ -21,8 +21,8 @@ public class UserStructure {
 
     public UserStructure(String key_, String userName_, String fullName_) {
         this.key = key_;
-        this.userName = userName_;
-        this.fullName = fullName_;
+        this.username = userName_;
+        this.fullname = fullName_;
         //this.group = group_;
     }
 
@@ -34,8 +34,8 @@ public class UserStructure {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("key", key);
-        result.put("fullName", fullName);
-        result.put("userName", userName);
+        result.put("fullname", fullname);
+        result.put("username", username);
        // result.put("group", group);
 
         return result;

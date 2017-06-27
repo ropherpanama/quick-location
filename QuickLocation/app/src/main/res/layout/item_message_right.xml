@@ -10,13 +10,13 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <ImageView
+   <!-- <ImageView
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:id="@+id/ivUserChat"
-        android:layout_alignBottom="@+id/contentMessageChat" />
+        android:layout_alignBottom="@+id/contentMessageChat" />-->
 
     <me.himanshusoni.chatmessageview.ChatMessageView
         android:layout_toLeftOf="@+id/ivUserChat"
@@ -29,7 +29,6 @@
         app:cmv_arrowPosition="right"
         app:cmv_backgroundColor="@color/primary"
         app:cmv_backgroundColorPressed="#FFBABABA"
-        app:cmv_contentPadding="10dp"
         app:cmv_cornerRadius="3dp"
         app:cmv_showArrow="true"
        >
@@ -52,8 +51,6 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/contentMessageChat"
         android:layout_below="@id/contentMessageChat"
-        android:layout_marginBottom="25dp"
-        android:padding="10dp"
         android:textSize="10sp" />
 
 </RelativeLayout>

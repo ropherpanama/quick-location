@@ -1,17 +1,21 @@
 package com.codebase.quicklocation;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.codebase.quicklocation.adapters.ChatFirebaseAdapter;
 import com.codebase.quicklocation.adapters.ClickListenerChatFirebase;
+import com.codebase.quicklocation.database.Users;
+import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.firebasedb.ChatMessage;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
 import com.codebase.quicklocation.model.ChatModel;
@@ -30,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,17 +56,16 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     private ImageView btSendMessage;
     private View contentRoot;
     private EditText edMessage;
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //fab = (FloatingActionButton) findViewById(R.id.fab_send);
-       // input = (EditText) findViewById(R.id.input);
-        //fab.setOnClickListener(this);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        context = this;
         group_id = getIntent().getExtras().getString("group_id");
 
         addChatToGruop();
@@ -72,7 +76,10 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     private void userAuthentication() {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        userModel = new UserModel(mFirebaseUser.getEmail().toString(), "", mFirebaseUser.getUid() );
+
+        UsersDao usersDao = new UsersDao(context);
+        List<Users> userses = usersDao.getAll();
+        userModel = new UserModel(userses.get(0).getNickname(), "", mFirebaseUser.getUid() );
 
     }
 
@@ -163,7 +170,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
                     if (!"".equals(txtMessage.toString()) && !"".equals(txtUser.toString()) && !"".equals(txtTime.toString())) {
                         txtMessage.setText(model.getMessage());
                         txtUser.setText(model.getUserMessage());
-                        txtTime.setText(getTimestamp(model.getTimeOfMessage()));
+                        txtTime.setText(getTimestamp(model.getTimeStamp()));
                     }
 
             }
@@ -207,12 +214,26 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     private void sendMessagetoFirebase() {
         ChatModel model = new ChatModel(userModel,edMessage.getText().toString(), Calendar.getInstance().getTime().getTime()+"",null);
         //String msg = input.getText().toString();
-        //if (!"".equals(msg)) {
+        if (!"".equals(edMessage.getText().toString())) {
             mFirebaseDatabaseReference.child(chats_node).push().setValue(model);
             // mFirebaseDatabaseReference.child(chats_node).push().setValue(new ChatMessage(msg, FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() / 1000));
             //adapter.notifyDataSetChanged();
             edMessage.setText(null);
-       // }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override

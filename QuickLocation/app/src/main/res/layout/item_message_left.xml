@@ -11,11 +11,11 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <ImageView
+    <!--<ImageView
         android:layout_alignBottom="@+id/contentMessageChat"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:id="@+id/ivUserChat" />
+        android:id="@+id/ivUserChat" />-->
 
     <me.himanshusoni.chatmessageview.ChatMessageView
         android:id="@+id/contentMessageChat"
@@ -41,16 +41,28 @@
 
     </me.himanshusoni.chatmessageview.ChatMessageView>
 
+
+    <TextView
+        android:id="@+id/txtsendusername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textStyle="bold"
+        android:textSize="10sp"
+        android:paddingTop="6dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/ivUserChat"
+        android:layout_toEndOf="@+id/ivUserChat" />
+
     <TextView
         android:text="22/06/2016"
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:paddingLeft="10dp"
         android:paddingTop="6dp"
         android:textSize="10sp"
-        android:layout_below="@+id/contentMessageChat"
-        android:layout_toEndOf="@+id/ivUserChat"
-        android:layout_toRightOf="@+id/ivUserChat" />
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/txtsendusername"
+        android:layout_toEndOf="@+id/txtsendusername" />
 </RelativeLayout>

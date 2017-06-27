@@ -12,7 +12,7 @@ import java.util.Map;
 public class Group {
     private String title;
     private String description;
-    public String id_gruop;
+    public String gruop_id;
      private Map<String, Object> members;
 
     public Group() {
@@ -21,7 +21,7 @@ public class Group {
     public Group(String title, String description, String id_gruop, Map<String, Object> members) {
         this.title = title;
         this.description = description;
-        this.id_gruop = id_gruop;
+        this.gruop_id = id_gruop;
         this.members = members;
     }
 
@@ -49,12 +49,12 @@ public class Group {
         this.members = members;
     }
 
-    public String getId_gruop() {
-        return id_gruop;
+    public String getGruop_id() {
+        return gruop_id;
     }
 
-    public void setId_gruop(String id_gruop) {
-        this.id_gruop = id_gruop;
+    public void setGruop_id(String gruop_id) {
+        this.gruop_id = gruop_id;
     }
 
     @Exclude
@@ -63,7 +63,7 @@ public class Group {
         result.put("title", title);
         result.put("description", description);
         result.put("members", members);
-        result.put("id_gruop", id_gruop);
+        result.put("gruop_id", gruop_id);
         return result;
     }
 }
