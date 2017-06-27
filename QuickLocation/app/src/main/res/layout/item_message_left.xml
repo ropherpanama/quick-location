@@ -27,7 +27,6 @@
         app:cmv_arrowPosition="left"
         app:cmv_cornerRadius="3dp"
         app:cmv_showArrow="true"
-        android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/ivUserChat"
         android:layout_toRightOf="@+id/ivUserChat">
 
@@ -49,8 +48,11 @@
         android:text="TextView"
         android:textStyle="bold"
         android:textSize="10sp"
-        android:paddingTop="6dp"
+        android:paddingBottom="8dp"
+        android:layout_alignStart="@+id/contentMessageChat"
         android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@id/contentMessageChat"
+        android:layout_below="@id/contentMessageChat"
         android:layout_toRightOf="@+id/ivUserChat"
         android:layout_toEndOf="@+id/ivUserChat" />
 
@@ -59,10 +61,12 @@
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingTop="6dp"
         android:textSize="10sp"
+        android:paddingStart="6dp"
+        android:paddingBottom="8dp"
+        android:layout_below="@id/contentMessageChat"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/txtsendusername"
-        android:layout_toEndOf="@+id/txtsendusername" />
+        android:layout_toEndOf="@+id/txtsendusername"
+        android:paddingLeft="6dp" />
 </RelativeLayout>

@@ -7,17 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.codebase.quicklocation.adapters.ChatFirebaseAdapter;
 import com.codebase.quicklocation.adapters.ClickListenerChatFirebase;
-import com.codebase.quicklocation.database.Users;
-import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.firebasedb.ChatMessage;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
+import com.codebase.quicklocation.firebasedb.UserStructure;
 import com.codebase.quicklocation.model.ChatModel;
 import com.codebase.quicklocation.model.UserModel;
 import com.codebase.quicklocation.utils.Utils;
@@ -34,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -77,9 +78,24 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
-        UsersDao usersDao = new UsersDao(context);
-        List<Users> userses = usersDao.getAll();
-        userModel = new UserModel(userses.get(0).getNickname(), "", mFirebaseUser.getUid() );
+        //UsersDao usersDao = new UsersDao(context);
+        //List<Users> userses = usersDao.getAll();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child(Utils.users).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("User",dataSnapshot.getValue().toString());
+                UserStructure userStructure = new UserStructure();
+                userStructure = dataSnapshot.getValue(UserStructure.class);
+                userModel = new UserModel(userStructure.getFullname(), "", mFirebaseUser.getUid() );
+                lerMessagensFirebase();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -137,7 +153,6 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
                     rootDataBase.updateChildren(typeValue);
                 }
 
-                lerMessagensFirebase();
 
             }
 
@@ -197,6 +212,8 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
+        final Animation anim = AnimationUtils.loadAnimation(v.getContext(),R.anim.anim_alpha);
+        v.startAnimation(anim);
         switch (v.getId())
         {
             case R.id.buttonMessage:
@@ -212,6 +229,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void sendMessagetoFirebase() {
+
         ChatModel model = new ChatModel(userModel,edMessage.getText().toString(), Calendar.getInstance().getTime().getTime()+"",null);
         //String msg = input.getText().toString();
         if (!"".equals(edMessage.getText().toString())) {
