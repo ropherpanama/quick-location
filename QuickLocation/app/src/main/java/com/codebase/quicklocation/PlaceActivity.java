@@ -153,6 +153,7 @@ public class PlaceActivity extends AppCompatActivity {
                                 statistic.setNickname(u.getNickname());
                                 statistic.setPlaceId(item.getPlaceId());
                                 database.getReference().child("places/statistics").child(u.getNickname()).push().setValue(statistic);
+                                System.out.println("****************** ESTADISTICA ENVIADA " + Utils.objectToJson(statistic));
                             }
 
                             Intent i = new Intent(PlaceActivity.this, PlaceDetailActivity.class);

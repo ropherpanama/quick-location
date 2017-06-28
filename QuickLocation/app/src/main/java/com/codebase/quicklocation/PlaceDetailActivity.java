@@ -244,7 +244,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                         }
                     } else {
-                        verificarBitmapLocal();
+                        if(dao.getByPlaceId(strPlaceId) != null)
+                            verificarBitmapLocal();
                     }
 
                     if (detail.getFormattedPhoneNumber() != null) {
@@ -318,7 +319,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             }
                         }
                     } else {
-                        Toast.makeText(PlaceDetailActivity.this, "No se puedo procesar tu solicitud", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(PlaceDetailActivity.this, "No se puedo procesar tu solicitud", Toast.LENGTH_LONG).show();
+                        getPlaceReviewaFromPlatform(strPlaceId);
                         missingReviews = true;
                     }
 
@@ -445,6 +447,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private void getPlaceDataFromPlatform(String placeId) {
         try {
+            System.out.println("************ INTENTO BUSCAR INFO EN MI PLATAFORMA ... ");
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             database.getReference().child("places/data").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -456,6 +459,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {}
             });
         }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -465,18 +469,43 @@ public class PlaceDetailActivity extends AppCompatActivity {
      */
     private void setScreenForNewData(PlaceDetail place) {
         if(place != null) {
-            System.out.println("********************** " + place);
+            System.out.println("********************** AJUSTANDO LA DATA FRESCA ... " + place);
             if(place.getFormattedAddress() != null && place.getFormattedAddress().length() > 0)
                 tvPlaceDirection.setText(place.getFormattedAddress());
             if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0)
                 tvPlacePhone.setText(place.getFormattedPhoneNumber());
 
-            if(place.getOpeningHours().getWeekdayText() != null && place.getOpeningHours().getWeekdayText().isEmpty()) {
+            if(place.getOpeningHours() != null && place.getOpeningHours().getWeekdayText() != null && place.getOpeningHours().getWeekdayText().isEmpty()) {
                 StringBuilder builder = new StringBuilder();
                 for (String str : place.getOpeningHours().getWeekdayText())
                     builder.append(str).append("\n");
                 tvPlaceOpeningHours.setText(Utils.formatDays(builder));
             }
+        } else
+            System.out.println("********************* NO ENCONTRE NADA DE VALOR ...");
+    }
+
+    /**
+     * Busca los reviews de la plataforma si Google no los tiene
+     * @param placeId
+     */
+    private void getPlaceReviewaFromPlatform(String placeId) {
+        try {
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database.getReference().child("places/reviews").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //setScreenForNewData(dataSnapshot.getValue(PlaceDetail.class));
+                    if(dataSnapshot.getValue() != null) {
+                        System.out.println("REVIEWS ****************** " + dataSnapshot.getValue().toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

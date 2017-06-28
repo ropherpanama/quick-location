@@ -50,7 +50,7 @@ public class FavoritesActivity extends AppCompatActivity {
             favorites = getFavoritesFromDb();
 
             if(favorites.isEmpty()) {
-                Snackbar.make(recyclerView,"No hay favoritos", Snackbar.LENGTH_SHORT).show();
+                Utils.showToast(this, "No hay favoritos para mostrar");
             } else {
                 mAdapter = new FavoritesItemAdapter(favorites, new FavoritesItemAdapter.OnItemClickListener() {
                     @Override
@@ -101,9 +101,9 @@ public class FavoritesActivity extends AppCompatActivity {
                             if(dao.deleteAll() > 0) {
                                 favorites.clear();//limpio la lista actual
                                 mAdapter.notifyDataSetChanged();
-                                Snackbar.make(toolbar, "Registros eliminados", Snackbar.LENGTH_SHORT).show();
+                                Utils.showToast(FavoritesActivity.this, "Registros eliminados");
                             } else {
-                                Snackbar.make(toolbar, "No puedo borrar los registros", Snackbar.LENGTH_SHORT).show();
+                                Utils.showToast(FavoritesActivity.this, "No puedo borrar los registros");
                             }
                         }
                     })

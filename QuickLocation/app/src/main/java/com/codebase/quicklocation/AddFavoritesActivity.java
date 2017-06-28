@@ -62,7 +62,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
             cdata = incomming.getString("cdata");
             placeDetailsJSON = getIntent().getExtras().getString("placeDetails");
             favorite = Utils.factoryGson().fromJson(cdata, Favorites.class);
-            //placeDetails = Utils.factoryGson().fromJson(placeDetailsJSON,ResponseForPlaceDetails.class);
 
             takePictureButton = (Button) findViewById(R.id.button_image);
             imageView = (ImageView) findViewById(R.id.imageview);
@@ -126,14 +125,16 @@ public class AddFavoritesActivity extends AppCompatActivity {
                     /**
                      * TODO: G
                      */
-                    Snackbar.make(toolbar, "Favorito guardado", Snackbar.LENGTH_SHORT).show();
+                    //Snackbar.make(toolbar, "Favorito guardado", Snackbar.LENGTH_SHORT).show();
+                    Utils.showToast(this, "Favorito guardado");
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
                     finish();
                 }
             }
         } catch (Exception e) {
-            Snackbar.make(toolbar, "No puedo guardar tu favorito", Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(toolbar, "No puedo guardar tu favorito", Snackbar.LENGTH_SHORT).show();
+            Utils.showToast(this, "No puedo guardar tu favorito");
         }
     }
 
@@ -156,40 +157,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
             } catch (IOException e) {
                 logger.error(Reporter.stringStackTrace(e));
             }
-            /*
-            if (resultCode == RESULT_OK) {
-                if (directImge != null) {
-                    if (data != null) {
-                        Bundle extras = data.getExtras();
-                        if (extras != null) {
-                            Bitmap photo = extras.getParcelable("data");
-                            OutputStream outStream = null;
-                            File file = new File(targetPath, favorite.getPlaceId() + ".jpg");
-                            try {
-                                Log.d("guardando bitmap", "inciando a guardar la foto " + file.getName());
-                                outStream = new FileOutputStream(file);
-                                if (photo != null) {
-                                    photo.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-                                }
-                                outStream.flush();
-                                outStream.close();
-                                Log.d("guardando bitmap", "finalizando " + file.getName());
-                            } catch (FileNotFoundException e) {
-                                logger.error(Reporter.stringStackTrace(e));
-                            } catch (IOException e) {
-                                logger.error(Reporter.stringStackTrace(e));
-                            }
-                            imageView.setImageBitmap(photo);
-                        }
-                    } else {
-                        try {
-                            imageView.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), getImageUri()));
-                        } catch (IOException e) {
-                            logger.error(Reporter.stringStackTrace(e));
-                        }
-                    }
-                }
-            }*/
         }
     }
 
@@ -197,20 +164,5 @@ public class AddFavoritesActivity extends AppCompatActivity {
         Intent intent = new Intent(AddFavoritesActivity.this,CapturePhotoActivity.class);
         intent.putExtra("placeID",favorite.getPlaceId());
         startActivityForResult(intent,CAMERA_RESULT);
-        //Intent camaraItent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //camaraItent.putExtra(MediaStore.EXTRA_OUTPUT, getImageUri());
-        //this.startActivityForResult(camaraItent, CAMERA_RESULT);
-
     }
-
-    /**
-     * Método que crea el nombre con la ruta de la imagen tomada con la cámara.
-     *
-     * @return
-     */
-    /*private Uri getImageUri() {
-        File file = new File(targetPath, favorite.getPlaceId() + ".jpg");
-        Uri imgUri = Uri.fromFile(file);
-        return imgUri;
-    }*/
 }

@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.Size;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -215,5 +216,9 @@ public class Utils {
         }
         System.out.println("Selected size " + retorno[0] + "x" + retorno[1]);
         return retorno;
+    }
+
+    public static void showToast(Context ctx, String message) {
+        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -250,13 +250,14 @@ public class ImprovementActivity extends AppCompatActivity {
                 });
 
                 database.getReference().child("places/new/report-issue").child(placeId).push().setValue(request);
+                Utils.showToast(this, "Tu información ha sido recibida");
                 finish();
             } else {
-                Toast.makeText(this, "No se ha ingresado nueva data", Toast.LENGTH_SHORT).show();
+                Utils.showToast(this, "No se ha ingresado nueva data");
             }
         } catch (Exception e) {
             Reporter.getInstance(ImprovementActivity.class).error(Reporter.stringStackTrace(e));
-            Toast.makeText(this, "No se puede procesar el envio", Toast.LENGTH_SHORT).show();
+            Utils.showToast(this, "No se puede procesar el envio");
         }
     }
 

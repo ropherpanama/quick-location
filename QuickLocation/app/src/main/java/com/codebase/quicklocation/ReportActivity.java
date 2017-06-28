@@ -1,5 +1,6 @@
 package com.codebase.quicklocation;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +18,8 @@ import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.UserReport;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -76,6 +79,7 @@ public class ReportActivity extends AppCompatActivity {
 
                 request.setPlaceId(placeID);
                 request.setInformations(informations);
+                final ImprovementRequest sendToServer = request;
                 //enviar trama al servidor
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 database.getReference().child("places/data").child(placeID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -83,10 +87,17 @@ public class ReportActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(!dataSnapshot.exists()) {
                             if(firebasePlaceRecord != null) {
-                                System.out.println(firebasePlaceRecord);
+                                System.out.println("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
-                                database.getReference().child("places/new/data").child(placeID).setValue(placeDetail);
+                                database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        System.out.println("************ MANDO EL REVIEW HIJO AL COMPLETARSE EL PADRE");
+                                        database.getReference().child("places/new/reviews").child(placeID).push().setValue(sendToServer);
+                                        System.out.println("************ HIJO GUARDADO EN SU CASA");
+                                    }
+                                });
                             }
                         }
                     }
@@ -94,8 +105,9 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
                 });
-
+                System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
                 database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
+                Utils.showToast(ReportActivity.this, "Tu opinión ha sido enviada");
                 finish();
             }
         }catch (Exception e) {
