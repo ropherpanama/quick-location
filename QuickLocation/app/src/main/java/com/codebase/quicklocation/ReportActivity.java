@@ -19,6 +19,7 @@ import com.codebase.quicklocation.model.UserReport;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -90,23 +91,26 @@ public class ReportActivity extends AppCompatActivity {
                                 System.out.println("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
-                                database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
+                                    public void onSuccess(Void aVoid) {
                                         System.out.println("************ MANDO EL REVIEW HIJO AL COMPLETARSE EL PADRE");
                                         database.getReference().child("places/new/reviews").child(placeID).push().setValue(sendToServer);
                                         System.out.println("************ HIJO GUARDADO EN SU CASA");
                                     }
                                 });
                             }
+                        } else {
+                            System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
+                            database.getReference().child("places/new/reviews").child(placeID).push().setValue(sendToServer);
                         }
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
                 });
-                System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
-                database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
+                //System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
+                //database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
                 Utils.showToast(ReportActivity.this, "Tu opinión ha sido enviada");
                 finish();
             }

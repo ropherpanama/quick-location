@@ -30,11 +30,14 @@ import android.widget.Toast;
 import com.bumptech.glide.util.Util;
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
+import com.codebase.quicklocation.model.Geometry;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.Review;
+import com.codebase.quicklocation.model.ServerReviews;
+import com.codebase.quicklocation.model.UserOpinion;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
@@ -49,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -73,7 +77,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private FavoritesDao dao;
     private View layoutReviews;
     private boolean missingInformation = false;
-    private boolean missingReviews = false;
+    private List<Review> sumReviews = new ArrayList<>();
+    private Geometry serverGeometry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,9 +177,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
                 Date date = new Date(userLocation.getTime());
                 Log.e("GPSTrackingService", date.toString());
-
+                Location placeLocation = new Location();
                 if (userLocation != null) {
-                    Location placeLocation = response.getResult().getGeometry().getLocation();
+                    if(serverGeometry != null) {
+                        System.out.println("****************** COJO LA COORDENADA DEL SERVIDOR ");
+                        placeLocation = serverGeometry.getLocation();
+                    } else {
+                        System.out.println("****************** COJO LA COORDENADA DEL GOOGLE ");
+                        placeLocation = response.getResult().getGeometry().getLocation();
+                    }
                     String queryParams = placeLocation.getLat() + "," + placeLocation.getLng();
                     Uri gmmIntentUri = Uri.parse("google.navigation:q=" + queryParams);
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -216,8 +227,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 if ("OK".equals(response.getStatus())) {
                     PlaceDetail detail = response.getResult();
 
-                    //Búsqueda de la foto del lugar en el API
-                    //if (detail.getPhotos() != null && detail.getPhotos().length > 0) {
                     if (detail.getPhotos() != null && detail.getPhotos().size() > 0) {
                         String key = Utils.giveMeMyCandy();
 
@@ -225,8 +234,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             String photoUrl = getString(R.string.google_api_place_photo_url) +
                                     "maxwidth=12040&photoreference=" + detail.getPhotos().get(0).getPhotoReference() +
                                     "&key=" + Utils.giveMeMyCandy();
-
-                            //logger.write("Photo place URL: " + photoUrl);
 
                             DisplayMetrics metrics = new DisplayMetrics();
                             getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -239,7 +246,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                     .resize(metrics.widthPixels, height)
                                     .into(ivPlacePhoto);
                         } else {
-                            //logger.write("No se pudo ubicar el key de acceso al API al momento de buscar el logo del local");
                             verificarBitmapLocal();
 
                         }
@@ -268,7 +274,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     }
 
                     if (detail.getOpeningHours() != null) {
-                        //if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().length > 0) {
                         if (detail.getOpeningHours().getWeekdayText() != null && detail.getOpeningHours().getWeekdayText().size() > 0) {
                             strOpeningHours = new StringBuilder();
 
@@ -294,37 +299,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         tvWebsite.setText(detail.getWebsite());
 
                     if(response.getResult().getReviews() != null && !response.getResult().getReviews().isEmpty()) {
-                        for(Review r : response.getResult().getReviews()){
-                            if(!"".equals(r.getText().trim())) {
-                                TextView authorTextView = new TextView(PlaceDetailActivity.this);
-                                TextView commentTextView = new TextView(PlaceDetailActivity.this);
-                                TextView ratingView = new TextView(PlaceDetailActivity.this);
-                                commentTextView.setText(r.getText());
-                                authorTextView.setText(r.getAuthor());
-                                ratingView.setText(String.valueOf(r.getRating()));
-                                ratingView.setGravity(Gravity.RIGHT);
-                                ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
-                                commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                                commentTextView.setPadding(0, 5, 0, 5);
-                                authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                                authorTextView.setTypeface(null, Typeface.BOLD);
-                                ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                                ((LinearLayout) layoutReviews).addView(authorTextView);
-                                ((LinearLayout) layoutReviews).addView(commentTextView);
-                                ((LinearLayout) layoutReviews).addView(ratingView);
-                                View separator = new View(PlaceDetailActivity.this);
-                                separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                                separator.setBackgroundColor(getResources().getColor(R.color.accent));
-                                ((LinearLayout) layoutReviews).addView(separator);
-                            }
-                        }
-                    } else {
-                        //Toast.makeText(PlaceDetailActivity.this, "No se puedo procesar tu solicitud", Toast.LENGTH_LONG).show();
-                        getPlaceReviewaFromPlatform(strPlaceId);
-                        missingReviews = true;
+                        sumReviews.clear();
+                        sumReviews = response.getResult().getReviews();
                     }
 
-                    System.out.println("Missing information " + missingInformation + ", Missing Review " + missingReviews);
+                    getPlaceReviewaFromPlatform(strPlaceId);
+                    System.out.println("Missing information " + missingInformation);
                     if(missingInformation)
                         getPlaceDataFromPlatform(strPlaceId);
 
@@ -378,7 +358,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     .resize(metrics.widthPixels, height)
                     .into(ivPlacePhoto);
 
-        }else {
+        } else {
             ivPlacePhoto.setImageResource(R.drawable.default_img);
         }
     }
@@ -459,7 +439,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {}
             });
         }catch (Exception e) {
-            e.printStackTrace();
+            Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
         }
     }
 
@@ -468,14 +448,19 @@ public class PlaceDetailActivity extends AppCompatActivity {
      * @param place lugar retornado por el API
      */
     private void setScreenForNewData(PlaceDetail place) {
+
         if(place != null) {
+
+            if(place.getGeometry() != null)
+                serverGeometry = place.getGeometry();
+
             System.out.println("********************** AJUSTANDO LA DATA FRESCA ... " + place);
             if(place.getFormattedAddress() != null && place.getFormattedAddress().length() > 0)
                 tvPlaceDirection.setText(place.getFormattedAddress());
             if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0)
                 tvPlacePhone.setText(place.getFormattedPhoneNumber());
 
-            if(place.getOpeningHours() != null && place.getOpeningHours().getWeekdayText() != null && place.getOpeningHours().getWeekdayText().isEmpty()) {
+            if(place.getOpeningHours() != null && place.getOpeningHours().getWeekdayText() != null && !place.getOpeningHours().getWeekdayText().isEmpty()) {
                 StringBuilder builder = new StringBuilder();
                 for (String str : place.getOpeningHours().getWeekdayText())
                     builder.append(str).append("\n");
@@ -489,15 +474,29 @@ public class PlaceDetailActivity extends AppCompatActivity {
      * Busca los reviews de la plataforma si Google no los tiene
      * @param placeId
      */
-    private void getPlaceReviewaFromPlatform(String placeId) {
+    private void getPlaceReviewaFromPlatform(final String placeId) {
         try {
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             database.getReference().child("places/reviews").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    //setScreenForNewData(dataSnapshot.getValue(PlaceDetail.class));
                     if(dataSnapshot.getValue() != null) {
-                        System.out.println("REVIEWS ****************** " + dataSnapshot.getValue().toString());
+                        List<Review> freshReviews = new ArrayList<>();
+                        for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                            UserOpinion message = messageSnapshot.getValue(UserOpinion.class);
+                            Review review = new Review();
+                            review.setAuthor(message.getAuthorName());
+                            review.setRating(message.getRating());
+                            review.setText(message.getComment());
+                            freshReviews.add(review);
+                        }
+
+                        for(Review rv : freshReviews) {
+                            sumReviews.add(rv);
+                            System.out.println("******************* ADDING REVIEW " + rv.getText());
+                        }
+
+                        putNewReviewsInTheScreen(sumReviews);
                     }
                 }
 
@@ -505,7 +504,40 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {}
             });
         }catch (Exception e) {
-            e.printStackTrace();
+            Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
+        }
+    }
+
+    private void putNewReviewsInTheScreen(List<Review> reviews) {
+        System.out.println("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
+        try {
+            for(Review r : reviews){
+                if(!"".equals(r.getText().trim())) {
+                    System.out.println("**************** LOCAL REVIEW " + r.getText());
+                    TextView authorTextView = new TextView(PlaceDetailActivity.this);
+                    TextView commentTextView = new TextView(PlaceDetailActivity.this);
+                    TextView ratingView = new TextView(PlaceDetailActivity.this);
+                    commentTextView.setText(r.getText());
+                    authorTextView.setText(r.getAuthor());
+                    ratingView.setText(String.valueOf(r.getRating()));
+                    ratingView.setGravity(Gravity.RIGHT);
+                    ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
+                    commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    commentTextView.setPadding(0, 5, 0, 5);
+                    authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    authorTextView.setTypeface(null, Typeface.BOLD);
+                    ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ((LinearLayout) layoutReviews).addView(authorTextView);
+                    ((LinearLayout) layoutReviews).addView(commentTextView);
+                    ((LinearLayout) layoutReviews).addView(ratingView);
+                    View separator = new View(PlaceDetailActivity.this);
+                    separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                    separator.setBackgroundColor(getResources().getColor(R.color.accent));
+                    ((LinearLayout) layoutReviews).addView(separator);
+                }
+            }
+        }catch(Exception e) {
+            Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
         }
     }
 }
