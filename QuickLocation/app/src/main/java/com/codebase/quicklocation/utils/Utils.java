@@ -41,6 +41,8 @@ public class Utils {
     public static final String users = "users";
     public static final String menbers = "menbers";
     public static final String chats = "chats";
+    public static final String token_fcm = "token_fcm";
+    public static final String location = "location";
 
 
     private Utils(){}

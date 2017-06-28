@@ -24,24 +24,24 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
-import com.codebase.quicklocation.database.DBHelper;
-import com.codebase.quicklocation.database.Users;
-import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -53,6 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private LinkedHashMap<String, String> categorias = new LinkedHashMap<>();
     private Reporter logger = Reporter.getInstance(WelcomeActivity.class);;
     static final int PERMISSION_ALL = 1;
+
     String[] permission;
     private FirebaseAuth mAuth;
     private Context context;
@@ -111,6 +112,28 @@ public class WelcomeActivity extends AppCompatActivity {
                 recyclerView.setAdapter(mAdapter);
             } catch (Exception e) {
                 logger.error(Reporter.stringStackTrace(e));
+            }
+
+
+            String tokenFcm = FirebaseInstanceId.getInstance().getToken();
+
+            if (tokenFcm!=null)
+            {
+                Log.e("onCreate"," token fcm"+tokenFcm);
+
+                //private void sendNewPromoBroadcast(String tokenfcm) {
+                DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+                FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
+                DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
+
+                Map<String, Boolean> mParent = new HashMap<>();
+                mParent.put(tokenFcm, true);
+                user_referemce.setValue(mParent);
+
+            //}
+            }else
+            {
+                Log.e("MainActivity","Token fcm sin crear");
             }
             validateUser();
         } else {

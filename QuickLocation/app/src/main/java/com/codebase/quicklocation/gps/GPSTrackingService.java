@@ -9,11 +9,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by Spanky on 06/02/2017.
@@ -24,13 +30,16 @@ public class GPSTrackingService extends Service {
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 300000; //5 minutos
     private static final float LOCATION_DISTANCE = 0;
-
+    DatabaseReference root;
+    FirebaseUser userFirebase;
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
 
         public LocationListener(String provider) {
             //logger.write("LocationListener " + provider);
             mLastLocation = new Location(provider);
+
+
         }
 
         @Override
@@ -44,6 +53,7 @@ public class GPSTrackingService extends Service {
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
             //logger.write(Utils.objectToJson(last));
             System.out.println(Utils.objectToJson(last));
+            setGeoFire(location.getLatitude(),location.getLongitude());
         }
 
         @Override
@@ -57,6 +67,25 @@ public class GPSTrackingService extends Service {
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
+    }
+
+    /**
+     * Envia las coordenadas con GeoFire;
+     * @param latitude
+     * @param longitude
+     */
+    private void setGeoFire(double latitude, double longitude) {
+
+        if (userFirebase != null)
+        {
+            DatabaseReference user_referemce = root.child(userFirebase.getUid());
+            DatabaseReference ref = user_referemce;
+            GeoFire geoFire = new GeoFire(ref);
+            geoFire.setLocation(Utils.location, new GeoLocation(latitude, longitude));
+        }
+        /*Map<String, Boolean> mParent = new HashMap<>();
+        mParent.put(tokenFcm, true);
+        user_referemce.setValue(mParent);*/
     }
 
     LocationListener[] mLocationListeners = new LocationListener[]{
@@ -87,6 +116,10 @@ public class GPSTrackingService extends Service {
         } catch (SecurityException | IllegalArgumentException ex) {
             logger.error(Reporter.stringStackTrace(ex));
         }
+        FirebaseApp.initializeApp(this);
+        root  = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+        userFirebase = FirebaseAuth.getInstance().getCurrentUser();
+
     }
 
     @Override

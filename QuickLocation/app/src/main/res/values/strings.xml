@@ -1,4 +1,5 @@
 <resources>
+    <string name="about"><a href='http://www.freepik.es/vector-gratis/conjunto-de-iconos-acerca-de-los-mapas_959358.htm'>Designed by Freepik</a></string>
     <string name="app_name">SOS Places</string>
     <string name="place_activity_label">Cerca de tí</string>
     <string name="place_detail_activity_label">Detalles</string>
