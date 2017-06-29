@@ -77,7 +77,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private FavoritesDao dao;
     private View layoutReviews;
     private boolean missingInformation = false;
-    private List<Review> sumReviews = new ArrayList<>();
+    private List<Review> togetherReviews = new ArrayList<>();
     private Geometry serverGeometry;
 
     @Override
@@ -298,13 +298,17 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     else
                         tvWebsite.setText(detail.getWebsite());
 
+                    //Buscar reviews, de Google primero, luego del server
                     if(response.getResult().getReviews() != null && !response.getResult().getReviews().isEmpty()) {
-                        sumReviews.clear();
-                        sumReviews = response.getResult().getReviews();
+                        togetherReviews.clear();
+                        togetherReviews.addAll(response.getResult().getReviews());
                     }
 
                     getPlaceReviewaFromPlatform(strPlaceId);
+                    //fin de busqueda de reviews
+
                     System.out.println("Missing information " + missingInformation);
+
                     if(missingInformation)
                         getPlaceDataFromPlatform(strPlaceId);
 
@@ -481,23 +485,27 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.getValue() != null) {
-                        List<Review> freshReviews = new ArrayList<>();
+                        List<Review> serverReviews = new ArrayList<>();
                         for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
                             UserOpinion message = messageSnapshot.getValue(UserOpinion.class);
                             Review review = new Review();
                             review.setAuthor(message.getAuthorName());
                             review.setRating(message.getRating());
                             review.setText(message.getComment());
-                            freshReviews.add(review);
+                            serverReviews.add(review);
                         }
 
-                        for(Review rv : freshReviews) {
+                        /*for(Review rv : freshReviews) {
                             sumReviews.add(rv);
                             System.out.println("******************* ADDING REVIEW " + rv.getText());
-                        }
+                        }*/
 
-                        putNewReviewsInTheScreen(sumReviews);
+                        //agrego las reviews que vienen del server si las hay
+                        if(serverReviews != null)
+                            togetherReviews.addAll(serverReviews);
                     }
+                    //Envio los reviews recolectados a pintar en pantalla
+                    putNewReviewsInTheScreen(togetherReviews);
                 }
 
                 @Override
