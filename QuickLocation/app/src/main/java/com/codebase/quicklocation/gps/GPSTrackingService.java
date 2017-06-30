@@ -15,11 +15,8 @@ import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by Spanky on 06/02/2017.
@@ -53,7 +50,7 @@ public class GPSTrackingService extends Service {
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
             //logger.write(Utils.objectToJson(last));
             System.out.println(Utils.objectToJson(last));
-            setGeoFire(location.getLatitude(),location.getLongitude());
+            //setGeoFire(location.getLatitude(),location.getLongitude());
         }
 
         @Override
@@ -116,9 +113,9 @@ public class GPSTrackingService extends Service {
         } catch (SecurityException | IllegalArgumentException ex) {
             logger.error(Reporter.stringStackTrace(ex));
         }
-        FirebaseApp.initializeApp(this);
+        /*FirebaseApp.initializeApp(this);
         root  = FirebaseDatabase.getInstance().getReference().child(Utils.users);
-        userFirebase = FirebaseAuth.getInstance().getCurrentUser();
+        userFirebase = FirebaseAuth.getInstance().getCurrentUser();*/
 
     }
 

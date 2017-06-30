@@ -39,9 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -124,11 +122,12 @@ public class WelcomeActivity extends AppCompatActivity {
                 //private void sendNewPromoBroadcast(String tokenfcm) {
                 DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
                 FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
+                assert task != null;
                 DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
 
-                Map<String, Boolean> mParent = new HashMap<>();
-                mParent.put(tokenFcm, true);
-                user_referemce.setValue(mParent);
+               // Map<String, Boolean> mParent = new HashMap<>();
+               // mParent.put(tokenFcm, true);
+                user_referemce.setValue(tokenFcm);
 
             //}
             }else
