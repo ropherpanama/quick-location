@@ -10,6 +10,15 @@ public class UserUseStatistic {
     private String nickname;
     private Date loginDate;
     private String placeId;
+    private String category;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public String getNickname() {
         return nickname;

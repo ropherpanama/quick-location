@@ -152,6 +152,7 @@ public class PlaceActivity extends AppCompatActivity {
                                 statistic.setLoginDate(new Date());
                                 statistic.setNickname(u.getNickname());
                                 statistic.setPlaceId(item.getPlaceId());
+                                statistic.setCategory(categoria);
                                 database.getReference().child("places/statistics").child(u.getNickname()).push().setValue(statistic);
                                 System.out.println("****************** ESTADISTICA ENVIADA " + Utils.objectToJson(statistic));
                             }
