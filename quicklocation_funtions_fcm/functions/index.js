@@ -47,10 +47,11 @@ exports.sendNewGruop  = functions.database.ref('/groups/{groupsUID}').onWrite(ev
   return loadUsers().then(users => {
       let tokens =  []
       for (let user of users) {
-        if (gruop.create_by != user.key) {
-
-        }
+        console.log("key ",grupo.create_by+" ---- "+user.key);
+        //console.log("user ",user);
+        if (grupo.create_by != user.key) {
           tokens.push(user.token_fcm);
+        }
             }
       let payload = {
           data: {
