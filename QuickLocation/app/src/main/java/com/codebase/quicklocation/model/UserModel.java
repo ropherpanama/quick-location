@@ -8,8 +8,8 @@ import com.google.firebase.database.Exclude;
 public class UserModel {
 
     private String id;
-    private String name;
-    private String photo_profile;
+    private String name = "Anonymous";
+    private String photo_profile = "default";
 
     public UserModel() {
     }

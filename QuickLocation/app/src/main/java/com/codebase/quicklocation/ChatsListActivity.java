@@ -80,6 +80,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                 Log.d("Item... "," "+item.getTitle());
                 Intent intent = new Intent(ChatsListActivity.this, ChatFirebaseActivity.class);
                 intent.putExtra("group_id", item.getGruop_id());
+                intent.putExtra("create_by",item.getCreate_by());
                 startActivity(intent);
             }
         });
@@ -187,7 +188,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
                     String key_group = rootDataBase.push().getKey();
                     DatabaseReference group_refer = rootDataBase.child(key_group);
-                    Group groupNew = new Group(title,description,key_group,typeValue);
+                    Group groupNew = new Group(title,description,key_group,typeValue,user_ui);
                     Map<String, Object> groupValue = groupNew.toMap();
                     group_refer.updateChildren(groupValue);
 

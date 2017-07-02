@@ -21,7 +21,9 @@ exports.sendPush = functions.database.ref('/messages/{chatsUid}/{chatUid}').onWr
     return loadUsers().then(users => {
         let tokens =  []
         for (let user of users) {
+          if (titleName != user.fullname) {
             tokens.push(user.token_fcm);
+          }
         }
         let payload = {
             data: {
@@ -45,11 +47,14 @@ exports.sendNewGruop  = functions.database.ref('/groups/{groupsUID}').onWrite(ev
   return loadUsers().then(users => {
       let tokens =  []
       for (let user of users) {
+        if (gruop.create_by != user.key) {
+
+        }
           tokens.push(user.token_fcm);
-      }
+            }
       let payload = {
           data: {
-              title: 'Nuevo grupo ' + titleName,
+              title: 'Nuevo grupo: ' + titleName,
               body: text
              }
       };
@@ -57,14 +62,13 @@ exports.sendNewGruop  = functions.database.ref('/groups/{groupsUID}').onWrite(ev
   });
 });
 
-
-
-
+/*Lista a todos los usuarios con detalles del token fcm*/
 function loadUsers() {
     let dbRef = admin.database().ref('/users');
     let defer = new Promise((resolve, reject) => {
         dbRef.once('value', (snap) => {
             let data = snap.val();
+
             let users = [];
             for (var property in data) {
                 users.push(data[property]);

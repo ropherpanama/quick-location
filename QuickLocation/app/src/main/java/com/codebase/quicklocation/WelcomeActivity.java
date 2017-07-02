@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -60,7 +61,6 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         mAuth = FirebaseAuth.getInstance();
-
         if (mAuth.getCurrentUser()!=null) {
             setContentView(R.layout.activity_welcome);
             context = this;
@@ -113,7 +113,9 @@ public class WelcomeActivity extends AppCompatActivity {
             }
 
 
-            String tokenFcm = FirebaseInstanceId.getInstance().getToken();
+            geneararTokenFCM();
+
+           String tokenFcm = FirebaseInstanceId.getInstance().getToken();
 
             if (tokenFcm!=null)
             {
@@ -135,6 +137,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 Log.e("MainActivity","Token fcm sin crear");
             }
             validateUser();
+
         } else {
             Intent intent = new Intent(this,LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -143,19 +146,80 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
+    private void geneararTokenFCM() {
+
+        SharedPreferences preferences = context.getSharedPreferences("registration_id", Context.MODE_PRIVATE);
+        String token_fcm =  preferences.getString("registration_id", "");
+
+        if (token_fcm.equals(""))
+        {
+            String tokenFcm = FirebaseInstanceId.getInstance().getToken();
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("registration_id", tokenFcm);
+        }
+            DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+            FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
+            assert task != null;
+            DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
+            user_referemce.setValue(token_fcm);
+    }
+
     private void validateUser() {
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
+                    Log.e("User","EXISTE");
+                    /*String fullname = "";
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        fullname = postSnapshot.child("fullName").getValue(String.class);
+
+                    }
+
+                    final Users users = new Users();
+                    UsersDao usersDao = new UsersDao(context);
+                    users.setNickname(fullname);
+                    usersDao.add(users);*/
+
+                }else {
+                    Log.e("User","No existe "+ mAuth.getCurrentUser().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        /*DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
          mDatabase.child(Utils.users).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(DataSnapshot dataSnapshot) {
                  Log.e("User",dataSnapshot.getValue().toString());
+
+                 if (dataSnapshot.hasChild())
+
+                 //hY0sEiUl0aasZmLTt1LkYpP9Wnf1
+               /*  Users users = dataSnapshot.getValue(Users.class);
+                 UsersDao usersDao = null;
+                 if (users!=null)
+                 {
+                     if (users.getNickname() == null)
+                         users.setNickname("Anonymous");
+
+                     usersDao.add(users);
+
+                 }
+
              }
 
              @Override
              public void onCancelled(DatabaseError databaseError) {
 
              }
-         });
+         });*/
     }
 
     private void fillElementsData() {
@@ -263,6 +327,13 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
                 mAuth.signOut();
+               /* try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    Log.d("Token","Token eliminado");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+                deleteTokenFCMFirebare();
                 Intent intent = new Intent(context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
@@ -284,6 +355,30 @@ public class WelcomeActivity extends AppCompatActivity {
         Button nbtn = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         nbtn.setTextColor(Color.parseColor("#da1919"));
     }
+
+    /**
+     * Elimina el tokem fcm de SharedPreferences.
+     */
+    private void deleteTokenFCMFirebare() {
+        /*if (mAuth.getCurrentUser().getUid()!=null) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Utils.users).child(mAuth.getCurrentUser().getUid()).child("token_fcm");
+            reference.setValue("");
+        }*/
+        /*final SharedPreferences prefs = this.getSharedPreferences("FCMID", Context.MODE_PRIVATE);  //PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("registration_id");
+        editor.apply();*/
+        /*DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+        FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
+        assert task != null;
+        DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
+        user_referemce.removeValue();*/
+        // Map<String, Boolean> mParent = new HashMap<>();
+        // mParent.put(tokenFcm, true);
+        //user_referemce.setValue(tokenFcm);
+
+    }
+
     /**
      * Registra al usuario en la plataforma  Crashlytics de Fabric.
      */

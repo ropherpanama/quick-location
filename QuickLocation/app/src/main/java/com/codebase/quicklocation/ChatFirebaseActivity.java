@@ -45,6 +45,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     FloatingActionButton fab;
     private EditText input;
     private String group_id;
+    private String create_by;
     private String chats_node;
     private DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Utils.messages);
     private FirebaseAuth mFirebaseAuth;
@@ -58,6 +59,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     private View contentRoot;
     private EditText edMessage;
     private Context context;
+    private String userUID="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +70,8 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
         getSupportActionBar().setHomeButtonEnabled(true);
         context = this;
         group_id = getIntent().getExtras().getString("group_id");
-
+        create_by = getIntent().getExtras().getString("create_by");
+        userUID  = FirebaseAuth.getInstance().getCurrentUser().getUid();
         addChatToGruop();
         viewShow();
         userAuthentication();

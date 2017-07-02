@@ -14,15 +14,24 @@ public class Group {
     private String description;
     public String gruop_id;
      private Map<String, Object> members;
+    private String create_by;
 
     public Group() {
     }
 
-    public Group(String title, String description, String id_gruop, Map<String, Object> members) {
+    public Group(String title, String description, String gruop_id, String create_by) {
         this.title = title;
         this.description = description;
-        this.gruop_id = id_gruop;
+        this.gruop_id = gruop_id;
+        this.create_by = create_by;
+    }
+
+    public Group(String title, String description, String gruop_id, Map<String, Object> members, String create_by) {
+        this.title = title;
+        this.description = description;
+        this.gruop_id = gruop_id;
         this.members = members;
+        this.create_by = create_by;
     }
 
     public String getTitle() {
@@ -57,6 +66,15 @@ public class Group {
         this.gruop_id = gruop_id;
     }
 
+
+    public String getCreate_by() {
+        return create_by;
+    }
+
+    public void setCreate_by(String create_by) {
+        this.create_by = create_by;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -64,6 +82,7 @@ public class Group {
         result.put("description", description);
         result.put("members", members);
         result.put("gruop_id", gruop_id);
+        result.put("create_by",create_by);
         return result;
     }
 }
