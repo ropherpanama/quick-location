@@ -2,6 +2,7 @@ package com.codebase.quicklocation.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import com.codebase.quicklocation.R;
 import com.codebase.quicklocation.model.ChatModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
+
+import me.himanshusoni.chatmessageview.ChatMessageView;
 
 /**
  * Created by AUrriola on 6/26/17.
@@ -82,7 +85,7 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
         viewHolder.setIvUser(model.getUserModel().getPhoto_profile());
         viewHolder.setTxtMessage(model.getMessage());
         viewHolder.setTvTimestamp(model.getTimeStamp());
-        viewHolder.tvIsLocation(View.GONE);
+        //viewHolder.tvIsLocation(View.GONE);
         //if (position == LEFT_MSG)
         //{
             if (model.getUserModel() != null)
@@ -105,31 +108,39 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
 
     public class MyChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView tvTimestamp, tvLocation, txtNombreFavorito;
+        TextView tvTimestamp, txtNombreFavorito;
           TextView txtMessage, txtsendusername, txtDestallesFavorito;
         ImageView ivUser, ivChatPhoto;
-
+        ChatMessageView messageView;
         public MyChatViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             tvTimestamp = (TextView) itemView.findViewById(R.id.timestamp);
             txtMessage = (TextView)itemView.findViewById(R.id.txtMessage);
             txtsendusername = (TextView)itemView.findViewById(R.id.txtsendusername);
-            tvLocation = (TextView) itemView.findViewById(R.id.tvLocation);
+            //tvLocation = (TextView) itemView.findViewById(R.id.tvLocation);
             ivChatPhoto = (ImageView) itemView.findViewById(R.id.img_chat);
             ivUser = (ImageView) itemView.findViewById(R.id.ivUserChat);
             txtDestallesFavorito = (TextView)itemView.findViewById(R.id.txtDestallesFavorito);
             txtNombreFavorito = (TextView)itemView.findViewById(R.id.txtNombreFavorito);
+            messageView = (ChatMessageView)itemView.findViewById(R.id.contentMessageChat);
+            messageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
             ChatModel model = getItem(position);
-            if (model.getMapModel() != null) {
+            Log.d("detall", model.toString());
+            if (model.getFavorites()!= null)
+            {
+                mClickListenerChatFirebase.clickFavoritos(view,model.getFavorites());
+            }
+            /*if (model.getMapModel() != null) {
                 mClickListenerChatFirebase.clickImageMapChat(view, position, model.getMapModel().getLatitude(), model.getMapModel().getLongitude());
             } else {
                 mClickListenerChatFirebase.clickImageChat(view, position, model.getUserModel().getName(), model.getUserModel().getPhoto_profile(), model.getFavorites().getCategory());
-            }
+            }*/
         }
 
         public void setTxtMessage(String message) {
@@ -156,10 +167,10 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             ivChatPhoto.setOnClickListener(this);
         }
 
-        public void tvIsLocation(int visible) {
+        /*public void tvIsLocation(int visible) {
             if (tvLocation == null) return;
             tvLocation.setVisibility(visible);
-        }
+        }*/
         public void settxtsendusername(String fullname)
         {
             if (txtsendusername == null)return;
@@ -171,6 +182,7 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             if (txtNombreFavorito==null)return;
 
             txtNombreFavorito.setText(nombre);
+
         }
 
         public void setDetallFavorito(String detalle)

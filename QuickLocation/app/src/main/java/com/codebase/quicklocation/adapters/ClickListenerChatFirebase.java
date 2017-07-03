@@ -2,6 +2,8 @@ package com.codebase.quicklocation.adapters;
 
 import android.view.View;
 
+import com.codebase.quicklocation.database.Favorites;
+
 /**
  * Created by Alessandro Barreto on 27/06/2016.
  */
@@ -20,5 +22,8 @@ public interface ClickListenerChatFirebase {
      * @param position
      */
     void clickImageMapChat(View view, int position, String latitude, String longitude);
+
+
+    void clickFavoritos(View view, Favorites favorites);
 
 }

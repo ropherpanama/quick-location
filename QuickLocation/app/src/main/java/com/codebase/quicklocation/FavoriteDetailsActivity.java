@@ -1,14 +1,11 @@
 package com.codebase.quicklocation;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -32,7 +29,6 @@ import com.codebase.quicklocation.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -40,6 +36,7 @@ import java.util.Date;
  */
 
 public class FavoriteDetailsActivity extends AppCompatActivity {
+    private static final int FROM_FAVORITE = 6;
 
     LinearLayout llayoutFavorite;
     private ImageView ivPlacePhoto;
@@ -61,11 +58,17 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private boolean from_faborito = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
+
+        if (getIntent().hasExtra("from_favorito"))
+        {
+            from_faborito = getIntent().getExtras().getBoolean("from_favorito");
+        }
 
         llayoutFavorite = (LinearLayout)findViewById(R.id.llayoutFavorite);
         llayoutFavorite.setVisibility(View.GONE);
@@ -227,10 +230,30 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (from_faborito)
+        {
+            Intent intent = new Intent();
+            setResult(FROM_FAVORITE,intent);
+            finish();
+            //intent.putExtra()
+        }
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (from_faborito)
+        {
+            Intent intent = new Intent();
+            setResult(FROM_FAVORITE,intent);
+            finish();
+            //intent.putExtra()
+        }
+        super.onBackPressed();
     }
 }

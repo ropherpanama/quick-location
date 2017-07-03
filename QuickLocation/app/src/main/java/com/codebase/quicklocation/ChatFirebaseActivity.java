@@ -45,6 +45,7 @@ import java.util.Map;
 
 public class ChatFirebaseActivity extends AppCompatActivity implements View.OnClickListener,ClickListenerChatFirebase {
     private static final int ADD_ACTIVITY_FAVORITE = 5;
+    private static final int FROM_FAVORITE = 6;
 
     FirebaseListAdapter<ChatMessage> adapter;
     FloatingActionButton fab;
@@ -285,5 +286,28 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void clickImageMapChat(View view, int position, String latitude, String longitude) {
 
+    }
+
+    @Override
+    public void clickFavoritos(View view, Favorites favorites) {
+        /*Gson gson = new Gson();
+        Date date_ = favorites.getAddedFrom();
+        @SuppressLint("SimpleDateFormat")
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String date = formatter.format(date_);
+        try {
+            favorites.setAddedFrom(sourceFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String favorito = gson.toJson(favorites);
+       // String favorito =  Utils.factoryGson().toJson(favorites);
+        Intent intent = new Intent(context, FavoriteDetailsActivity.class);
+        Log.d("favorito",favorito);
+        intent.putExtra("favorito",favorito);
+        intent.putExtra("from_favorito",true);
+        startActivityForResult(intent,FROM_FAVORITE);*/
     }
 }

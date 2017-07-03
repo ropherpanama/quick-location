@@ -41,7 +41,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content" />
 
-         <TextView
+        <!-- <TextView
              android:visibility="gone"
              android:id="@+id/tvLocation"
              android:layout_marginTop="2dp"
@@ -50,8 +50,26 @@
              android:text="Localização Recebida"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:textStyle="bold"/>
+             android:textStyle="bold"/>-->
 
+         <TextView
+             android:id="@+id/txtDestallesFavorito"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text="TextView"
+             android:textStyle="bold"
+             android:layout_alignTop="@+id/img_chat"
+             android:layout_toRightOf="@+id/img_chat"
+             android:layout_toEndOf="@+id/img_chat" />
+
+         <TextView
+             android:id="@+id/txtNombreFavorito"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text="TextView"
+             android:layout_below="@+id/txtDestallesFavorito"
+             android:layout_toRightOf="@+id/img_chat"
+             android:layout_toEndOf="@+id/img_chat" />
      </me.himanshusoni.chatmessageview.ChatMessageView>
 
      <TextView
@@ -59,11 +77,11 @@
          android:id="@+id/timestamp"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="10dp"
-         android:paddingLeft="10dp"
-         android:paddingTop="3dp"
          android:textSize="10sp"
+         android:paddingStart="6dp"
+         android:paddingBottom="8dp"
          android:layout_below="@+id/contentMessageChat"
          android:layout_toEndOf="@+id/ivUserChat"
-         android:layout_toRightOf="@+id/ivUserChat" />
+         android:layout_toRightOf="@+id/ivUserChat"
+         android:paddingLeft="6dp" />
  </RelativeLayout>
