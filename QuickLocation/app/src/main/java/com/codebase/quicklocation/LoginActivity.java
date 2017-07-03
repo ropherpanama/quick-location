@@ -321,7 +321,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 attemptLogin();
                 break;
             case R.id.btnRegister:
-                Intent intent = new Intent(LoginActivity.this, ResgistraseActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ResgisterActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 break;

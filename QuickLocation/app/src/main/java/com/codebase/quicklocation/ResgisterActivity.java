@@ -51,7 +51,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class ResgistraseActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
+public class ResgisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -219,7 +219,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
                     Map<String, Object> postValues = userStructure.toMap();
                     user_referemce.updateChildren(postValues);
                     Toast.makeText(context, "Creación de usuario exitoso.", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(ResgistraseActivity.this, WelcomeActivity.class);
+                    Intent intent = new Intent(ResgisterActivity.this, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                     finish();
@@ -315,7 +315,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(ResgistraseActivity.this,
+                new ArrayAdapter<>(ResgisterActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
         mEmailView.setAdapter(adapter);
     }
@@ -367,7 +367,7 @@ public class ResgistraseActivity extends AppCompatActivity implements LoaderCall
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(ResgistraseActivity.this, LoginActivity.class);
+        Intent intent = new Intent(ResgisterActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         finish();

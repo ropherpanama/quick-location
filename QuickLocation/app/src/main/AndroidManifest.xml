@@ -64,7 +64,7 @@
             android:name=".LoginActivity"
             android:label="@string/login" />
         <activity
-            android:name=".ResgistraseActivity"
+            android:name=".ResgisterActivity"
             android:label="@string/title_activity_resgistrase">
 
             <!--
