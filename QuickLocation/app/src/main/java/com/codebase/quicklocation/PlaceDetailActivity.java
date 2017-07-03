@@ -372,7 +372,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
      *
      * @param v parametro de vista
      */
-    public void guardarFavorito(View v) {
+    public void addFavorite(View v) {
         dao = new FavoritesDao(this);
         Favorites f = dao.getByPlaceId(strPlaceId);
         if (f == null) {

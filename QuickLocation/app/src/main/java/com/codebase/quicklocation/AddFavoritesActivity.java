@@ -106,7 +106,7 @@ public class AddFavoritesActivity extends AppCompatActivity {
     /**
      * Guarda el registro en la base de datos
      */
-    public void guardarFavoritoBD(MenuItem item) {
+    public void addFavoriteBD(MenuItem item) {
         try {
             Favorites f;
             if (favorite != null) {

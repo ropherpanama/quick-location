@@ -73,7 +73,7 @@
                         android:layout_marginLeft="20dp"
                         android:padding="5dp"
                         android:text="Agregar a Favoritos"
-                        android:onClick="guardarFavorito"
+                        android:onClick="addFavorite"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
                         android:textColor="@color/primary"

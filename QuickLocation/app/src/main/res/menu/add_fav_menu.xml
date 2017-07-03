@@ -5,5 +5,5 @@
     <item android:title="Guardar"
         android:id="@+id/fav_menu_save"
         app:showAsAction="ifRoom|withText"
-        android:onClick="guardarFavoritoBD"/>
+        android:onClick="addFavoriteBD"/>
 </menu>
