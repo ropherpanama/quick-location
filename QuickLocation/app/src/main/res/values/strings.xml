@@ -21,12 +21,12 @@
     <string name="action_sign_in">Iniciar sesión</string>
     <string name="action_sign_in_short">Iniciar sesión</string>
     <string name="error_invalid_email">Esta dirección de correo electrónico es inválida</string>
-    <string name="error_invalid_password">La contraseña es muy corta</string>
+    <string name="error_invalid_password">Contraseña mínimo 5 caracteres, máximo 25</string>
     <string name="error_incorrect_password">La contraseña es incorecta</string>
     <string name="error_field_required">Este campo es necesario</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="fullname_max">El máximo son 25 caracteres</string>
+    <string name="nickname_max">El máximo son 10 caracteres</string>
     <string name="action_register">Registrarse</string>
     <string name="title_activity_resgistrase">Registro</string>
     <string name="uuser_name">Nickname</string>

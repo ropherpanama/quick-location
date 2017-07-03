@@ -79,6 +79,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private boolean missingInformation = false;
     private List<Review> togetherReviews = new ArrayList<>();
     private Geometry serverGeometry;
+    private PlaceDetail placeFavoriteType = new PlaceDetail();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +183,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     if(serverGeometry != null) {
                         System.out.println("****************** COJO LA COORDENADA DEL SERVIDOR ");
                         placeLocation = serverGeometry.getLocation();
+                        placeFavoriteType.setGeometry(serverGeometry);
                     } else {
                         System.out.println("****************** COJO LA COORDENADA DEL GOOGLE ");
                         placeLocation = response.getResult().getGeometry().getLocation();
@@ -226,6 +228,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                 if ("OK".equals(response.getStatus())) {
                     PlaceDetail detail = response.getResult();
+                    placeFavoriteType = response.getResult();//se asigna el resultado al favorito si ha de guardarse, esto ira cambiando
 
                     if (detail.getPhotos() != null && detail.getPhotos().size() > 0) {
                         String key = Utils.giveMeMyCandy();
@@ -384,7 +387,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
             favorite.setPlaceId(strPlaceId);
             Intent i = new Intent(PlaceDetailActivity.this, AddFavoritesActivity.class);
             String cdata = Utils.objectToJson(favorite);
-            String detailsResponse = Utils.objectToJson(response);
+            //String detailsResponse = Utils.objectToJson(response);
+            String detailsResponse = Utils.objectToJson(placeFavoriteType);
             i.putExtra("placeDetails", detailsResponse);
             i.putExtra("cdata", cdata);
             startActivity(i);
@@ -454,9 +458,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private void setScreenForNewData(PlaceDetail place) {
 
         if(place != null) {
+            placeFavoriteType = place;//seteo lo nuevo al favorito
 
-            if(place.getGeometry() != null)
+            if(place.getGeometry() != null) {
                 serverGeometry = place.getGeometry();
+            }
 
             System.out.println("********************** AJUSTANDO LA DATA FRESCA ... " + place);
             if(place.getFormattedAddress() != null && place.getFormattedAddress().length() > 0)
@@ -495,16 +501,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             serverReviews.add(review);
                         }
 
-                        /*for(Review rv : freshReviews) {
-                            sumReviews.add(rv);
-                            System.out.println("******************* ADDING REVIEW " + rv.getText());
-                        }*/
-
                         //agrego las reviews que vienen del server si las hay
                         if(serverReviews != null)
                             togetherReviews.addAll(serverReviews);
                     }
                     //Envio los reviews recolectados a pintar en pantalla
+                    placeFavoriteType.setReviews(togetherReviews);// seteo al favorito todos los reviews recolectados
                     putNewReviewsInTheScreen(togetherReviews);
                 }
 

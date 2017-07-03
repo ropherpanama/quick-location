@@ -51,6 +51,14 @@ public class FavoritesDataDao {
         }
     }
 
+    public void deleteAll() {
+        try {
+            dao.delete(dao.queryForAll());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<FavoritesData> getAll() {
         try {
             return dao.queryForAll();

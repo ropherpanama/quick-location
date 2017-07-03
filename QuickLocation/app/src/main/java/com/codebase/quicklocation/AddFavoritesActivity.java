@@ -122,10 +122,6 @@ public class AddFavoritesActivity extends AppCompatActivity {
                     favoriteData.setPlaceId(favorite.getPlaceId());
                     favoriteData.setCdata(placeDetailsJSON);
                     favoritesData.add(favoriteData);
-                    /**
-                     * TODO: G
-                     */
-                    //Snackbar.make(toolbar, "Favorito guardado", Snackbar.LENGTH_SHORT).show();
                     Utils.showToast(this, "Favorito guardado");
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);

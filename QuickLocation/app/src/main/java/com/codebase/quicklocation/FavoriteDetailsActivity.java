@@ -1,6 +1,7 @@
 package com.codebase.quicklocation;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,12 +26,14 @@ import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
+import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by AUrriola on 6/18/17.
@@ -58,19 +62,20 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private boolean from_faborito = false;
+    private boolean from_favorito = false;
+    private View layoutReviews;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
 
-        if (getIntent().hasExtra("from_favorito"))
-        {
-            from_faborito = getIntent().getExtras().getBoolean("from_favorito");
+        if (getIntent().hasExtra("from_favorito")) {
+            from_favorito = getIntent().getExtras().getBoolean("from_favorito");
         }
 
-        llayoutFavorite = (LinearLayout)findViewById(R.id.llayoutFavorite);
+        layoutReviews = findViewById(R.id.layout_reviews);
+        llayoutFavorite = (LinearLayout) findViewById(R.id.llayoutFavorite);
         llayoutFavorite.setVisibility(View.GONE);
         ivPlacePhoto = (ImageView) findViewById(R.id.iv_place_photo);
         Bundle incomming = getIntent().getExtras();
@@ -108,8 +113,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         callButton = (Button) findViewById(R.id.call_action_button);
 
         favoritesData = favoritesDataDao.getByPlaceId(favorite.getPlaceId());
-        placeDetails = Utils.factoryGson().fromJson(favoritesData.getCdata(),ResponseForPlaceDetails.class);
-        placeDetail =  placeDetails.getResult();
+        placeDetail = Utils.factoryGson().fromJson(favoritesData.getCdata(), PlaceDetail.class);
         setTitle(favorite.getLocalName());
         showViewDetails();
     }
@@ -130,7 +134,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             strPlaceDirection = placeDetail.getFormattedAddress();
 
         if (placeDetail.getOpeningHours() != null) {
-            //if (placeDetail.getOpeningHours().getWeekdayText() != null && placeDetail.getOpeningHours().getWeekdayText().length > 0) {
             if (placeDetail.getOpeningHours().getWeekdayText() != null && placeDetail.getOpeningHours().getWeekdayText().size() > 0) {
                 strOpeningHours = new StringBuilder();
 
@@ -152,10 +155,14 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             tvWebsite.setText("Dato no disponible");
         else
             tvWebsite.setText(placeDetail.getWebsite());
+
+        if(placeDetail.getReviews() != null) {
+            putNewReviewsInTheScreen(placeDetail.getReviews());
+        }
     }
 
-    public void goToWebsite(View view){
-        if (!tvWebsite.getText().equals("Dato no disponible")){
+    public void goToWebsite(View view) {
+        if (!tvWebsite.getText().equals("Dato no disponible")) {
             String url = tvWebsite.getText().toString();
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
@@ -167,6 +174,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
+
     /**
      * Método que crea el nombre con la ruta de la imagen tomada con la cámara.
      *
@@ -194,6 +202,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             logger.error(Reporter.stringStackTrace(se));
         }
     }
+
     /**
      * Este metodo realiza lo siguiente:
      * Obtiene la coordenada actual del usuario
@@ -230,10 +239,9 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (from_faborito)
-        {
+        if (from_favorito) {
             Intent intent = new Intent();
-            setResult(FROM_FAVORITE,intent);
+            setResult(FROM_FAVORITE, intent);
             finish();
             //intent.putExtra()
         }
@@ -244,16 +252,46 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
-        if (from_faborito)
-        {
+        if (from_favorito) {
             Intent intent = new Intent();
-            setResult(FROM_FAVORITE,intent);
+            setResult(FROM_FAVORITE, intent);
             finish();
-            //intent.putExtra()
         }
         super.onBackPressed();
+    }
+
+    private void putNewReviewsInTheScreen(List<Review> reviews) {
+        System.out.println("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
+        try {
+            for(Review r : reviews){
+                if(!"".equals(r.getText().trim())) {
+                    System.out.println("**************** LOCAL REVIEW " + r.getText());
+                    TextView authorTextView = new TextView(FavoriteDetailsActivity.this);
+                    TextView commentTextView = new TextView(FavoriteDetailsActivity.this);
+                    TextView ratingView = new TextView(FavoriteDetailsActivity.this);
+                    commentTextView.setText(r.getText());
+                    authorTextView.setText(r.getAuthor());
+                    ratingView.setText(String.valueOf(r.getRating()));
+                    ratingView.setGravity(Gravity.RIGHT);
+                    ratingView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_review, 0);
+                    commentTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    commentTextView.setPadding(0, 5, 0, 5);
+                    authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    authorTextView.setTypeface(null, Typeface.BOLD);
+                    ratingView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ((LinearLayout) layoutReviews).addView(authorTextView);
+                    ((LinearLayout) layoutReviews).addView(commentTextView);
+                    ((LinearLayout) layoutReviews).addView(ratingView);
+                    View separator = new View(FavoriteDetailsActivity.this);
+                    separator.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                    separator.setBackgroundColor(getResources().getColor(R.color.accent));
+                    ((LinearLayout) layoutReviews).addView(separator);
+                }
+            }
+        }catch(Exception e) {
+            Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
+        }
     }
 }

@@ -163,12 +163,24 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
             fullname.setError(getString(R.string.error_field_required));
             focusView = fullname;
             cancel = true;
+        } else {
+            if(fullname.length() > 25) {
+                fullname.setError(getString(R.string.fullname_max));
+                focusView = fullname;
+                cancel = true;
+            }
         }
 
         if (TextUtils.isEmpty(userName)) {
             username.setError(getString(R.string.error_field_required));
             focusView = username;
             cancel = true;
+        }  else {
+            if(userName.length() > 10) {
+                username.setError(getString(R.string.nickname_max));
+                focusView = username;
+                cancel = true;
+            }
         }
 
         // Check for a valid password, if the user entered one.
@@ -234,13 +246,11 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 4 && password.length() <= 12;
     }
 
     /**

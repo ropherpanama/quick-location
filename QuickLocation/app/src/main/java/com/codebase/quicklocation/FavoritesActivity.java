@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import com.codebase.quicklocation.adapters.FavoritesItemAdapter;
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
+import com.codebase.quicklocation.database.dao.FavoritesDataDao;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 
@@ -31,6 +32,7 @@ public class FavoritesActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Favorites> favorites = new ArrayList<>();
     private FavoritesDao dao = new FavoritesDao(this);
+    private FavoritesDataDao dataDao = new FavoritesDataDao(this);
     private boolean add_favorite = false;
 
     @Override
@@ -112,6 +114,7 @@ public class FavoritesActivity extends AppCompatActivity {
                         public  void onClick(DialogInterface dialog, int which) {
                             if(dao.deleteAll() > 0) {
                                 favorites.clear();//limpio la lista actual
+                                dataDao.deleteAll();
                                 mAdapter.notifyDataSetChanged();
                                 Utils.showToast(FavoritesActivity.this, "Registros eliminados");
                             } else {

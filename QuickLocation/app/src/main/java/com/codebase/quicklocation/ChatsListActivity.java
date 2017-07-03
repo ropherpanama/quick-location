@@ -37,25 +37,23 @@ import java.util.Map;
 public class ChatsListActivity extends AppCompatActivity implements View.OnClickListener {
     private ListView lstChatsFirebase;
     private RecyclerView recyclerView;
-    private   Toolbar toolbar;
+    private Toolbar toolbar;
     private RecyclerView.Adapter adapter;
     private List<Group> groups = new ArrayList<>();
     private Context context;
     private DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.groups);
     private String user_ui = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context= this;
-        Log.d("ChatsListActivity",user_ui);
+        context = this;
+        Log.d("ChatsListActivity", user_ui);
         setContentView(R.layout.activity_chats_list);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        //DatabaseReference mDatabaseChats = FirebaseDatabase.getInstance().getReference();
-        //mDatabaseChats = mDatabaseChats.child(Utils.groups);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -77,10 +75,10 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         adapter = new ChatsFirebaseAdapter(groups, new ChatsFirebaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Group item) {
-                Log.d("Item... "," "+item.getTitle());
+                Log.d("Item... ", " " + item.getTitle());
                 Intent intent = new Intent(ChatsListActivity.this, ChatFirebaseActivity.class);
                 intent.putExtra("group_id", item.getGruop_id());
-                intent.putExtra("create_by",item.getCreate_by());
+                intent.putExtra("create_by", item.getCreate_by());
                 startActivity(intent);
             }
         });
@@ -92,7 +90,6 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         recyclerView.setAdapter(adapter);
-
     }
 
     /**
@@ -101,17 +98,10 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
     private void maplist(DataSnapshot map) {
         groups.clear();
 
-
-        for (DataSnapshot dataSnapshot: map.getChildren()) {
-            Group group = new Group();
-           // TypeGroup typeGroup = dataSnapshot.getValue(TypeGroup.class);
-            group = dataSnapshot.getValue(Group.class);   //mainChildChat.setTitle(dataSnapshot.getKey());
-
-            //assert group != null;
-           // if (group.getMembers().containsKey(user_ui))
-                groups.add(group);
+        for (DataSnapshot dataSnapshot : map.getChildren()) {
+            Group group = dataSnapshot.getValue(Group.class);
+            groups.add(group);
         }
-
     }
 
     @Override
@@ -132,8 +122,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.fab:
                 showAlertDialog(v);
                 break;
@@ -142,16 +131,17 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * Muestra al usuario una ventana para llenar la informacion de grupos para chats.
+     *
      * @param v
      */
     private void showAlertDialog(final View v) {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.user_input_dialog_box,null);
+        View view = layoutInflater.inflate(R.layout.user_input_dialog_box, null);
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
         builder.setView(view);
 
-        final EditText txtTitle = (AutoCompleteTextView)view.findViewById(R.id.txtTituloGroupo);
-        final EditText txtDescripcion = (AutoCompleteTextView)view.findViewById(R.id.txtDescripcion);
+        final EditText txtTitle = (AutoCompleteTextView) view.findViewById(R.id.txtTituloGroupo);
+        final EditText txtDescripcion = (AutoCompleteTextView) view.findViewById(R.id.txtDescripcion);
 
         builder.setCancelable(false).setPositiveButton(R.string.aceptar, new DialogInterface.OnClickListener() {
             @Override
@@ -161,39 +151,32 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                 boolean cancel = false;
                 View focusView = null;
 
-                if (TextUtils.isEmpty(title))
-                {
+                if (TextUtils.isEmpty(title)) {
                     txtTitle.setError(getString(R.string.error_field_required));
                     focusView = txtTitle;
                     cancel = true;
 
                 }
-                if (TextUtils.isEmpty(description))
-                {
+                if (TextUtils.isEmpty(description)) {
                     txtDescripcion.setError(getString(R.string.error_field_required));
                     focusView = txtDescripcion;
                     cancel = true;
-
                 }
 
-                if (cancel)
-                {
-                 focusView.requestFocus();
-                }else {
+                if (cancel) {
+                    focusView.requestFocus();
+                } else {
                     dialog.dismiss();
-                    //Map<String, Object> params = new HashMap<>();
-                    //params.put("-KnSpnnQOwRNP4I44Oms", true);
-                    TypeGroup member = new TypeGroup(user_ui,true);
+                    TypeGroup member = new TypeGroup(user_ui, true);
                     Map<String, Object> typeValue = member.toMap();
 
                     String key_group = rootDataBase.push().getKey();
                     DatabaseReference group_refer = rootDataBase.child(key_group);
-                    Group groupNew = new Group(title,description,key_group,typeValue,user_ui);
+                    Group groupNew = new Group(title, description, key_group, typeValue, user_ui);
                     Map<String, Object> groupValue = groupNew.toMap();
                     group_refer.updateChildren(groupValue);
 
                     addGruopToUser(key_group);
-
                 }
 
             }
@@ -201,17 +184,16 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                 .setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                     dialog.cancel();
+                        dialog.cancel();
                     }
                 });
         android.support.v7.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
-
     }
 
     private void addGruopToUser(String title) {
         DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.users).child(user_ui).child(Utils.groups);
-        TypeGroup typeGroup = new TypeGroup(title,true);
+        TypeGroup typeGroup = new TypeGroup(title, true);
         Map<String, Object> typeValue = typeGroup.toMap();
         rootDataBase.updateChildren(typeValue);
     }
