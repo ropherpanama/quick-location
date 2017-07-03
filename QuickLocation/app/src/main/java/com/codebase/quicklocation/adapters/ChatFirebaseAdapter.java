@@ -63,8 +63,9 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             } else {
                 return LEFT_MSG_IMG;
             }
-        } else if (model.getFile() != null) {
-            if (model.getFile().getType().equals("img") && model.getUserModel().getName().equals(nameUser)) {
+        } else if (model.getFavorites() != null) {
+           // if (model.getFavorites().getType().equals("img") && model.getUserModel().getName().equals(nameUser)) {
+            if (model.getUserModel().getName().equals(nameUser)) {
                 return RIGHT_MSG_IMG;
             } else {
                 return LEFT_MSG_IMG;
@@ -86,10 +87,16 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
         //{
             if (model.getUserModel() != null)
             viewHolder.settxtsendusername(model.getUserModel().getName());
+        if (model.getFavorites() != null)
+        {
+            viewHolder.setDetallFavorito(model.getFavorites().getCategory());
+            viewHolder.settNombreFavorito(model.getFavorites().getLocalName());
+        }
+
         //}
-       /* if (model.getFile() != null) {
+       /* if (model.getFavorites() != null) {
             viewHolder.tvIsLocation(View.GONE);
-            viewHolder.setIvChatPhoto(model.getFile().getUrl_file());
+            viewHolder.setIvChatPhoto(model.getFavorites().getFavorito_categoria());
         } else if (model.getMapModel() != null) {
             viewHolder.setIvChatPhoto(alessandro.firebaseandroid.util.Util.local(model.getMapModel().getLatitude(), model.getMapModel().getLongitude()));
             viewHolder.tvIsLocation(View.VISIBLE);
@@ -98,8 +105,8 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
 
     public class MyChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView tvTimestamp, tvLocation;
-          TextView txtMessage, txtsendusername;
+        TextView tvTimestamp, tvLocation, txtNombreFavorito;
+          TextView txtMessage, txtsendusername, txtDestallesFavorito;
         ImageView ivUser, ivChatPhoto;
 
         public MyChatViewHolder(View itemView) {
@@ -110,6 +117,8 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             tvLocation = (TextView) itemView.findViewById(R.id.tvLocation);
             ivChatPhoto = (ImageView) itemView.findViewById(R.id.img_chat);
             ivUser = (ImageView) itemView.findViewById(R.id.ivUserChat);
+            txtDestallesFavorito = (TextView)itemView.findViewById(R.id.txtDestallesFavorito);
+            txtNombreFavorito = (TextView)itemView.findViewById(R.id.txtNombreFavorito);
         }
 
         @Override
@@ -119,7 +128,7 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             if (model.getMapModel() != null) {
                 mClickListenerChatFirebase.clickImageMapChat(view, position, model.getMapModel().getLatitude(), model.getMapModel().getLongitude());
             } else {
-                mClickListenerChatFirebase.clickImageChat(view, position, model.getUserModel().getName(), model.getUserModel().getPhoto_profile(), model.getFile().getUrl_file());
+                mClickListenerChatFirebase.clickImageChat(view, position, model.getUserModel().getName(), model.getUserModel().getPhoto_profile(), model.getFavorites().getCategory());
             }
         }
 
@@ -156,6 +165,21 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatF
             if (txtsendusername == null)return;
             txtsendusername.setText(fullname);
         }
+
+        public void settNombreFavorito(String nombre)
+        {
+            if (txtNombreFavorito==null)return;
+
+            txtNombreFavorito.setText(nombre);
+        }
+
+        public void setDetallFavorito(String detalle)
+        {
+            if (txtDestallesFavorito == null) return;
+
+            txtDestallesFavorito.setText(detalle);
+        }
+
 
     }
 

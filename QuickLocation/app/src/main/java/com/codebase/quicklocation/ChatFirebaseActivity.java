@@ -1,6 +1,7 @@
 package com.codebase.quicklocation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 
 import com.codebase.quicklocation.adapters.ChatFirebaseAdapter;
 import com.codebase.quicklocation.adapters.ClickListenerChatFirebase;
+import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.firebasedb.ChatMessage;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
 import com.codebase.quicklocation.firebasedb.UserStructure;
@@ -40,6 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ChatFirebaseActivity extends AppCompatActivity implements View.OnClickListener,ClickListenerChatFirebase {
+    private static final int ADD_ACTIVITY_FAVORITE = 5;
 
     FirebaseListAdapter<ChatMessage> adapter;
     FloatingActionButton fab;
@@ -166,43 +171,6 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
         });
     }
 
-    /*@Deprecated
-    private void displayChatMessage()
-    {
-        ListView  listView = (ListView)findViewById(R.id.list_of_messages);
-
-
-        adapter = new FirebaseListAdapter<ChatMessage>(this,ChatMessage.class, R.layout.message_right, msgDBRoot.child(chats_node)) {
-            @Override
-            protected void populateView(View v, ChatMessage model, int position) {
-//                if (model.getUserMessage().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
-
-
-                    TextView txtMessage, txtUser, txtTime;
-
-                    isEnabled(position);
-                    txtMessage = (TextView) v.findViewById(R.id.message_text);
-                    txtUser = (TextView) v.findViewById(R.id.message_user);
-                    txtTime = (TextView) v.findViewById(R.id.txtTime);
-
-                    if (!"".equals(txtMessage.toString()) && !"".equals(txtUser.toString()) && !"".equals(txtTime.toString())) {
-                        txtMessage.setText(model.getMessage());
-                        txtUser.setText(model.getUserMessage());
-                        txtTime.setText(getTimestamp(model.getTimeStamp()));
-                    }
-
-            }
-
-            @Override
-            public View getView(int position, View view, ViewGroup viewGroup) {
-
-                return super.getView(position, view, viewGroup);
-
-            }
-        };
-       // if(adapter.getCount()>0)
-            listView.setAdapter(adapter);
-    }*/
     public String getTimestamp(long timestamp)
     {
         Date date = new Date(timestamp*1000);
@@ -250,6 +218,58 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
         }
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_favorite, menu);
+        return true;
+    }
+
+
+    /**
+     * Función para agregar favoritos.
+     * @param item
+     */
+    public void addFavorite(MenuItem item)
+    {
+        Intent intent = new Intent(context, FavoritesActivity.class);
+        intent.putExtra("add_favorite",true);
+        startActivityForResult(intent,ADD_ACTIVITY_FAVORITE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if(requestCode==ADD_ACTIVITY_FAVORITE)
+        {
+            String favoriteJSON=data.getStringExtra("cdata");
+            Log.e("favorito",favoriteJSON);
+            sendMyFavorite(favoriteJSON);
+            //textView1.setText(message);
+        }
+    }
+
+    /**
+     * Agrega al chat el item de favorito
+     * @param favoriteJSON
+     */
+    private void sendMyFavorite(String favoriteJSON) {
+
+        Favorites favorite = Utils.factoryGson().fromJson(favoriteJSON, Favorites.class);
+        //Favorites fileModel = new Favorites("img",favorite.getCategory(),favorite.getLocalName(),"");
+        ChatModel model = new ChatModel(userModel,edMessage.getText().toString(), Calendar.getInstance().getTime().getTime()+"",favorite);
+        //if (!"".equals(edMessage.getText().toString())) {
+            mFirebaseDatabaseReference.child(chats_node).push().setValue(model);
+            // mFirebaseDatabaseReference.child(chats_node).push().setValue(new ChatMessage(msg, FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() / 1000));
+            //adapter.notifyDataSetChanged();
+            edMessage.setText(null);
+        //}
+
+    }
+
 
     @Override
     public void onBackPressed() {
