@@ -1,5 +1,7 @@
 package com.codebase.quicklocation.model;
 
+import com.codebase.quicklocation.database.Favorites;
+
 /**
  * Created by AUrriola on 6/26/17.
  */
@@ -10,17 +12,17 @@ public class ChatModel {
     private UserModel userModel;
     private String message = "";
     private String timeStamp = "";
-    private FileModel file;
+    private Favorites favorites;
     private MapModel mapModel;
 
     public ChatModel() {
     }
 
-    public ChatModel(UserModel userModel, String message, String timeStamp, FileModel file) {
+    public ChatModel(UserModel userModel, String message, String timeStamp, Favorites favorites) {
         this.userModel = userModel;
         this.message = message;
         this.timeStamp = timeStamp;
-        this.file = file;
+        this.favorites = favorites;
     }
 
     public ChatModel(UserModel userModel, String timeStamp, MapModel mapModel) {
@@ -61,12 +63,12 @@ public class ChatModel {
         this.timeStamp = timeStamp;
     }
 
-    public FileModel getFile() {
-        return file;
+    public Favorites getFavorites() {
+        return favorites;
     }
 
-    public void setFile(FileModel file) {
-        this.file = file;
+    public void setFavorites(Favorites favorites) {
+        this.favorites = favorites;
     }
 
     public MapModel getMapModel() {
@@ -81,7 +83,7 @@ public class ChatModel {
     public String toString() {
         return "ChatModel{" +
                 "mapModel=" + mapModel +
-                ", file=" + file +
+                ", favorites=" + favorites +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", message='" + message + '\'' +
                 ", userModel=" + userModel +

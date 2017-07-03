@@ -3,7 +3,6 @@ package com.codebase.quicklocation;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -25,17 +24,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class FavoritesActivity extends AppCompatActivity {
+    private static final int ADD_ACTIVITY_FAVORITE = 5;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Favorites> favorites = new ArrayList<>();
     private FavoritesDao dao = new FavoritesDao(this);
+    private boolean add_favorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
+        add_favorite = getIntent().getExtras().getBoolean("add_favorite");
         try {
             toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -56,9 +58,17 @@ public class FavoritesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(Favorites item) {
                         String cdata = Utils.objectToJson(item);
-                        Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
-                        itentfavoritoDetails.putExtra("favorito",cdata);
-                        startActivity(itentfavoritoDetails);
+                        if (add_favorite)
+                        {
+                            Intent intent = new Intent();
+                            intent.putExtra("cdata",cdata);
+                            setResult(ADD_ACTIVITY_FAVORITE,intent);
+                            finish();
+                        } else {
+                            Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
+                            itentfavoritoDetails.putExtra("favorito", cdata);
+                            startActivity(itentfavoritoDetails);
+                        }
                     }
                 });
 

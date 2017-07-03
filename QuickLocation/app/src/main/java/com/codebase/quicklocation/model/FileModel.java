@@ -6,17 +6,17 @@ package com.codebase.quicklocation.model;
 public class FileModel {
 
     private String type;
-    private String url_file;
-    private String name_file;
+    private String favorito_categoria; //categoria
+    private String nombre_favorito; //detalle
     private String size_file;
 
     public FileModel() {
     }
 
-    public FileModel(String type, String url_file, String name_file, String size_file) {
+    public FileModel(String type, String favorito_categoria, String name_file, String size_file) {
         this.type = type;
-        this.url_file = url_file;
-        this.name_file = name_file;
+        this.favorito_categoria = favorito_categoria;
+        this.nombre_favorito = name_file;
         this.size_file = size_file;
     }
 
@@ -28,20 +28,20 @@ public class FileModel {
         this.type = type;
     }
 
-    public String getUrl_file() {
-        return url_file;
+    public String getFavorito_categoria() {
+        return favorito_categoria;
     }
 
-    public void setUrl_file(String url_file) {
-        this.url_file = url_file;
+    public void setFavorito_categoria(String favorito_categoria) {
+        this.favorito_categoria = favorito_categoria;
     }
 
-    public String getName_file() {
-        return name_file;
+    public String getNombre_favorito() {
+        return nombre_favorito;
     }
 
-    public void setName_file(String name_file) {
-        this.name_file = name_file;
+    public void setNombre_favorito(String nombre_favorito) {
+        this.nombre_favorito = nombre_favorito;
     }
 
     public String getSize_file() {
