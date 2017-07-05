@@ -8,10 +8,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -25,9 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.model.Geometry;
@@ -36,7 +32,6 @@ import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.Review;
-import com.codebase.quicklocation.model.ServerReviews;
 import com.codebase.quicklocation.model.UserOpinion;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
@@ -52,11 +47,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
 public class PlaceDetailActivity extends AppCompatActivity {
+    private static final int FROM_FAVORITE = 6;
+
     private ImageView ivPlacePhoto;
     private TextView tvPlaceDirection;
     private TextView tvWebsite;
@@ -80,6 +76,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private List<Review> togetherReviews = new ArrayList<>();
     private Geometry serverGeometry;
     private PlaceDetail placeFavoriteType = new PlaceDetail();
+    private boolean from_favorito = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +89,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+
+        if (getIntent().hasExtra("from_favorito")) {
+            from_favorito = getIntent().getExtras().getBoolean("from_favorito");
+        }
 
         ivPlacePhoto = (ImageView) findViewById(R.id.iv_place_photo);
         tvPlacePhone = (TextView) findViewById(R.id.tv_phone_number);
@@ -139,6 +141,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (from_favorito) {
+            Intent intent = new Intent();
+            setResult(FROM_FAVORITE, intent);
+            finish();
+            //intent.putExtra()
+        }
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
@@ -548,6 +556,17 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         }catch(Exception e) {
             Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        if (from_favorito) {
+            Intent intent = new Intent();
+            setResult(FROM_FAVORITE, intent);
+            finish();
         }
     }
 }

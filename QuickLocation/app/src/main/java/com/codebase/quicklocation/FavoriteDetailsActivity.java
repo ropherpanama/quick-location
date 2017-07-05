@@ -40,7 +40,6 @@ import java.util.List;
  */
 
 public class FavoriteDetailsActivity extends AppCompatActivity {
-    private static final int FROM_FAVORITE = 6;
 
     LinearLayout llayoutFavorite;
     private ImageView ivPlacePhoto;
@@ -62,17 +61,12 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private boolean from_favorito = false;
     private View layoutReviews;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_detail);
-
-        if (getIntent().hasExtra("from_favorito")) {
-            from_favorito = getIntent().getExtras().getBoolean("from_favorito");
-        }
 
         layoutReviews = findViewById(R.id.layout_reviews);
         llayoutFavorite = (LinearLayout) findViewById(R.id.llayoutFavorite);
@@ -239,12 +233,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (from_favorito) {
-            Intent intent = new Intent();
-            setResult(FROM_FAVORITE, intent);
-            finish();
-            //intent.putExtra()
-        }
+
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
@@ -254,12 +243,8 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (from_favorito) {
-            Intent intent = new Intent();
-            setResult(FROM_FAVORITE, intent);
-            finish();
-        }
         super.onBackPressed();
+        finish();
     }
 
     private void putNewReviewsInTheScreen(List<Review> reviews) {

@@ -21,9 +21,7 @@ import android.widget.ImageView;
 import com.codebase.quicklocation.adapters.ChatFirebaseAdapter;
 import com.codebase.quicklocation.adapters.ClickListenerChatFirebase;
 import com.codebase.quicklocation.database.Favorites;
-import com.codebase.quicklocation.database.FavoritesData;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
-import com.codebase.quicklocation.database.dao.FavoritesDataDao;
 import com.codebase.quicklocation.firebasedb.ChatMessage;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
 import com.codebase.quicklocation.firebasedb.UserStructure;
@@ -251,40 +249,16 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void clickFavoritos(View view, Favorites favorites) {
-        try {
-            if(placeId != null) {
-                Favorites favorite = dataDao.getByPlaceId(placeId);
-                if(favorite != null) {
-                    Intent intent = new Intent(this, FavoriteDetailsActivity.class);
-                    intent.putExtra("favorito", Utils.objectToJson(favorite));
-                    intent.putExtra("from_favorito", true);
-                    startActivityForResult(intent,FROM_FAVORITE);
-                    Utils.showToast(this, favorite.getLocalName());
-                }
-            } else {
-                Utils.showToast(this, "No se puede mostrar el adjunto");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String favoritoJSON = Utils.objectToJson(favorites);
+        Log.e("ChatFirebase",favoritoJSON);
+        if(favorites != null) {
+            Intent intent = new Intent(this, PlaceDetailActivity.class);
+            intent.putExtra("placeId",favorites.getPlaceId());
+            intent.putExtra("placeName",favorites.getLocalName());
+            intent.putExtra("placeRating",favorites.getRating());
+            intent.putExtra("app_categoria",favorites.getCategory());
+            intent.putExtra("from_favorito", true);
+            startActivityForResult(intent,FROM_FAVORITE);
         }
-        /*Gson gson = new Gson();
-        Date date_ = favorites.getAddedFrom();
-        @SuppressLint("SimpleDateFormat")
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
-        DateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String date = formatter.format(date_);
-        try {
-            favorites.setAddedFrom(sourceFormat.parse(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        String favorito = gson.toJson(favorites);
-       // String favorito =  Utils.factoryGson().toJson(favorites);
-        Intent intent = new Intent(context, FavoriteDetailsActivity.class);
-        Log.d("favorito",favorito);
-        intent.putExtra("favorito",favorito);
-        intent.putExtra("from_favorito",true);
-        startActivityForResult(intent,FROM_FAVORITE);*/
     }
 }
