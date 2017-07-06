@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Spanky on 10/01/2017.
+ * Created by fgcanga on 10/01/2017.
  * Representa un item del menu principal (pantalla)
  * Designa el logo y el titulo del boton mostrado
  */

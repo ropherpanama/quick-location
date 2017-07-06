@@ -20,7 +20,7 @@ import com.codebase.quicklocation.utils.Utils;
 import java.util.List;
 
 /**
- * Created by Rosendo on 07/06/2017.
+ * Created by fgcanga on 07/06/2017.
  */
 
 public class FavoritesItemAdapter extends RecyclerView.Adapter<FavoritesItemAdapter.ViewHolder> {

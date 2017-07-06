@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Rosendo on 18/06/2017.
+ * Created by fgcanga on 18/06/2017.
  */
 
 public class FavoritesDataDao {

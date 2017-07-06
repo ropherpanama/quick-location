@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import android.os.Bundle;
 
 /**
- * Created by Spanky on 24/01/2017.
+ * Created by fgcanga on 24/01/2017.
  */
 
 public class LastLocation {

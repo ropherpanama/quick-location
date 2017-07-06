@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by AUrriola on 6/25/17.
+ * Created by fgcanga on 6/25/17.
  */
 @IgnoreExtraProperties
 public class UserStructure {

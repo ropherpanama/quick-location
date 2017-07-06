@@ -5,7 +5,7 @@ import com.codebase.quicklocation.model.Place;
 import java.util.Comparator;
 
 /**
- * Created by Spanky on 01/05/2017.
+ * Created by fgcanga on 01/05/2017.
  * Sorter para ordenar los sitios encontrados de acuerdo al rating
  */
 

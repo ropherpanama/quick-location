@@ -19,7 +19,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * Created by AUrriola on 6/27/17.
+ * Created by fgcanga on 6/27/17.
  * recibe los mensajes de fcm.
  */
 

@@ -22,7 +22,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 /**
- * Created by Spanky on 22/01/2017.
+ * Created by fgcanga on 22/01/2017.
  */
 
 public class Utils {
@@ -30,8 +30,7 @@ public class Utils {
     private static final String DEFAULT_PATTERN_DATE = "yyyy-MM-dd";
     private static final Reporter logger = Reporter.getInstance(Utils.class);
     private static final String takeThisCandy = "AIzaSyBhIlk9LcuQI3sFQutidJ6_yjNhZYR2ptA";
-    public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Quicklocation";
-
+    public static final String targetPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Quicklocation";
 
     /**
      * Firebase
@@ -44,8 +43,11 @@ public class Utils {
     public static final String token_fcm = "token_fcm";
     public static final String location = "location";
 
+    //set this flag to false to turn off the log file write on the phone filesystem, true to enable logging
+    public static final boolean writeLogFile = false;
 
-    private Utils(){}
+    private Utils() {
+    }
 
     public static Gson factoryGson(final String pattern) {
         return builderGson(pattern);
@@ -66,18 +68,19 @@ public class Utils {
     /**
      * Metodo usado para escribir la ultima coordenada registrada por el GPS
      * en el almacenamiento interno del telefono
+     *
      * @param fileName nombre del archivo en donde se debe escribir la informacion
-     * @param bigStr informacion que debe ser escrita en el archivo
+     * @param bigStr   informacion que debe ser escrita en el archivo
      */
     public static void writeJsonOnDisk(String fileName, StringBuilder bigStr) {
         try {
             //File file = new File(Environment.getDataDirectory(), fileName + ".json");
             File file = new File(Environment.getExternalStorageDirectory(), fileName + ".json");
 
-            if(!file.exists()) {
-            	file.createNewFile();
+            if (!file.exists()) {
+                file.createNewFile();
             }
-            
+
             FileWriter Filewriter = new FileWriter(file);
             Filewriter.write(bigStr.toString());
             Filewriter.close();
@@ -112,6 +115,7 @@ public class Utils {
 
     /**
      * Simple traduccion al español de los resultados del API
+     *
      * @param trama datos sobre el horario devueltos por el API
      * @return Cadena formateada (traducida)
      */
@@ -158,14 +162,15 @@ public class Utils {
 
     /**
      * Obtiene el recurso grafico a partir del nombre, en el directorio determinado
-     * @param ctx contexto de la aplicacion
+     *
+     * @param ctx        contexto de la aplicacion
      * @param directorio directorio en donde se debe ubicar (drawable, mipmap)
-     * @param id nombre del recurso
+     * @param id         nombre del recurso
      * @return identificador numerico del recurso
      */
     public static int getDrawableByName(Context ctx, String directorio, String id) {
         String name = "ic_" + id.toLowerCase();
-        //System.out.println("Buscando drawable llamado : " + name);
+        //logger.write("Buscando drawable llamado : " + name);
         return ctx.getResources().getIdentifier(name, directorio, ctx.getPackageName());
     }
 
@@ -176,7 +181,7 @@ public class Utils {
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public  void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 })
@@ -198,7 +203,7 @@ public class Utils {
         File file = new File(targetPath, favoriteID + ".jpg");
         if (file.exists()) {
             file.delete();
-            Log.d("Delete","Se elmina imagen " + favoriteID);
+            Log.d("Delete", "Se elmina imagen " + favoriteID);
         }
     }
 
@@ -206,17 +211,17 @@ public class Utils {
     public static Integer[] chooseBestPhotoDimension(Size[] sizes) {
         int minWidth = 640;
         int minHeigth = 480;
-        Integer [] retorno = new Integer[2];
+        Integer[] retorno = new Integer[2];
         int average = sizes.length / 2;
 
-        if(sizes[average].getWidth() > minWidth) {
+        if (sizes[average].getWidth() > minWidth) {
             retorno[0] = sizes[average].getWidth();
             retorno[1] = sizes[average].getHeight();
         } else {
             retorno[0] = minWidth;
             retorno[1] = minHeigth;
         }
-        System.out.println("Selected size " + retorno[0] + "x" + retorno[1]);
+
         return retorno;
     }
 

@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import me.himanshusoni.chatmessageview.ChatMessageView;
 
 /**
- * Created by AUrriola on 6/26/17.
+ * Created by fgcanga on 6/26/17.
  */
 
 public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel,ChatFirebaseAdapter.MyChatViewHolder> {

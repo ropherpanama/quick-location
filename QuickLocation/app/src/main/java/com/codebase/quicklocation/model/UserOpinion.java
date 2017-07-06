@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Rosendo on 27/06/2017.
+ * Created by fgcanga on 27/06/2017.
  */
 
 public class UserOpinion {

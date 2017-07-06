@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 /**
- * Created by Spanky on 06/02/2017.
+ * Created by fgcanga on 06/02/2017.
  */
 
 public class GPSTrackingService extends Service {
@@ -49,7 +49,7 @@ public class GPSTrackingService extends Service {
             last.setTime(System.currentTimeMillis());
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
             //logger.write(Utils.objectToJson(last));
-            System.out.println(Utils.objectToJson(last));
+            logger.write(Utils.objectToJson(last));
             //setGeoFire(location.getLatitude(),location.getLongitude());
         }
 

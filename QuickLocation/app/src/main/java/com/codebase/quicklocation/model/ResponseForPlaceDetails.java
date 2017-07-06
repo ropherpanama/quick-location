@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Spanky on 23/01/2017.
+ * Created by fgcanga on 23/01/2017.
  */
 
 public class ResponseForPlaceDetails {

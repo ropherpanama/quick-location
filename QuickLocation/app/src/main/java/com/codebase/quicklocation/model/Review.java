@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by Rosendo on 23/06/2017.
+ * Created by fgcanga on 23/06/2017.
  */
 
 public class Review {

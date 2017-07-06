@@ -129,7 +129,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 DownloadDetailOfPlace downloader = new DownloadDetailOfPlace();
                 downloader.execute(url);
             } else
-                Snackbar.make(toolbar, "No se encontró el key de acceso al API", Snackbar.LENGTH_LONG).show();
+                Utils.showToast(this, "No se encontró el key de acceso al API");
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
@@ -189,11 +189,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 Location placeLocation = new Location();
                 if (userLocation != null) {
                     if(serverGeometry != null) {
-                        System.out.println("****************** COJO LA COORDENADA DEL SERVIDOR ");
+                        logger.write("****************** COJO LA COORDENADA DEL SERVIDOR ");
                         placeLocation = serverGeometry.getLocation();
                         placeFavoriteType.setGeometry(serverGeometry);
                     } else {
-                        System.out.println("****************** COJO LA COORDENADA DEL GOOGLE ");
+                        logger.write("****************** COJO LA COORDENADA DEL GOOGLE ");
                         placeLocation = response.getResult().getGeometry().getLocation();
                     }
                     String queryParams = placeLocation.getLat() + "," + placeLocation.getLng();
@@ -204,7 +204,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 }
             } else {
                 //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
-                Snackbar.make(findViewById(android.R.id.content), "Had a snack at Snackbar", Snackbar.LENGTH_LONG).show();
+                Utils.showToast(this, "No puedo ubicarte en este momento.");
             }
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
@@ -318,17 +318,17 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     getPlaceReviewaFromPlatform(strPlaceId);
                     //fin de busqueda de reviews
 
-                    System.out.println("Missing information " + missingInformation);
+                    logger.write("Missing information " + missingInformation);
 
                     if(missingInformation)
                         getPlaceDataFromPlatform(strPlaceId);
 
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
-                    Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
+                    Utils.showToast(PlaceDetailActivity.this, "Tu busqueda no arrojo resultados");
                 } else {
                     //TODO: Caso probado colocar pantalla de informacion
-                    Snackbar.make(toolbar, response.getStatus(), Snackbar.LENGTH_SHORT).show();
+                    Utils.showToast(PlaceDetailActivity.this, response.getStatus());
                 }
             }
         }
@@ -401,7 +401,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             i.putExtra("cdata", cdata);
             startActivity(i);
         } else {
-            Snackbar.make(toolbar, "Favorito ya existe", Snackbar.LENGTH_SHORT).show();
+            Utils.showToast(this, "Favorito ya existe");
         }
     }
 
@@ -443,7 +443,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private void getPlaceDataFromPlatform(String placeId) {
         try {
-            System.out.println("************ INTENTO BUSCAR INFO EN MI PLATAFORMA ... ");
+            logger.write("************ INTENTO BUSCAR INFO EN MI PLATAFORMA ... ");
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             database.getReference().child("places/data").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -472,7 +472,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 serverGeometry = place.getGeometry();
             }
 
-            System.out.println("********************** AJUSTANDO LA DATA FRESCA ... " + place);
+            logger.write("********************** AJUSTANDO LA DATA FRESCA ... " + place);
             if(place.getFormattedAddress() != null && place.getFormattedAddress().length() > 0)
                 tvPlaceDirection.setText(place.getFormattedAddress());
             if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0)
@@ -485,7 +485,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 tvPlaceOpeningHours.setText(Utils.formatDays(builder));
             }
         } else
-            System.out.println("********************* NO ENCONTRE NADA DE VALOR ...");
+            logger.write("********************* NO ENCONTRE NADA DE VALOR ...");
     }
 
     /**
@@ -527,11 +527,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     private void putNewReviewsInTheScreen(List<Review> reviews) {
-        System.out.println("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
+        logger.write("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
         try {
             for(Review r : reviews){
                 if(!"".equals(r.getText().trim())) {
-                    System.out.println("**************** LOCAL REVIEW " + r.getText());
+                    logger.write("**************** LOCAL REVIEW " + r.getText());
                     TextView authorTextView = new TextView(PlaceDetailActivity.this);
                     TextView commentTextView = new TextView(PlaceDetailActivity.this);
                     TextView ratingView = new TextView(PlaceDetailActivity.this);
@@ -559,10 +559,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         if (from_favorito) {
             Intent intent = new Intent();
             setResult(FROM_FAVORITE, intent);

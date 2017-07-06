@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Rosendo on 17/06/2017.
+ * Created by fgcanga on 17/06/2017.
  */
 
 public class Schedule {

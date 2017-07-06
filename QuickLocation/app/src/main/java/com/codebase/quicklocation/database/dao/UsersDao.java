@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.database.dao;
 
 /**
- * Created by Rosendo on 05/06/2017.
+ * Created by fgcanga on 05/06/2017.
  */
 
 import android.content.Context;

@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import java.util.Date;
 
 /**
- * Created by Rosendo on 27/06/2017.
+ * Created by fgcanga on 27/06/2017.
  */
 
 public class UserUseStatistic {

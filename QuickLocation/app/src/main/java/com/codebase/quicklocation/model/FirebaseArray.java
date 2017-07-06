@@ -8,7 +8,7 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 
 /**
- * Created by AUrriola on 6/21/17.
+ * Created by fgcanga on 6/21/17.
  */
 
 public class FirebaseArray implements ChildEventListener{

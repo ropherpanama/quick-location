@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by AUrriola on 6/18/17.
+ * Created by fgcanga on 6/18/17.
  */
 
 public class FavoriteDetailsActivity extends AppCompatActivity {
@@ -248,11 +248,11 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     }
 
     private void putNewReviewsInTheScreen(List<Review> reviews) {
-        System.out.println("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
+        logger.write("******************** COLOCANDO REVIEWS DESDE LA PLATAFORMA PROPIA ... ");
         try {
             for(Review r : reviews){
                 if(!"".equals(r.getText().trim())) {
-                    System.out.println("**************** LOCAL REVIEW " + r.getText());
+                    logger.write("**************** LOCAL REVIEW " + r.getText());
                     TextView authorTextView = new TextView(FavoriteDetailsActivity.this);
                     TextView commentTextView = new TextView(FavoriteDetailsActivity.this);
                     TextView ratingView = new TextView(FavoriteDetailsActivity.this);

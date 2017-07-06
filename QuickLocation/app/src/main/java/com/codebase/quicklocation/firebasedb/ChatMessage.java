@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by AUrriola on 6/20/17.
+ * Created by fgcanga on 6/20/17.
  */
 
 public class ChatMessage {

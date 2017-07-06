@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.firebasedb;
 
 /**
- * Created by AUrriola on 6/26/17.
+ * Created by fgcanga on 6/26/17.
  */
 
 public class Child {

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Spanky on 22/01/2017.
+ * Created by fgcanga on 22/01/2017.
  */
 
 public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.ViewHolder>{

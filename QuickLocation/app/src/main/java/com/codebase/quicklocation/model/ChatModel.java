@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import com.codebase.quicklocation.database.Favorites;
 
 /**
- * Created by AUrriola on 6/26/17.
+ * Created by fgcanga on 6/26/17.
  */
 
 public class ChatModel {

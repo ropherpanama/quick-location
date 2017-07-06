@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import java.util.List;
 
 /**
- * Created by Rosendo on 17/06/2017.
+ * Created by fgcanga on 17/06/2017.
  * Objeto enviado al servidor cuando el usuario realiza
  * una sugerencia de mejora en la informacion del lugar
  */

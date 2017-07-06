@@ -88,20 +88,20 @@ public class ReportActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(!dataSnapshot.exists()) {
                             if(firebasePlaceRecord != null) {
-                                System.out.println("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
+                                logger.write("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
                                 database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        System.out.println("************ MANDO EL REVIEW HIJO AL COMPLETARSE EL PADRE");
+                                        logger.write("************ MANDO EL REVIEW HIJO AL COMPLETARSE EL PADRE");
                                         database.getReference().child("places/new/reviews").child(placeID).push().setValue(sendToServer);
-                                        System.out.println("************ HIJO GUARDADO EN SU CASA");
+                                        logger.write("************ HIJO GUARDADO EN SU CASA");
                                     }
                                 });
                             }
                         } else {
-                            System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
+                            logger.write("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
                             database.getReference().child("places/new/reviews").child(placeID).push().setValue(sendToServer);
                         }
                     }
@@ -109,7 +109,7 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
                 });
-                //System.out.println("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
+                //logger.write("************ MANDO EL REVIEW HIJO YA TENIA PADRE");
                 //database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
                 Utils.showToast(ReportActivity.this, "Tu opinión ha sido enviada");
                 finish();

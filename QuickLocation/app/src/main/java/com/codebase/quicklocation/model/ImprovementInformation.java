@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import java.util.List;
 
 /**
- * Created by Rosendo on 17/06/2017.
+ * Created by fgcanga on 17/06/2017.
  * Esta clase define la etiqueta y el contenido que difiere al conjunto
  * de informacion que puede ser mejorada por el usuario a traves de la
  * aplicacion web

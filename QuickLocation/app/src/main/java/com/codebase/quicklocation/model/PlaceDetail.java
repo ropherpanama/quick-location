@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by Spanky on 23/01/2017.
+ * Created by fgcanga on 23/01/2017.
  * Representa la informacion de detalle a cerca del lugar basado en su ID de lugar
  */
 

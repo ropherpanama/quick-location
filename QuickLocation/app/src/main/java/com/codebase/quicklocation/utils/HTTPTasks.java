@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.utils;
 
 /**
- * Created by Spanky on 11/02/2017.
+ * Created by fgcanga on 11/02/2017.
  */
 
 import java.io.InputStream;

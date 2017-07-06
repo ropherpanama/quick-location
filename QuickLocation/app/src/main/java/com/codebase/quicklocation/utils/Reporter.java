@@ -15,6 +15,8 @@ import android.annotation.SuppressLint;
 import android.os.Environment;
 import android.os.SystemClock;
 
+import com.bumptech.glide.util.Util;
+
 /**
  * Esta clase generara un archivo de logs en el raiz de la SD Card. Se genera un
  * archivo por fecha (automatico)
@@ -26,28 +28,26 @@ public class Reporter {
     private static String fileName = "quicklocation_app";// Default File Name
     private String programName = "";
     private String message = "";
-    private static Reporter log;
+    private static Reporter logger;
     private GregorianCalendar g = new GregorianCalendar();
     private Date date = new Date();
 
     public static Reporter getInstance(Class caller) {
-        if (log == null)
-            log = new Reporter(caller);
-        return log;
+        if (logger == null)
+            logger = new Reporter(caller);
+        return logger;
     }
 
     public static Reporter getInstance(Class caller, String fileName) {
-        if (log == null)
-            log = new Reporter(caller);
-        log.setFileName(fileName);
-        return log;
+        if (logger == null)
+            logger = new Reporter(caller);
+        logger.setFileName(fileName);
+        return logger;
     }
 
     private Reporter(Class caller) {
         this.setProgramName(caller.getClass().getCanonicalName());
     }
-
-
 
     private PrintStream createLogFile() {
         Calendar calendar = Calendar.getInstance();
@@ -66,7 +66,7 @@ public class Reporter {
             ps = new PrintStream(out);
             printStr = ps;
         } catch (Exception x) {
-            System.out.println(fileName + " --> Error al crear Archivo: "
+            logger.write(fileName + " --> Error al crear Archivo: "
                     + name + "\n" + x);
         }
         return ps;
@@ -76,18 +76,18 @@ public class Reporter {
      * Use este metodo para imprimir informacion o anotaciones similares a debug
      *
      * @param text Mensaje que desea imprimir
-     * @return
      */
-    public String write(String text) {
-        message = text;
+    public void write(String text) {
+        if(Utils.writeLogFile) {
+            message = text;
 
-        if (printStr == null)
-            printStr = createLogFile();
-        printStr.println("Hora: " + fechahoy("yyyy-MM-dd HH:mm:ss")
-                + " " + SystemClock.currentThreadTimeMillis() + " -- "
-                + programName + " -- [MSG] : " + message);
-        printStr.flush();
-        return message;
+            if (printStr == null)
+                printStr = createLogFile();
+            printStr.println("Hora: " + fechahoy("yyyy-MM-dd HH:mm:ss")
+                    + " " + SystemClock.currentThreadTimeMillis() + " -- "
+                    + programName + " -- [MSG] : " + message);
+            printStr.flush();
+        }
     }
 
     /**
@@ -95,18 +95,18 @@ public class Reporter {
      * salida que represente un mal funcionamiento en su proceso
      *
      * @param text Mensaje de error que desee imprimir
-     * @return
      */
-    public String error(String text) {
-        message = text;
+    public void error(String text) {
+        if(Utils.writeLogFile) {
+            message = text;
 
-        if (printStr == null)
-            printStr = createLogFile();
-        printStr.println("Hora: " + fechahoy("yyyy-MM-dd HH:mm:ss")
-                + " " + SystemClock.currentThreadTimeMillis() + " -- "
-                + programName + " -- [ERR] : " + message);
-        printStr.flush();
-        return message;
+            if (printStr == null)
+                printStr = createLogFile();
+            printStr.println("Hora: " + fechahoy("yyyy-MM-dd HH:mm:ss")
+                    + " " + SystemClock.currentThreadTimeMillis() + " -- "
+                    + programName + " -- [ERR] : " + message);
+            printStr.flush();
+        }
     }
 
     public static String getFileName() {
@@ -115,8 +115,8 @@ public class Reporter {
 
     /**
      * Use este metodo si desea modificar el nombre del archivo que se generara,
-     * por defecto el archivo se llama Log.log No requiere colocar la extension
-     * .log, solo escriba el nombre del archivo
+     * por defecto el archivo se llama Log.logger No requiere colocar la extension
+     * .logger, solo escriba el nombre del archivo
      *
      * @param fileName Nombre del archivo de salida
      */
@@ -151,7 +151,7 @@ public class Reporter {
         Writer writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);
         exception.printStackTrace(printWriter);
-        System.out.println(writer.toString());
+        logger.write(writer.toString());
         return writer.toString();
     }
 

@@ -15,7 +15,7 @@ import com.codebase.quicklocation.firebasedb.Group;
 import java.util.List;
 
 /**
- * Created by AUrriola on 6/23/17.
+ * Created by fgcanga on 6/23/17.
  */
 @Deprecated
 public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdapter.ViewHolder>  {

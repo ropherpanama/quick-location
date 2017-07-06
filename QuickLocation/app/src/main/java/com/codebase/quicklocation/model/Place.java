@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by Spanky on 22/01/2017.
+ * Created by fgcanga on 22/01/2017.
  * Representa el objeto con la informacion general de un lugar devuelto por el API
  */
 

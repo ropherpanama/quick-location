@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import java.util.ArrayList;
 
 /**
- * Created by Spanky on 22/01/2017.
+ * Created by fgcanga on 22/01/2017.
  * Representa el retorno completo del Api de Google para Places (Informacion general de la busqueda)
  */
 

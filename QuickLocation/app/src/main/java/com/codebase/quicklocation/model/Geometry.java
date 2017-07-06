@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Spanky on 22/01/2017.
+ * Created by fgcanga on 22/01/2017.
  * Representa el objeto Geometry devuelto por el Api de Google
  */
 

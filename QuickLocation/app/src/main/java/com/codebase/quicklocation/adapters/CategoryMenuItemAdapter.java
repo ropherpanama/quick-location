@@ -15,7 +15,7 @@ import com.codebase.quicklocation.utils.Utils;
 import java.util.ArrayList;
 
 /**
- * Created by Spanky on 10/01/2017.
+ * Created by fgcanga on 10/01/2017.
  */
 
 public class CategoryMenuItemAdapter extends RecyclerView.Adapter<CategoryMenuItemAdapter.ViewHolder> {

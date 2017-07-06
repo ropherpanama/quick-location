@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Rosendo on 18/06/2017.
+ * Created by fgcanga on 18/06/2017.
  */
 
 public class UserReport {
