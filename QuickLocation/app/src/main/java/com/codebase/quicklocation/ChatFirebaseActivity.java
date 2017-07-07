@@ -249,8 +249,6 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void clickFavoritos(View view, Favorites favorites) {
-        String favoritoJSON = Utils.objectToJson(favorites);
-        Log.e("ChatFirebase",favoritoJSON);
         if(favorites != null) {
             Intent intent = new Intent(this, PlaceDetailActivity.class);
             intent.putExtra("placeId",favorites.getPlaceId());

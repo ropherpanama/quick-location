@@ -3,7 +3,7 @@ package com.codebase.quicklocation.model;
 import com.google.firebase.database.Exclude;
 
 /**
- * Created by Alessandro Barreto on 22/06/2016.
+ * Created by fgcanga on 22/06/2016.
  */
 public class UserModel {
 

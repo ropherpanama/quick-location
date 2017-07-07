@@ -565,6 +565,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
             Intent intent = new Intent();
             setResult(FROM_FAVORITE, intent);
             finish();
+        } else {
+            finish();
         }
     }
 }

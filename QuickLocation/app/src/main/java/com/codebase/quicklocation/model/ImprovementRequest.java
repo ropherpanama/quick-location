@@ -12,6 +12,7 @@ public class ImprovementRequest {
     private String placeId;
     private String author;
     private List<ImprovementInformation> informations;
+    private long date;
 
     public String getPlaceId() {
         return placeId;
@@ -35,5 +36,13 @@ public class ImprovementRequest {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }

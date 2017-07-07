@@ -1,7 +1,6 @@
 package com.codebase.quicklocation;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,6 +20,7 @@ import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
+import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.model.Schedule;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ImprovementActivity extends AppCompatActivity {
@@ -161,6 +162,7 @@ public class ImprovementActivity extends AppCompatActivity {
             String newDireccion = direccion.getText().toString();
             String newTelefono = telefono.getText().toString();
             ImprovementRequest request = new ImprovementRequest();
+            request.setTimestamp(System.currentTimeMillis());
             request.setPlaceId(placeId);
 
             if(!usuarios.isEmpty())
@@ -241,6 +243,7 @@ public class ImprovementActivity extends AppCompatActivity {
                                 logger.write("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
+                                placeDetail.setReviews(Collections.<Review>emptyList());
                                 database.getReference().child("places/new/data").child(placeId).setValue(placeDetail).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {

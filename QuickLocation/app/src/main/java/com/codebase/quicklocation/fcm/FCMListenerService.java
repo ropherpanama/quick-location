@@ -27,14 +27,11 @@ public class FCMListenerService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        String title = "";
-        String message = "";
-        String messageid = "";
-        title = remoteMessage.getData().get("title");
-        message  = remoteMessage.getData().get("body");
+        String title = remoteMessage.getData().get("title");
+        String message  = remoteMessage.getData().get("body");
         Log.e("FCMListenerService", "else getTitle: " + title);
         Log.e("FCMListenerService", "else getBody: " + message);
-        messageid = System.currentTimeMillis()+"-"+remoteMessage.getFrom();
+        String messageid = System.currentTimeMillis()+"-"+remoteMessage.getFrom();
         sendNotification(title, message,messageid);
     }
 
@@ -58,7 +55,8 @@ public class FCMListenerService extends FirebaseMessagingService {
         stackBuilder.addNextIntent(intent);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSoundUri = soundMetodo("");
-        NotificationCompat.Builder notificationBuilder = null;
+        NotificationCompat.Builder notificationBuilder;
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             notificationBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.notifications_icon)
@@ -71,7 +69,7 @@ public class FCMListenerService extends FirebaseMessagingService {
                     .setColor(0xFFDA1919)
                     .setSound(defaultSoundUri)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                    .setVisibility(Notification.VISIBILITY_PUBLIC)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setContentIntent(pendingIntent);
         } else {
             notificationBuilder = new NotificationCompat.Builder(this)

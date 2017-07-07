@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class UserUseStatistic {
     private String nickname;
-    private Date loginDate;
+    private long date;
     private String placeId;
     private String category;
 
@@ -28,19 +28,19 @@ public class UserUseStatistic {
         this.nickname = nickname;
     }
 
-    public Date getLoginDate() {
-        return loginDate;
-    }
-
-    public void setLoginDate(Date loginDate) {
-        this.loginDate = loginDate;
-    }
-
     public String getPlaceId() {
         return placeId;
     }
 
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }

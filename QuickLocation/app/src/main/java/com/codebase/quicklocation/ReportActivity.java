@@ -1,8 +1,7 @@
 package com.codebase.quicklocation;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,18 +14,17 @@ import com.codebase.quicklocation.model.ImprovementInformation;
 import com.codebase.quicklocation.model.ImprovementRequest;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
-import com.codebase.quicklocation.model.UserReport;
+import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ReportActivity extends AppCompatActivity {
@@ -55,6 +53,7 @@ public class ReportActivity extends AppCompatActivity {
         try {
             UsersDao dao = new UsersDao(this);
             ImprovementRequest request = new ImprovementRequest();
+            request.setTimestamp(System.currentTimeMillis());
             String content = reportContent.getText().toString();
 
             if(content.length() > 0) {
@@ -91,6 +90,7 @@ public class ReportActivity extends AppCompatActivity {
                                 logger.write("************ NO TENGO EL PLACE PADRE, LO MANDO" + firebasePlaceRecord);
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
+                                placeDetail.setReviews(Collections.<Review>emptyList());
                                 database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {

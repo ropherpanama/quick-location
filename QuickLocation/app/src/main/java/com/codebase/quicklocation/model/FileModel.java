@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Alessandro Barreto on 22/06/2016.
+ * Created by fgcanga on 22/06/2016.
  */
 public class FileModel {
 

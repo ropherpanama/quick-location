@@ -8,6 +8,7 @@ public class UserReport {
     private String username;
     private String placeId;
     private String reportContent;
+    private long date;
 
     public String getUsername() {
         return username;
@@ -31,5 +32,13 @@ public class UserReport {
 
     public void setReportContent(String reportContent) {
         this.reportContent = reportContent;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 }

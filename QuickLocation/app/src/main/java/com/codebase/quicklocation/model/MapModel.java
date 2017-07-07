@@ -1,7 +1,7 @@
 package com.codebase.quicklocation.model;
 
 /**
- * Created by Alessandro Barreto on 24/06/2016.
+ * Created by fgcanga on 24/06/2016.
  */
 public class MapModel {
     private String latitude;
