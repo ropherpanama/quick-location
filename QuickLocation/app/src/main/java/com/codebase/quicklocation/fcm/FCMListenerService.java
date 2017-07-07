@@ -1,6 +1,5 @@
 package com.codebase.quicklocation.fcm;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -13,8 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.codebase.quicklocation.ChatsListActivity;
 import com.codebase.quicklocation.R;
-import com.codebase.quicklocation.WelcomeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -40,7 +39,7 @@ public class FCMListenerService extends FirebaseMessagingService {
      *
      */
     private void sendNotification(String title, String message, String messageid) {
-        Intent intent = new Intent(this, WelcomeActivity.class);
+        Intent intent = new Intent(this, ChatsListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //  intent.putExtra("title", title);
         //intent.putExtra("title",listMsg.get(0).title);
@@ -48,10 +47,10 @@ public class FCMListenerService extends FirebaseMessagingService {
         //intent.putExtra("body", message);
         // intent.putExtra("fromInt",fromInt);
         // Sets an ID for the notification, so it can be updated
-        int notifyID = 0;
+        int notifyID = 0;//Integer.parseInt(messageid);
         long[] vibraPattern = {0, 500, 250, 500};
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(WelcomeActivity.class);
+        stackBuilder.addParentStack(ChatsListActivity.class);
         stackBuilder.addNextIntent(intent);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSoundUri = soundMetodo("");

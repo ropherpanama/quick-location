@@ -79,10 +79,13 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
         context = this;
         group_id = getIntent().getExtras().getString("group_id");
         create_by = getIntent().getExtras().getString("create_by");
+
         userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         addChatToGruop();
         viewShow();
         userAuthentication();
+        setTitle(getIntent().getExtras().getString("title"));
+
     }
 
     private void userAuthentication() {

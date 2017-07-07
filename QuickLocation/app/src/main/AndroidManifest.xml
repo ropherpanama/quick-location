@@ -81,12 +81,11 @@
 
         <activity
             android:name=".ChatFirebaseActivity"
-            android:label="@string/title_activity_chat_firebase"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ChatsListActivity"
             android:label="@string/title_activity_chats_list"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
 
 
         <service

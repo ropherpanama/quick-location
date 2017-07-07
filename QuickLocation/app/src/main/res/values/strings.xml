@@ -36,6 +36,6 @@
     <string name="salir">¿Desea salir de la aplicación?</string>
     <string name="login">Iniciar sesión</string>
     <string name="title_activity_chat_firebase">Sala de chats</string>
-    <string name="title_activity_chats_list">Iniciar un chat</string>
+    <string name="title_activity_chats_list">Grupos de chats</string>
     <string name="full_name">Nombre completo</string>
 </resources>
