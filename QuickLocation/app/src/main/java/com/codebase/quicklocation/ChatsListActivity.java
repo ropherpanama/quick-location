@@ -5,11 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,6 +93,48 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         recyclerView.setAdapter(adapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private ItemTouchHelper.Callback createHelperCallback() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                          RecyclerView.ViewHolder target) {
+                        moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                        return true;
+                    }
+
+                    @Override
+                    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        deleteItem(viewHolder.getAdapterPosition());
+                    }
+                };
+        return simpleItemTouchCallback;    }
+
+    private void deleteItem(int adapterPosition) {
+        Group group = groups.get(adapterPosition);
+
+        TypeGroup member = new TypeGroup(user_ui, false);
+        Map<String, Object> typeValue = member.toMap();
+
+        DatabaseReference salir_grupo = rootDataBase.child(group.getGruop_id()).child(Utils.salir);
+        salir_grupo.updateChildren(typeValue);
+        groups.remove(adapterPosition);
+        adapter.notifyDataSetChanged();
+        Snackbar.make(toolbar, "Saliste del grupo!", Snackbar.LENGTH_SHORT).show();
+
+        //DatabaseReference group_refer = rootDataBase.child(key_group);
+
+    }
+
+    private void moveItem(int adapterPosition, int adapterPosition1) {
+
     }
 
     /**
@@ -101,7 +145,21 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
         for (DataSnapshot dataSnapshot : map.getChildren()) {
             Group group = dataSnapshot.getValue(Group.class);
-            groups.add(group);
+            if (group.getSalir()!= null) {
+                Map<String, Object> map1 = group.getSalir();
+                for (Object o : map1.keySet()) {
+                    String key = o.toString();
+                    if (!(Boolean) map1.get(key)) {
+                        Log.e("ChatsListActivity", "No se agrega al listado de grupos... " + key + "  --  " + map1.get(key));
+                    } else {
+                        groups.add(group);
+                    }
+                }
+            }else
+            {
+                groups.add(group);
+
+            }
         }
     }
 

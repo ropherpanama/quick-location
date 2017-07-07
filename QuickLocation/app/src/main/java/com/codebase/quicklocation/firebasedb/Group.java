@@ -14,6 +14,8 @@ public class Group {
     private String description;
     public String gruop_id;
      private Map<String, Object> members;
+    private Map<String, Object> salir;
+
     private String create_by;
 
     public Group() {
@@ -75,12 +77,21 @@ public class Group {
         this.create_by = create_by;
     }
 
+    public Map<String, Object> getSalir() {
+        return salir;
+    }
+
+    public void setSalir(Map<String, Object> salir) {
+        this.salir = salir;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("title", title);
         result.put("description", description);
         result.put("members", members);
+        result.put("salir", salir);
         result.put("gruop_id", gruop_id);
         result.put("create_by",create_by);
         return result;

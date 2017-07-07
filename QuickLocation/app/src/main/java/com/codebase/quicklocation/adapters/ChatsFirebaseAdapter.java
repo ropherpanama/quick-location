@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * Created by fgcanga on 6/23/17.
  */
-@Deprecated
 public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdapter.ViewHolder>  {
     private final List<Group> groupList;
     private final ChatsFirebaseAdapter.OnItemClickListener listener;
