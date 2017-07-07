@@ -53,7 +53,6 @@ public class ReportActivity extends AppCompatActivity {
         try {
             UsersDao dao = new UsersDao(this);
             ImprovementRequest request = new ImprovementRequest();
-            request.setTimestamp(System.currentTimeMillis());
             String content = reportContent.getText().toString();
 
             if(content.length() > 0) {

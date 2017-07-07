@@ -149,7 +149,6 @@ public class PlaceActivity extends AppCompatActivity {
                                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 Users u = usuarios.get(0);
                                 UserUseStatistic statistic = new UserUseStatistic();
-                                statistic.setTimestamp(System.currentTimeMillis());
                                 statistic.setNickname(u.getNickname());
                                 statistic.setPlaceId(item.getPlaceId());
                                 statistic.setCategory(categoria);
