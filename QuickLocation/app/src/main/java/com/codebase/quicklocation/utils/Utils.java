@@ -42,6 +42,8 @@ public class Utils {
     public static final String chats = "chats";
     public static final String token_fcm = "token_fcm";
     public static final String location = "location";
+    //public static final String favorite = "favorites";
+    public static final String salir = "salir";
 
     //set this flag to false to turn off the log file write on the phone filesystem, true to enable logging
     public static final boolean writeLogFile = false;
