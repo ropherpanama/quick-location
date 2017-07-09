@@ -319,8 +319,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     logger.write("Missing information " + missingInformation);
 
-                    if(missingInformation)
-                        getPlaceDataFromPlatform(strPlaceId);
+                    //if(missingInformation)
+                    getPlaceDataFromPlatform(strPlaceId);
 
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
                     Utils.showToast(PlaceDetailActivity.this, "Tu busqueda no arrojo resultados");

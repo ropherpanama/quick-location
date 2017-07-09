@@ -151,6 +151,7 @@ public class PlaceActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.exists()) {
+                                    System.out.println("Processing ... " + dataSnapshot.getValue().toString());
                                     PlaceDetail placeDetail = dataSnapshot.getValue(PlaceDetail.class);
                                     System.out.println(placeDetail.getName() + ", rating: " + placeDetail.getRating());
                                     p.setRating(placeDetail.getRating());
