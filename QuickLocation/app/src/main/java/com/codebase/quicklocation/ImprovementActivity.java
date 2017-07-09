@@ -162,6 +162,7 @@ public class ImprovementActivity extends AppCompatActivity {
             String newDireccion = direccion.getText().toString();
             String newTelefono = telefono.getText().toString();
             ImprovementRequest request = new ImprovementRequest();
+            request.setDate(System.currentTimeMillis());
             request.setPlaceId(placeId);
 
             if(!usuarios.isEmpty())
