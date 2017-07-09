@@ -237,8 +237,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
                     startActivity(mapIntent);
                 }
             } else {
-                //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
-                Snackbar.make(findViewById(android.R.id.content), "No puedo ubicarte ...", Snackbar.LENGTH_LONG).show();
+                Utils.showToast(this, "No puedo ubicarte ...");
             }
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));

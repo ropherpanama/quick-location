@@ -203,7 +203,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     startActivity(mapIntent);
                 }
             } else {
-                //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
                 Utils.showToast(this, "No puedo ubicarte en este momento.");
             }
         } catch (Exception e) {
@@ -324,10 +323,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
                         getPlaceDataFromPlatform(strPlaceId);
 
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
-                    //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Utils.showToast(PlaceDetailActivity.this, "Tu busqueda no arrojo resultados");
                 } else {
-                    //TODO: Caso probado colocar pantalla de informacion
                     Utils.showToast(PlaceDetailActivity.this, response.getStatus());
                 }
             }

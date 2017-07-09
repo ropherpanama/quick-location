@@ -383,12 +383,9 @@ public class WelcomeActivity extends AppCompatActivity {
      * Registra al usuario en la plataforma  Crashlytics de Fabric.
      */
     private void logUser() {
-        // TODO: Use the current user's information
-        // You can call any combination of these three methods
-        Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getEmail()+"");
+        Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getEmail());
         //Crashlytics.setUserEmail(utils.getUserLogin().di_correo);
         //Crashlytics.setUserName(utils.getUserLogin().nm_usuario);
         //Crashlytics.log("Registro de usuario a Crashlytics");
-
     }
 }

@@ -203,8 +203,7 @@ public class PlaceActivity extends AppCompatActivity {
 
                     recyclerView.setAdapter(mAdapter);
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
-                    //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
-                    Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
+                    Utils.showToast(PlaceActivity.this, "Tu busqueda no arrojo resultados");
                 } else {
                     Utils.showMessage("Conexion", "En estos momentos no podemos ubicar tu informacion, intentalo mas tarde", PlaceActivity.this);
                 }
