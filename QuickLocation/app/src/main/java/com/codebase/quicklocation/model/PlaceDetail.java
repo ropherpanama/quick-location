@@ -24,6 +24,7 @@ public class PlaceDetail {
     private List<Photo> photos;
     private String name;
     private List<Review> reviews;
+    private double rating;
 
     public List<Review> getReviews() {
         return reviews;
@@ -103,5 +104,13 @@ public class PlaceDetail {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
