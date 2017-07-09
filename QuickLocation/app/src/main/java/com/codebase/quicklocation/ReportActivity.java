@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 
@@ -49,6 +50,7 @@ public class ReportActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final Button sendButton = (Button) findViewById(R.id.report_button_send);
 
         reportContent.addTextChangedListener(new TextWatcher() {
             @Override
@@ -61,8 +63,10 @@ public class ReportActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if(reportContent.getText().length() > 120) {
                     reportContent.setError("Máximo 120 caracteres");
+                    sendButton.setEnabled(false);
                 } else {
                     reportContent.setError(null);
+                    sendButton.setEnabled(true);
                 }
             }
         });
@@ -132,6 +136,8 @@ public class ReportActivity extends AppCompatActivity {
                 //database.getReference().child("places/new/reviews").child(placeID).push().setValue(request);
                 Utils.showToast(ReportActivity.this, "Tu opinión ha sido enviada");
                 finish();
+            } else {
+                reportContent.setError("Debe introducir un comentario");
             }
         }catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
