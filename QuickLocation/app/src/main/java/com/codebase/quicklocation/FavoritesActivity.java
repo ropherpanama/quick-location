@@ -62,8 +62,7 @@ public class FavoritesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(Favorites item) {
                         String cdata = Utils.objectToJson(item);
-                        if (add_favorite)
-                        {
+                        if (add_favorite) {
                             Intent intent = new Intent();
                             intent.putExtra("cdata",cdata);
                             setResult(ADD_ACTIVITY_FAVORITE,intent);

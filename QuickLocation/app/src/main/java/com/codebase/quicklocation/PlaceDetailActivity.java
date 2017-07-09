@@ -186,7 +186,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
                 Date date = new Date(userLocation.getTime());
                 Log.e("GPSTrackingService", date.toString());
-                Location placeLocation = new Location();
+                Location placeLocation;
                 if (userLocation != null) {
                     if(serverGeometry != null) {
                         logger.write("****************** COJO LA COORDENADA DEL SERVIDOR ");
