@@ -13,10 +13,14 @@ import android.support.v4.app.ActivityCompat;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 /**
  * Created by fgcanga on 06/02/2017.
@@ -50,7 +54,7 @@ public class GPSTrackingService extends Service {
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
             //logger.write(Utils.objectToJson(last));
             logger.write(Utils.objectToJson(last));
-            //setGeoFire(location.getLatitude(),location.getLongitude());
+            setGeoFire(location.getLatitude(),location.getLongitude());
         }
 
         @Override
@@ -75,10 +79,14 @@ public class GPSTrackingService extends Service {
 
         if (userFirebase != null)
         {
-            DatabaseReference user_referemce = root.child(userFirebase.getUid());
-            DatabaseReference ref = user_referemce;
-            GeoFire geoFire = new GeoFire(ref);
-            geoFire.setLocation(Utils.location, new GeoLocation(latitude, longitude));
+            DatabaseReference ref = root.child(userFirebase.getUid());
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("latitude", latitude);
+            result.put("longitude", longitude);
+            ref.updateChildren(result);
+           // GeoFire geoFire = new GeoFire(ref);
+           // geoFire.setLocation(Utils.location, new GeoLocation(latitude, longitude));
+
         }
         /*Map<String, Boolean> mParent = new HashMap<>();
         mParent.put(tokenFcm, true);
@@ -110,12 +118,13 @@ public class GPSTrackingService extends Service {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[0]);
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[1]);
             mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[2]);
-        } catch (SecurityException | IllegalArgumentException ex) {
+            FirebaseApp.initializeApp(this);
+            root  = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+            userFirebase = FirebaseAuth.getInstance().getCurrentUser();
+
+        } catch (SecurityException | IllegalArgumentException| DatabaseException ex) {
             logger.error(Reporter.stringStackTrace(ex));
         }
-        /*FirebaseApp.initializeApp(this);
-        root  = FirebaseDatabase.getInstance().getReference().child(Utils.users);
-        userFirebase = FirebaseAuth.getInstance().getCurrentUser();*/
 
     }
 

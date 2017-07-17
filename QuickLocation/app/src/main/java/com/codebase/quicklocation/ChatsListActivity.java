@@ -24,6 +24,7 @@ import android.widget.ListView;
 import com.codebase.quicklocation.adapters.ChatsFirebaseAdapter;
 import com.codebase.quicklocation.firebasedb.Group;
 import com.codebase.quicklocation.firebasedb.TypeGroup;
+import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -233,6 +234,15 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                     DatabaseReference group_refer = rootDataBase.child(key_group);
                     Group groupNew = new Group(title, description, key_group, typeValue, user_ui);
                     Map<String, Object> groupValue = groupNew.toMap();
+
+                    /**/
+                    String lastLocation = Utils.getSavedLocation(context);
+                    if(!"no_location".equals(lastLocation)) {
+                        LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
+                        groupValue.put("latitude",userLocation.getLatitude()+"");
+                        groupValue.put("longitude",userLocation.getLongitude()+"");
+                    }
+                    /**/
                     group_refer.updateChildren(groupValue);
 
                     addGruopToUser(key_group);
@@ -255,5 +265,13 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         TypeGroup typeGroup = new TypeGroup(title, true);
         Map<String, Object> typeValue = typeGroup.toMap();
         rootDataBase.updateChildren(typeValue);
+        sendToAllUsers();
+    }
+
+    /**
+     * Método para enviar notifiaciones a todas las pesonas.
+     */
+    private void sendToAllUsers() {
+
     }
 }
