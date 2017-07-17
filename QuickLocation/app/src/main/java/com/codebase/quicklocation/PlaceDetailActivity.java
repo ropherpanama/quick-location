@@ -186,7 +186,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
                 Date date = new Date(userLocation.getTime());
                 Log.e("GPSTrackingService", date.toString());
-                Location placeLocation = new Location();
+                Location placeLocation;
                 if (userLocation != null) {
                     if(serverGeometry != null) {
                         logger.write("****************** COJO LA COORDENADA DEL SERVIDOR ");
@@ -203,7 +203,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     startActivity(mapIntent);
                 }
             } else {
-                //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
                 Utils.showToast(this, "No puedo ubicarte en este momento.");
             }
         } catch (Exception e) {
@@ -320,14 +319,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
                     logger.write("Missing information " + missingInformation);
 
-                    if(missingInformation)
-                        getPlaceDataFromPlatform(strPlaceId);
+                    //if(missingInformation)
+                    getPlaceDataFromPlatform(strPlaceId);
 
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
-                    //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
                     Utils.showToast(PlaceDetailActivity.this, "Tu busqueda no arrojo resultados");
                 } else {
-                    //TODO: Caso probado colocar pantalla de informacion
                     Utils.showToast(PlaceDetailActivity.this, response.getStatus());
                 }
             }

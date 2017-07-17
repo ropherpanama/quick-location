@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,11 +29,17 @@ import com.codebase.quicklocation.model.Location;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.Review;
+import com.codebase.quicklocation.model.UserOpinion;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,7 +59,6 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private TextView tvPlaceOpeningHours;
     private TextView tvWebsite;
     private String targetPath = Utils.targetPath;
-    private ResponseForPlaceDetails placeDetails;
     private FavoritesDataDao favoritesDataDao;
     private FavoritesData favoritesData;
     private String cdata;
@@ -62,6 +69,9 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
     private Reporter logger = Reporter.getInstance(FavoriteDetailsActivity.class);
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private View layoutReviews;
+    private String strPlaceId;
+    private List<Review> togetherReviews = new ArrayList<>();
+    //private PlaceDetail placeFavoriteType = new PlaceDetail();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +118,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
 
         favoritesData = favoritesDataDao.getByPlaceId(favorite.getPlaceId());
         placeDetail = Utils.factoryGson().fromJson(favoritesData.getCdata(), PlaceDetail.class);
+        strPlaceId = favorite.getPlaceId();
         setTitle(favorite.getLocalName());
         showViewDetails();
     }
@@ -151,8 +162,11 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             tvWebsite.setText(placeDetail.getWebsite());
 
         if(placeDetail.getReviews() != null) {
-            putNewReviewsInTheScreen(placeDetail.getReviews());
+            togetherReviews.clear();
+            togetherReviews.addAll(placeDetail.getReviews());
         }
+
+        getPlaceReviewaFromPlatform(strPlaceId);
     }
 
     public void goToWebsite(View view) {
@@ -215,7 +229,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
                 Log.e("GPSTrackingService", date.toString());
 
                 if (userLocation != null) {
-                    Location placeLocation = placeDetails.getResult().getGeometry().getLocation();
+                    Location placeLocation = placeDetail.getGeometry().getLocation();//TODO checkear esto
                     String queryParams = placeLocation.getLat() + "," + placeLocation.getLng();
                     Uri gmmIntentUri = Uri.parse("google.navigation:q=" + queryParams);
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -223,8 +237,7 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
                     startActivity(mapIntent);
                 }
             } else {
-                //TODO proveer alternativa para cuando no se encuentra archivo de coordenada en disco
-                Snackbar.make(findViewById(android.R.id.content), "No puedo ubicarte ...", Snackbar.LENGTH_LONG).show();
+                Utils.showToast(this, "No puedo ubicarte ...");
             }
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
@@ -239,6 +252,13 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.fav_details_menu, menu);
+        return true;
     }
 
     @Override
@@ -279,4 +299,69 @@ public class FavoriteDetailsActivity extends AppCompatActivity {
             Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
         }
     }
+
+    /**
+     * Este metodo despliega la ventana de Mejora de Informacion
+     * @param item menu item que debe ser clickeado
+     */
+    public void showImprovementScreenFromFav(MenuItem item) {
+        ResponseForPlaceDetails response = new ResponseForPlaceDetails();
+        response.setResult(placeDetail);
+        Intent i = new Intent(FavoriteDetailsActivity.this, ImprovementActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        i.putExtra("api_response", Utils.objectToJson(response));
+        startActivity(i);
+    }
+
+    /**
+     * Este metodo responde ante el evento click sobre el item de menu
+     * Quejas o Sugerencias, despliega la ventana de Reportes
+     * @param item menu item que debe ser clickeado
+     */
+    public void showCommentsScreenFromFav(MenuItem item) {
+        ResponseForPlaceDetails response = new ResponseForPlaceDetails();
+        response.setResult(placeDetail);
+        Intent i = new Intent(FavoriteDetailsActivity.this, ReportActivity.class);
+        i.putExtra("place_id", strPlaceId);
+        i.putExtra("api_response", Utils.objectToJson(response));
+        startActivity(i);
+    }
+
+    /**
+     * Busca los reviews de la plataforma si Google no los tiene
+     * @param placeId
+     */
+    private void getPlaceReviewaFromPlatform(final String placeId) {
+        try {
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database.getReference().child("places/reviews").child(placeId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() != null) {
+                        List<Review> serverReviews = new ArrayList<>();
+                        for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                            UserOpinion message = messageSnapshot.getValue(UserOpinion.class);
+                            Review review = new Review();
+                            review.setAuthor(message.getAuthorName());
+                            review.setRating(message.getRating());
+                            review.setText(message.getComment());
+                            serverReviews.add(review);
+                        }
+
+                        //agrego las reviews que vienen del server si las hay
+                        if(serverReviews != null)
+                            togetherReviews.addAll(serverReviews);
+                    }
+                    //Envio los reviews recolectados a pintar en pantalla
+                    putNewReviewsInTheScreen(togetherReviews);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }catch (Exception e) {
+            Utils.showToast(this, "Ha ocurrido un error " + e.getMessage());
+        }
+    }
+
 }

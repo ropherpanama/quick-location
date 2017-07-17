@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,18 +17,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.codebase.quicklocation.adapters.PlaceItemAdapter;
 import com.codebase.quicklocation.database.Users;
 import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.model.Place;
+import com.codebase.quicklocation.model.PlaceDetail;
+import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.ResponseForPlaces;
 import com.codebase.quicklocation.model.UserUseStatistic;
 import com.codebase.quicklocation.sorters.RatingSorter;
 import com.codebase.quicklocation.utils.HTTPTasks;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -40,6 +52,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class PlaceActivity extends AppCompatActivity {
     static final String KEY_CATEGORY = "categoria";
@@ -55,6 +70,7 @@ public class PlaceActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Place> places = new ArrayList<>();
+    //private List<Place> tempPlaces = new ArrayList<>();
     private List<Place> fakePlaces = new ArrayList<>();//Lista original para efectos de ordenamiento
     private UsersDao usersDao;
 
@@ -124,12 +140,31 @@ public class PlaceActivity extends AppCompatActivity {
             if (!result.contains("Error!")) {
                 ResponseForPlaces response = Utils.factoryGson().fromJson(result, ResponseForPlaces.class);
                 if ("OK".equals(response.getStatus())) {
-                    //List<Place> places = response.getResults();
                     places.clear();
                     places = response.getResults();
+                    //tempPlaces = response.getResults();
 
-                    for (Place p : places)
-                        fakePlaces.add(p);
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+                    for (final Place p : places) {
+                        database.getReference().child("places/data").child(p.getPlaceId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()) {
+                                    System.out.println("Processing ... " + dataSnapshot.getValue().toString());
+                                    PlaceDetail placeDetail = dataSnapshot.getValue(PlaceDetail.class);
+                                    System.out.println(placeDetail.getName() + ", rating: " + placeDetail.getRating());
+                                    p.setRating(placeDetail.getRating());
+                                    fakePlaces.add(p);
+                                } else {
+                                    fakePlaces.add(p);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {}
+                        });
+                    }
 
                     //Ajustar la data para mostrar en la lista de resultados
                     recyclerView = (RecyclerView) findViewById(R.id.list_of_places);
@@ -169,8 +204,7 @@ public class PlaceActivity extends AppCompatActivity {
 
                     recyclerView.setAdapter(mAdapter);
                 } else if ("ZERO_RESULTS".equals(response.getStatus())) {
-                    //TODO: proveer la informacion necesaria, de ser posible realizar en este punto una busqueda mas amplia
-                    Snackbar.make(toolbar, "Tu busqueda no arrojo resultados", Snackbar.LENGTH_SHORT).show();
+                    Utils.showToast(PlaceActivity.this, "Tu busqueda no arrojo resultados");
                 } else {
                     Utils.showMessage("Conexion", "En estos momentos no podemos ubicar tu informacion, intentalo mas tarde", PlaceActivity.this);
                 }
@@ -196,6 +230,10 @@ public class PlaceActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Ordena la lista de lugares por puntuacion
+     * @param item item de menu
+     */
     public void ordenarPorRating(MenuItem item) {
         Collections.sort(places, new RatingSorter());
         mAdapter.notifyDataSetChanged();

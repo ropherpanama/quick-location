@@ -114,6 +114,7 @@ public class ReportActivity extends AppCompatActivity {
                                 ResponseForPlaceDetails responseForPlaceDetails = Utils.factoryGson().fromJson(firebasePlaceRecord, ResponseForPlaceDetails.class);
                                 PlaceDetail placeDetail = responseForPlaceDetails.getResult();
                                 placeDetail.setReviews(Collections.<Review>emptyList());
+
                                 database.getReference().child("places/new/data").child(placeID).setValue(placeDetail).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {

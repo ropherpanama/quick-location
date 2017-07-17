@@ -224,8 +224,6 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
                 if (task.isSuccessful()) {
                     showProgress(false);
                     usersDao.add(users);
-                    /*TODO: Save user in Firebase.*/
-                    //String key_user = root.push().getKey();
                     DatabaseReference user_referemce = root.child(task.getResult().getUser().getUid());
                     UserStructure userStructure = new UserStructure(task.getResult().getUser().getUid(), userName, funllName);
                     Map<String, Object> postValues = userStructure.toMap();
@@ -237,7 +235,6 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
                     finish();
                 } else {
                     showProgress(false);
-                    //Toast.makeText(context,"Fallo la creación del usario.",Toast.LENGTH_LONG).show();
                     String msg = task.getException().getMessage();
                     dialogWarning(msg);
                 }
