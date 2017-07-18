@@ -1,6 +1,9 @@
 let functions = require('firebase-functions');
 let admin = require('firebase-admin');
+const GeoFire = require('geofire');
+
 admin.initializeApp(functions.config().firebase);
+const geoFire = new GeoFire(admin.database().ref('/geofire'));
 
 exports.sendPush = functions.database.ref('/messages/{chatsUid}/{chatUid}').onWrite(event => {
   const chatUid = event.data.val();
@@ -81,3 +84,26 @@ function loadUsers() {
     });
     return defer;
 }
+
+exports.saveUser = functions.database.ref('/users/{pushId}')
+    .onWrite(event => {
+      const user = event.data.val();
+      console.log("key user",''+event.params.pushId);
+      var latitude = event.data.child('latitude');
+      var longitude = event.data.child('longitude');
+      if (latitude.changed() || longitude.changed()) {
+        const location = [user.latitude, user.longitude];
+        return geoFire.set(event.params.pushId, location);
+      }
+    });
+
+/*exports.addNewUser = functions.https.onRequest((req, res) => {
+  const user = req.body;
+  var newUser = admin.database().ref('/users').push();
+  newUser.set(user).then(snapshot => {
+    var location = [user.latitude, user.longitude];
+    geoFire.set(newUser.key, location).then(function() {
+      res.send(200, "ok");
+    });
+  });
+});*/

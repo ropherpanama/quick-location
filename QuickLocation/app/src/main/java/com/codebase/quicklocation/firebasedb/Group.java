@@ -13,7 +13,7 @@ public class Group {
     private String title;
     private String description;
     public String gruop_id;
-     private Map<String, Object> members;
+     private TypeGroup members;
     private Map<String, Object> salir;
 
     private String create_by;
@@ -28,7 +28,7 @@ public class Group {
         this.create_by = create_by;
     }
 
-    public Group(String title, String description, String gruop_id, Map<String, Object> members, String create_by) {
+    public Group(String title, String description, String gruop_id, TypeGroup members, String create_by) {
         this.title = title;
         this.description = description;
         this.gruop_id = gruop_id;
@@ -52,11 +52,11 @@ public class Group {
         this.description = description;
     }
 
-    public Map<String, Object> getMembers() {
+    public TypeGroup getMembers() {
         return members;
     }
 
-    public void setMembers(Map<String, Object> members) {
+    public void setMembers(TypeGroup members) {
         this.members = members;
     }
 

@@ -46,7 +46,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
     private Context context;
     private DatabaseReference rootDataBase = FirebaseDatabase.getInstance().getReference().child(Utils.groups);
     private String user_ui = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+    private String key_group="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +60,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
-
+        key_group = rootDataBase.push().getKey();
 
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
@@ -124,8 +124,9 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
         TypeGroup member = new TypeGroup(user_ui, false);
         Map<String, Object> typeValue = member.toMap();
 
-        DatabaseReference salir_grupo = rootDataBase.child(group.getGruop_id()).child(Utils.salir);
-        salir_grupo.updateChildren(typeValue);
+        DatabaseReference salir_grupo = rootDataBase.child(group.getGruop_id()).child("members").child(user_ui);
+        salir_grupo.removeValue();
+        //salir_grupo.updateChildren(typeValue);
         groups.remove(adapterPosition);
         adapter.notifyDataSetChanged();
         Snackbar.make(toolbar, "Saliste del grupo!", Snackbar.LENGTH_SHORT).show();
@@ -143,8 +144,27 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
      */
     private void maplist(DataSnapshot map) {
         groups.clear();
-
+        String userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         for (DataSnapshot dataSnapshot : map.getChildren()) {
+            Group group = dataSnapshot.getValue(Group.class);
+            //Log.e("......",userUID+ " --- "+dataSnapshot.child("members"));
+            DataSnapshot snapshot = dataSnapshot.child("members");
+            for (DataSnapshot auz : snapshot.getChildren()) {
+                Log.e("DataSnapshot",""+auz.getKey());
+                if (userUID.equals(auz.getKey()))
+                {
+                    groups.add(group);
+                }
+            }
+
+
+            /*if (addGroup)
+            {
+                groups.add(group);
+            }*/
+
+        }
+        /*for (DataSnapshot dataSnapshot : map.getChildren()) {
             Group group = dataSnapshot.getValue(Group.class);
             if (group.getSalir()!= null) {
                 Map<String, Object> map1 = group.getSalir();
@@ -161,7 +181,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                 groups.add(group);
 
             }
-        }
+        }*/
     }
 
     @Override
@@ -227,12 +247,11 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                     focusView.requestFocus();
                 } else {
                     dialog.dismiss();
-                    TypeGroup member = new TypeGroup(user_ui, true);
-                    Map<String, Object> typeValue = member.toMap();
+                    //TypeGroup member = new TypeGroup(user_ui, true);
+                    //Map<String, Object> typeValue = member.toMap();
 
-                    String key_group = rootDataBase.push().getKey();
                     DatabaseReference group_refer = rootDataBase.child(key_group);
-                    Group groupNew = new Group(title, description, key_group, typeValue, user_ui);
+                    Group groupNew = new Group(title, description, key_group, user_ui);
                     Map<String, Object> groupValue = groupNew.toMap();
 
                     /**/
@@ -243,8 +262,9 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                         groupValue.put("longitude",userLocation.getLongitude()+"");
                     }
                     /**/
-                    group_refer.updateChildren(groupValue);
 
+                    group_refer.updateChildren(groupValue);
+                    //group_refer.child(Utils.menbers).child(key_group).setValue(true);
                     addGruopToUser(key_group);
                 }
 
