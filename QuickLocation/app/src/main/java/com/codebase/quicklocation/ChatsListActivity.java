@@ -60,7 +60,6 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
-        key_group = rootDataBase.push().getKey();
 
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
@@ -249,6 +248,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                     dialog.dismiss();
                     //TypeGroup member = new TypeGroup(user_ui, true);
                     //Map<String, Object> typeValue = member.toMap();
+                    key_group = rootDataBase.push().getKey();
 
                     DatabaseReference group_refer = rootDataBase.child(key_group);
                     Group groupNew = new Group(title, description, key_group, user_ui);

@@ -181,7 +181,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void sendMessagetoFirebase() {
-        ChatModel model = new ChatModel(userModel, edMessage.getText().toString(), Calendar.getInstance().getTime().getTime() + "", null);
+        ChatModel model = new ChatModel(group_id,userModel, edMessage.getText().toString(), Calendar.getInstance().getTime().getTime() + "", null);
         if (!"".equals(edMessage.getText().toString())) {
             mFirebaseDatabaseReference.child(chats_node).push().setValue(model);
             edMessage.setText(null);
@@ -232,7 +232,7 @@ public class ChatFirebaseActivity extends AppCompatActivity implements View.OnCl
     private void sendMyFavorite(String favoriteJSON) {
         Favorites favorite = Utils.factoryGson().fromJson(favoriteJSON, Favorites.class);
         placeId = favorite.getPlaceId();
-        ChatModel model = new ChatModel(userModel, edMessage.getText().toString(), Calendar.getInstance().getTime().getTime() + "", favorite);
+        ChatModel model = new ChatModel(group_id,userModel, edMessage.getText().toString(), Calendar.getInstance().getTime().getTime() + "", favorite);
         mFirebaseDatabaseReference.child(chats_node).push().setValue(model);
         edMessage.setText(null);
     }

@@ -18,6 +18,14 @@ public class ChatModel {
     public ChatModel() {
     }
 
+    public ChatModel(String id, UserModel userModel, String message, String timeStamp, Favorites favorites) {
+        this.id = id;
+        this.userModel = userModel;
+        this.message = message;
+        this.timeStamp = timeStamp;
+        this.favorites = favorites;
+    }
+
     public ChatModel(UserModel userModel, String message, String timeStamp, Favorites favorites) {
         this.userModel = userModel;
         this.message = message;
