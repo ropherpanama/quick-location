@@ -13,16 +13,25 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.bumptech.glide.util.Util;
 import com.codebase.quicklocation.adapters.FavoritesItemAdapter;
 import com.codebase.quicklocation.database.Favorites;
 import com.codebase.quicklocation.database.dao.FavoritesDao;
 import com.codebase.quicklocation.database.dao.FavoritesDataDao;
+import com.codebase.quicklocation.model.Place;
+import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FavoritesActivity extends AppCompatActivity {
     private static final int ADD_ACTIVITY_FAVORITE = 5;
@@ -31,9 +40,11 @@ public class FavoritesActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Favorites> favorites = new ArrayList<>();
+    private List<Favorites> favoritesTemp = new ArrayList<>();
     private FavoritesDao dao = new FavoritesDao(this);
     private FavoritesDataDao dataDao = new FavoritesDataDao(this);
     private boolean add_favorite = false;
+    Timer timer = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +66,80 @@ public class FavoritesActivity extends AppCompatActivity {
             //se carga la lista de favoritos guardados por el usuario
             favorites = getFavoritesFromDb();
 
-            if(favorites.isEmpty()) {
-                Utils.showToast(this, "No hay favoritos para mostrar");
-            } else {
-                mAdapter = new FavoritesItemAdapter(favorites, new FavoritesItemAdapter.OnItemClickListener() {
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+            for (final Favorites p : favorites) {
+                database.getReference().child("places/data").child(p.getPlaceId()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onItemClick(Favorites item) {
-                        String cdata = Utils.objectToJson(item);
-                        if (add_favorite) {
-                            Intent intent = new Intent();
-                            intent.putExtra("cdata",cdata);
-                            setResult(ADD_ACTIVITY_FAVORITE,intent);
-                            finish();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            System.out.println("Processing ... " + dataSnapshot.getValue().toString());
+                            PlaceDetail placeDetail = dataSnapshot.getValue(PlaceDetail.class);
+                            System.out.println(placeDetail.getName() + ", rating: " + placeDetail.getRating());
+                            double a = placeDetail.getRating() * placeDetail.getReviewsCount();
+                            double b = p.getRating() * Utils.googleMult;
+                            int total = placeDetail.getReviewsCount() + Utils.googleMult;
+                            double finalRating = 0;
+
+                            if (a > 0 && b > 0)
+                                finalRating = (a + b) / total;
+                            else if (a > 0 && b <= 0)
+                                finalRating = a / placeDetail.getReviewsCount();
+                            else if (a <= 0 && b > 0)
+                                finalRating = b / Utils.googleMult;
+
+                            p.setRating(Double.parseDouble(Utils.df.format(finalRating)));
+                            favoritesTemp.add(p);
                         } else {
-                            Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
-                            itentfavoritoDetails.putExtra("favorito", cdata);
-                            startActivity(itentfavoritoDetails);
+                            favoritesTemp.add(p);
                         }
                     }
-                });
 
-                recyclerView.setAdapter(mAdapter);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
             }
+
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (favoritesTemp.size() == favorites.size()) {
+                        timer.cancel();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (favoritesTemp.isEmpty()) {
+                                    Utils.showToast(FavoritesActivity.this, "No hay favoritos para mostrar");
+                                } else {
+                                    mAdapter = new FavoritesItemAdapter(favoritesTemp, new FavoritesItemAdapter.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(Favorites item) {
+                                            String cdata = Utils.objectToJson(item);
+                                            if (add_favorite) {
+                                                Intent intent = new Intent();
+                                                intent.putExtra("cdata", cdata);
+                                                setResult(ADD_ACTIVITY_FAVORITE, intent);
+                                                finish();
+                                            } else {
+                                                Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
+                                                itentfavoritoDetails.putExtra("favorito", cdata);
+                                                startActivity(itentfavoritoDetails);
+                                            }
+                                        }
+                                    });
+
+                                    recyclerView.setAdapter(mAdapter);
+                                }
+                            }
+                        });
+                    } else {
+                        System.out.println("Aun no ... ");
+                    }
+                }
+            };
+
+            timer.schedule(timerTask, 0, 100);
         } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
         }
@@ -85,7 +148,7 @@ public class FavoritesActivity extends AppCompatActivity {
     private List<Favorites> getFavoritesFromDb() {
         try {
             return dao.getAll();
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error(Reporter.stringStackTrace(e));
             return Collections.emptyList();
         }
@@ -110,9 +173,9 @@ public class FavoritesActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .setPositiveButton("Si", new DialogInterface.OnClickListener() {
                         @Override
-                        public  void onClick(DialogInterface dialog, int which) {
-                            if(dao.deleteAll() > 0) {
-                                favorites.clear();//limpio la lista actual
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (dao.deleteAll() > 0) {
+                                favoritesTemp.clear();//limpio la lista actual
                                 dataDao.deleteAll();
                                 mAdapter.notifyDataSetChanged();
                                 Utils.showToast(FavoritesActivity.this, "Registros eliminados");
@@ -130,5 +193,11 @@ public class FavoritesActivity extends AppCompatActivity {
                     .show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        timer.cancel();
     }
 }
