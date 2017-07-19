@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 
 /**
  * Created by fgcanga on 22/01/2017.
@@ -44,9 +45,10 @@ public class Utils {
     public static final String location = "location";
     //public static final String favorite = "favorites";
     public static final String salir = "salir";
-
     //set this flag to false to turn off the log file write on the phone filesystem, true to enable logging
     public static final boolean writeLogFile = false;
+    public static final int googleMult = 5;
+    public static final DecimalFormat df = new DecimalFormat("#.0");
 
     private Utils() {
     }

@@ -154,7 +154,19 @@ public class PlaceActivity extends AppCompatActivity {
                                     System.out.println("Processing ... " + dataSnapshot.getValue().toString());
                                     PlaceDetail placeDetail = dataSnapshot.getValue(PlaceDetail.class);
                                     System.out.println(placeDetail.getName() + ", rating: " + placeDetail.getRating());
-                                    p.setRating(placeDetail.getRating());
+                                    double a = placeDetail.getRating() * placeDetail.getReviewsCount();
+                                    double b = p.getRating() * Utils.googleMult;
+                                    int total = placeDetail.getReviewsCount() + Utils.googleMult;
+                                    double finalRating = 0;
+
+                                    if(a > 0 && b > 0)
+                                        finalRating = (a + b) / total;
+                                    else if(a > 0 && b <= 0)
+                                        finalRating = a / placeDetail.getReviewsCount();
+                                    else if(a <= 0 && b > 0)
+                                        finalRating = b / Utils.googleMult;
+
+                                    p.setRating(Double.parseDouble(Utils.df.format(finalRating)));
                                     fakePlaces.add(p);
                                 } else {
                                     fakePlaces.add(p);

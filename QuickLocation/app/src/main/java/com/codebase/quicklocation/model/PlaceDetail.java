@@ -25,6 +25,7 @@ public class PlaceDetail {
     private String name;
     private List<Review> reviews;
     private double rating;
+    private int reviewsCount;
 
     public List<Review> getReviews() {
         return reviews;
@@ -112,5 +113,13 @@ public class PlaceDetail {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public int getReviewsCount() {
+        return reviewsCount;
+    }
+
+    public void setReviewsCount(int reviewsCount) {
+        this.reviewsCount = reviewsCount;
     }
 }
