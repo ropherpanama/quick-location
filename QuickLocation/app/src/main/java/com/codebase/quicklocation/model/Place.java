@@ -15,6 +15,7 @@ public class Place {
     private double rating;
     private String[] types;
     private String vicinity;
+    private boolean showRating;
 
     public Geometry getGeometry() {
         return geometry;
@@ -62,5 +63,13 @@ public class Place {
 
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
+    }
+
+    public boolean isShowRating() {
+        return showRating;
+    }
+
+    public void setShowRating(boolean showRating) {
+        this.showRating = showRating;
     }
 }

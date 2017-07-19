@@ -23,7 +23,6 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
     private final PlaceItemAdapter.OnItemClickListener listener;
     private final String appCategory;
 
-
     public PlaceItemAdapter(List<Place> places, String appCategory, PlaceItemAdapter.OnItemClickListener listener) {
         this.places = places;
         this.listener = listener;
@@ -53,6 +52,7 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         private ImageView placeLogo;
         private String appCategory;
         private TextView placeRating;
+        private boolean showRating;
 
         private ViewHolder(View itemView, String appCategory) {
             super(itemView);
@@ -64,7 +64,12 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         }
 
         public void bind(final Place item, final PlaceItemAdapter.OnItemClickListener listener) {
-            placeRating.setText(String.valueOf(item.getRating()));
+            if(item.isShowRating()) {
+                placeRating.setVisibility(View.VISIBLE);
+                placeRating.setText(String.valueOf(item.getRating()));
+            } else {
+                placeRating.setVisibility(View.GONE);
+            }
             placeName.setText(item.getName());
             placeDirection.setText(item.getVicinity());
             placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), "mipmap", appCategory));

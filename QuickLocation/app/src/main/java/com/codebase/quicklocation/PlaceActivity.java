@@ -26,6 +26,7 @@ import com.codebase.quicklocation.model.Place;
 import com.codebase.quicklocation.model.PlaceDetail;
 import com.codebase.quicklocation.model.ResponseForPlaceDetails;
 import com.codebase.quicklocation.model.ResponseForPlaces;
+import com.codebase.quicklocation.model.Review;
 import com.codebase.quicklocation.model.UserUseStatistic;
 import com.codebase.quicklocation.sorters.RatingSorter;
 import com.codebase.quicklocation.utils.HTTPTasks;
@@ -70,7 +71,6 @@ public class PlaceActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(PlaceActivity.class);
     private List<Place> places = new ArrayList<>();
-    //private List<Place> tempPlaces = new ArrayList<>();
     private List<Place> fakePlaces = new ArrayList<>();//Lista original para efectos de ordenamiento
     private UsersDao usersDao;
 
@@ -235,6 +235,10 @@ public class PlaceActivity extends AppCompatActivity {
      * @param item item de menu
      */
     public void ordenarPorRating(MenuItem item) {
+        for (Place p: places) {
+            p.setShowRating(true);
+        }
+
         Collections.sort(places, new RatingSorter());
         mAdapter.notifyDataSetChanged();
     }
@@ -246,9 +250,10 @@ public class PlaceActivity extends AppCompatActivity {
      */
     public void ordenarPorDistancia(MenuItem item){
         places.clear();
-
-        for(Place p: fakePlaces)
+        for(Place p: fakePlaces) {
+            p.setShowRating(false);
             places.add(p);
+        }
 
         mAdapter.notifyDataSetChanged();
     }
