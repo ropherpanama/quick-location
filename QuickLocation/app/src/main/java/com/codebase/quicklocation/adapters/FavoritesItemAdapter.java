@@ -66,6 +66,7 @@ public class FavoritesItemAdapter extends RecyclerView.Adapter<FavoritesItemAdap
 
         public void bind(final Favorites item, final FavoritesItemAdapter.OnItemClickListener listener) {
             placeRating.setText(String.valueOf(item.getRating()));
+            System.out.println("*************** VALOR DE RATING CALCULADO FAVORITO " + item.getLocalName() + " *** " + item.getRating());
             favoriteName.setText(item.getLocalName());
             favoriteCategory.setText(item.getCategory());
             placeLogo.setImageResource(Utils.getDrawableByName(placeLogo.getContext(), "mipmap", item.getCategory().toLowerCase()));

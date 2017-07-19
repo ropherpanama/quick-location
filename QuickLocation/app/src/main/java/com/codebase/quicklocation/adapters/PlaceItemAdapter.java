@@ -64,6 +64,7 @@ public class PlaceItemAdapter extends RecyclerView.Adapter<PlaceItemAdapter.View
         }
 
         public void bind(final Place item, final PlaceItemAdapter.OnItemClickListener listener) {
+            System.out.println("*************** VALOR DE RATING CALCULADO PLACE " + item.getName() + " *** " + item.getRating());
             if(item.isShowRating()) {
                 placeRating.setVisibility(View.VISIBLE);
                 placeRating.setText(String.valueOf(item.getRating()));
