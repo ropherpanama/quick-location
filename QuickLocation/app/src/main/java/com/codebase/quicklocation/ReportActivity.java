@@ -5,9 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 
@@ -37,6 +37,7 @@ public class ReportActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Reporter logger = Reporter.getInstance(ReportActivity.class);
     private String firebasePlaceRecord;
+    private boolean enableMenuItem = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,6 @@ public class ReportActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final Button sendButton = (Button) findViewById(R.id.report_button_send);
 
         reportContent.addTextChangedListener(new TextWatcher() {
             @Override
@@ -63,16 +63,16 @@ public class ReportActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if(reportContent.getText().length() > 120) {
                     reportContent.setError("Máximo 120 caracteres");
-                    sendButton.setEnabled(false);
+                    enableMenuItem = false;
                 } else {
                     reportContent.setError(null);
-                    sendButton.setEnabled(true);
+                    enableMenuItem = true;
                 }
             }
         });
     }
 
-    public void sendReport(View view) {
+    public void sendReport() {
         try {
             UsersDao dao = new UsersDao(this);
             ImprovementRequest request = new ImprovementRequest();
@@ -149,7 +149,26 @@ public class ReportActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+        } else if(item.getItemId() == R.id.report_item_menu) {
+            if(enableMenuItem) {
+                sendReport();
+            } else {
+                Utils.showToast(ReportActivity.this, "Corrija los errores de entrada");
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.report_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.report_item_menu).setEnabled(enableMenuItem);
+        return true;
     }
 }
