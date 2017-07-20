@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -143,6 +144,8 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
      */
     private void maplist(DataSnapshot map) {
         groups.clear();
+
+        List<Group> groupsAux = new ArrayList<>();
         String userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         for (DataSnapshot dataSnapshot : map.getChildren()) {
             Group group = dataSnapshot.getValue(Group.class);
@@ -155,33 +158,11 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
                     groups.add(group);
                 }
             }
-
-
-            /*if (addGroup)
-            {
-                groups.add(group);
-            }*/
-
         }
-        /*for (DataSnapshot dataSnapshot : map.getChildren()) {
-            Group group = dataSnapshot.getValue(Group.class);
-            if (group.getSalir()!= null) {
-                Map<String, Object> map1 = group.getSalir();
-                for (Object o : map1.keySet()) {
-                    String key = o.toString();
-                    if (!(Boolean) map1.get(key)) {
-                        Log.e("ChatsListActivity", "No se agrega al listado de grupos... " + key + "  --  " + map1.get(key));
-                    } else {
-                        groups.add(group);
-                    }
-                }
-            }else
-            {
-                groups.add(group);
-
-            }
-        }*/
+        //Descendente
+        Collections.sort(groups,new Group.CompDate(true));
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -18,11 +18,11 @@ import java.util.List;
  * Created by fgcanga on 6/23/17.
  */
 public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdapter.ViewHolder>  {
-    private final List<Group> groupList;
-    private final ChatsFirebaseAdapter.OnItemClickListener listener;
+    private  List<Group> groupList;
+    private  ChatsFirebaseAdapter.OnItemClickListener listener;
 
     public ChatsFirebaseAdapter(List<Group> groups, OnItemClickListener listener) {
-        this.groupList = groups;
+        this.groupList = groups;//sortList(groups);
         this.listener = listener;
     }
 
@@ -55,7 +55,8 @@ public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdap
 
         public void bind(final Group group, final OnItemClickListener listener) {
             txtTitle.setText(group.getTitle());
-            txtDescription.setText(group.getDescription());
+            String descrip = (group.getLastmessage()!=null)?group.getLastmessage():group.getDescription();
+            txtDescription.setText(descrip);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -70,7 +71,5 @@ public class ChatsFirebaseAdapter extends RecyclerView.Adapter<ChatsFirebaseAdap
 
     public interface OnItemClickListener {
         void onItemClick(Group item);
-
-
     }
 }

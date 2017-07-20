@@ -2,6 +2,8 @@ package com.codebase.quicklocation.firebasedb;
 
 import com.google.firebase.database.Exclude;
 
+import java.sql.Date;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +17,8 @@ public class Group {
     public String gruop_id;
      private TypeGroup members;
     private Map<String, Object> salir;
+    private long timestamp;
+    private String lastmessage;
 
     private String create_by;
 
@@ -85,6 +89,22 @@ public class Group {
         this.salir = salir;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getLastmessage() {
+        return lastmessage;
+    }
+
+    public void setLastmessage(String lastmessage) {
+        this.lastmessage = lastmessage;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -96,4 +116,23 @@ public class Group {
         result.put("create_by",create_by);
         return result;
     }
+
+
+    /**
+     * Compara las fechas en tipo Date, luego las ordenas descendento o ascenentes.
+     */
+    public static class CompDate implements Comparator<Group> {
+        private int mod = 1;
+        public CompDate(boolean desc) {
+            if (desc) mod =-1;
+        }
+        @Override
+        public int compare(Group arg0, Group arg1) {
+            Date date0 = new Date(arg0.getTimestamp()*1000L);
+            Date date1 = new Date(arg1.getTimestamp()*1000L);
+            return mod*date0.compareTo(date1);
+        }
+    }
+
+
 }
