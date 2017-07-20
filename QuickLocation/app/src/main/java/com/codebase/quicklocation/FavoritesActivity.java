@@ -122,9 +122,10 @@ public class FavoritesActivity extends AppCompatActivity {
                                                 setResult(ADD_ACTIVITY_FAVORITE, intent);
                                                 finish();
                                             } else {
-                                                Intent itentfavoritoDetails = new Intent(FavoritesActivity.this, FavoriteDetailsActivity.class);
-                                                itentfavoritoDetails.putExtra("favorito", cdata);
-                                                startActivity(itentfavoritoDetails);
+                                                Intent i = new Intent(FavoritesActivity.this, PlaceDetailActivity.class);
+                                                i.putExtra(PlaceActivity.KEY_PLACE_NAME, item.getLocalName());
+                                                i.putExtra(PlaceActivity.KEY_PLACE_ID, item.getPlaceId());
+                                                startActivity(i);
                                             }
                                         }
                                     });
