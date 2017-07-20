@@ -11,12 +11,6 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <!--<ImageView
-        android:layout_alignBottom="@+id/contentMessageChat"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:id="@+id/ivUserChat" />-->
-
     <me.himanshusoni.chatmessageview.ChatMessageView
         android:id="@+id/contentMessageChat"
         android:layout_width="match_parent"
@@ -26,9 +20,7 @@
         app:cmv_arrowGravity="end"
         app:cmv_arrowPosition="left"
         app:cmv_cornerRadius="3dp"
-        app:cmv_showArrow="true"
-        android:layout_toEndOf="@+id/ivUserChat"
-        android:layout_toRightOf="@+id/ivUserChat">
+        app:cmv_showArrow="true">
 
     <TextView
         android:id="@+id/txtMessage"
@@ -52,9 +44,7 @@
         android:layout_alignStart="@+id/contentMessageChat"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@id/contentMessageChat"
-        android:layout_below="@id/contentMessageChat"
-        android:layout_toRightOf="@+id/ivUserChat"
-        android:layout_toEndOf="@+id/ivUserChat" />
+        android:layout_below="@id/contentMessageChat" />
 
     <TextView
         android:text="22/06/2016"

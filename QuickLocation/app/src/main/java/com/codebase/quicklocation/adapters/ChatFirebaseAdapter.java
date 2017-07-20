@@ -120,7 +120,6 @@ public class ChatFirebaseAdapter extends FirebaseRecyclerAdapter<ChatModel, Chat
             txtsendusername = (TextView) itemView.findViewById(R.id.txtsendusername);
             //tvLocation = (TextView) itemView.findViewById(R.id.tvLocation);
             ivChatPhoto = (ImageView) itemView.findViewById(R.id.img_chat);
-            ivUser = (ImageView) itemView.findViewById(R.id.ivUserChat);
             txtDestallesFavorito = (TextView) itemView.findViewById(R.id.txtDestallesFavorito);
             txtNombreFavorito = (TextView) itemView.findViewById(R.id.txtNombreFavorito);
             messageView = (ChatMessageView) itemView.findViewById(R.id.contentMessageChat);
