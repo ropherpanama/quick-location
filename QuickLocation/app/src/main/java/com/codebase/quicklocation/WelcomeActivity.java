@@ -25,8 +25,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import com.codebase.quicklocation.adapters.CategoryMenuItemAdapter;
+import com.codebase.quicklocation.database.Users;
+import com.codebase.quicklocation.database.dao.UsersDao;
 import com.codebase.quicklocation.gps.GPSTrackingService;
 import com.codebase.quicklocation.model.CategoryMenuItem;
+import com.codebase.quicklocation.model.LastLocation;
 import com.codebase.quicklocation.utils.Reporter;
 import com.codebase.quicklocation.utils.Utils;
 import com.crashlytics.android.Crashlytics;
@@ -41,6 +44,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -76,6 +80,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(this, permission, PERMISSION_ALL);
                 } else {
                     logger.write("Stating service with permissions");
+                    System.out.println("***************** Arrancando servicio desde Menu 2 ...");
                     startService(new Intent(this, GPSTrackingService.class));
                 }
 
@@ -112,34 +117,23 @@ public class WelcomeActivity extends AppCompatActivity {
                 logger.error(Reporter.stringStackTrace(e));
             }
 
-
             geneararTokenFCM();
+            String tokenFcm = FirebaseInstanceId.getInstance().getToken();
 
-           String tokenFcm = FirebaseInstanceId.getInstance().getToken();
-
-            if (tokenFcm!=null)
-            {
-                Log.e("onCreate"," token fcm"+tokenFcm);
-
-                //private void sendNewPromoBroadcast(String tokenfcm) {
+            if (tokenFcm!=null) {
+                Log.e("onCreate"," token fcm " + tokenFcm);
                 DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
                 FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
                 assert task != null;
                 DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
-
-               // Map<String, Boolean> mParent = new HashMap<>();
-               // mParent.put(tokenFcm, true);
                 user_referemce.setValue(tokenFcm);
-
-            //}
-            }else
-            {
+            } else {
                 Log.e("MainActivity","Token fcm sin crear");
             }
-            validateUser();
-
         } else {
-            Intent intent = new Intent(this,LoginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
+            System.out.println("******************** Parando servicio desde Menu 2");
+            stopService(new Intent(this, GPSTrackingService.class));
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
             finish();
@@ -147,79 +141,37 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void geneararTokenFCM() {
-
+        String lastLocation = Utils.getSavedLocation(this);
+        LastLocation userLocation = Utils.factoryGson().fromJson(lastLocation, LastLocation.class);
+        UsersDao usersDao = new UsersDao(this);
         SharedPreferences preferences = context.getSharedPreferences("registration_id", Context.MODE_PRIVATE);
         String token_fcm =  preferences.getString("registration_id", "");
 
-        if (token_fcm.equals(""))
-        {
+        if (token_fcm.equals("")) {
             String tokenFcm = FirebaseInstanceId.getInstance().getToken();
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("registration_id", tokenFcm);
         }
-            DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
-            FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
-            assert task != null;
+
+        DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
+        FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
+        assert task != null;
+        System.out.println("********************* Email para filtrar usuario activo " + task.getEmail());
+        Users usuario = usersDao.getByEmail(task.getEmail());
+        if(usuario != null) {
             DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
             user_referemce.setValue(token_fcm);
-    }
-
-    private void validateUser() {
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Utils.users);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
-                    Log.e("User","EXISTE");
-                    /*String fullname = "";
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        fullname = postSnapshot.child("fullName").getValue(String.class);
-
-                    }
-
-                    final Users users = new Users();
-                    UsersDao usersDao = new UsersDao(context);
-                    users.setNickname(fullname);
-                    usersDao.add(users);*/
-
-                }else {
-                    Log.e("User","No existe "+ mAuth.getCurrentUser().toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        /*DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-         mDatabase.child(Utils.users).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-             @Override
-             public void onDataChange(DataSnapshot dataSnapshot) {
-                 Log.e("User",dataSnapshot.getValue().toString());
-
-                 if (dataSnapshot.hasChild())
-
-                 //hY0sEiUl0aasZmLTt1LkYpP9Wnf1
-               /*  Users users = dataSnapshot.getValue(Users.class);
-                 UsersDao usersDao = null;
-                 if (users!=null)
-                 {
-                     if (users.getNickname() == null)
-                         users.setNickname("Anonymous");
-
-                     usersDao.add(users);
-
-                 }
-
-             }
-
-             @Override
-             public void onCancelled(DatabaseError databaseError) {
-
-             }
-         });*/
+            user_referemce = root.child(task.getUid()).child("fullname");
+            user_referemce.setValue(usuario.getFullname());
+            user_referemce = root.child(task.getUid()).child("latitude");
+            user_referemce.setValue(userLocation.getLatitude());
+            user_referemce = root.child(task.getUid()).child("longitude");
+            user_referemce.setValue(userLocation.getLongitude());
+            user_referemce = root.child(task.getUid()).child("username");
+            user_referemce.setValue(usuario.getNickname());
+            user_referemce = root.child(task.getUid()).child("key");
+            user_referemce.setValue(task.getUid());
+        }
     }
 
     private void fillElementsData() {
@@ -282,6 +234,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 showSettingsAlert();
             }else{
                 logger.write("Stating service without permissions");
+                System.out.println("***************** Arrancando servicio desde Menu 1 ...");
                 startService(new Intent(this, GPSTrackingService.class));
             }
         }
@@ -327,16 +280,11 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
                 mAuth.signOut();
-               /* try {
-                    FirebaseInstanceId.getInstance().deleteInstanceId();
-                    Log.d("Token","Token eliminado");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-                deleteTokenFCMFirebare();
                 Intent intent = new Intent(context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
+                System.out.println("******************** Parando servicio desde Menu 1");
+                stopService(new Intent(WelcomeActivity.this, GPSTrackingService.class));
                 finish();
             }
         }).setNegativeButton(context.getString(R.string.cancelar),
@@ -357,35 +305,9 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     /**
-     * Elimina el tokem fcm de SharedPreferences.
-     */
-    private void deleteTokenFCMFirebare() {
-        /*if (mAuth.getCurrentUser().getUid()!=null) {
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Utils.users).child(mAuth.getCurrentUser().getUid()).child("token_fcm");
-            reference.setValue("");
-        }*/
-        /*final SharedPreferences prefs = this.getSharedPreferences("FCMID", Context.MODE_PRIVATE);  //PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.remove("registration_id");
-        editor.apply();*/
-        /*DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);
-        FirebaseUser task = FirebaseAuth.getInstance().getCurrentUser();
-        assert task != null;
-        DatabaseReference user_referemce = root.child(task.getUid()).child(Utils.token_fcm);
-        user_referemce.removeValue();*/
-        // Map<String, Boolean> mParent = new HashMap<>();
-        // mParent.put(tokenFcm, true);
-        //user_referemce.setValue(tokenFcm);
-
-    }
-
-    /**
      * Registra al usuario en la plataforma  Crashlytics de Fabric.
      */
     private void logUser() {
         Crashlytics.setUserIdentifier(mAuth.getCurrentUser().getEmail());
-        //Crashlytics.setUserEmail(utils.getUserLogin().di_correo);
-        //Crashlytics.setUserName(utils.getUserLogin().nm_usuario);
-        //Crashlytics.log("Registro de usuario a Crashlytics");
     }
 }

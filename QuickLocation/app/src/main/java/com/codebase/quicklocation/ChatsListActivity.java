@@ -225,6 +225,7 @@ public class ChatsListActivity extends AppCompatActivity implements View.OnClick
 
                 if (cancel) {
                     focusView.requestFocus();
+                    Utils.showToast(ChatsListActivity.this, "Datos incompletos, no se envió la solicitud");
                 } else {
                     dialog.dismiss();
                     //TypeGroup member = new TypeGroup(user_ui, true);

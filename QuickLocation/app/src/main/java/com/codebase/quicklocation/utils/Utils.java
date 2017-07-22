@@ -11,6 +11,11 @@ import android.util.Log;
 import android.util.Size;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -21,6 +26,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 /**
  * Created by fgcanga on 22/01/2017.
@@ -231,5 +237,46 @@ public class Utils {
 
     public static void showToast(Context ctx, String message) {
         Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Encargado de actualizar las coordenadas del usuario
+     * @param latitude latitud
+     * @param longitude longitud
+     * @return true si lo envio correctamente, false caso constrario
+     */
+    public static boolean setGeoFire(double latitude, double longitude) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + "/firebaseUser.json"));
+            JsonElement json = new JsonParser().parse(br);
+            String firebaseUser = json.getAsString();
+
+            if (firebaseUser != null && !firebaseUser.equals("")) {
+                System.out.println("Enviando coordenadas de usuario Geofire " + firebaseUser);
+                DatabaseReference root = FirebaseDatabase.getInstance().getReference().child(Utils.users);;
+                DatabaseReference ref = root.child(firebaseUser);
+                HashMap<String, Object> result = new HashMap<>();
+                result.put("latitude", latitude);
+                result.put("longitude", longitude);
+                ref.updateChildren(result);
+            } else {
+                System.out.println("************* No hay usuario activo para enviar a Geofire");
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String getSavedFirebaseUser(Context context) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + "/firebaseUser.json"));
+            JsonElement json = new JsonParser().parse(br);
+            return json.getAsJsonObject().toString();
+        } catch (Exception e) {
+            logger.error(Reporter.stringStackTrace(e));
+            return "no_firebaseuser";
+        }
     }
 }

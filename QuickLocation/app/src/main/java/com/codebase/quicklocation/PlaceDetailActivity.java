@@ -481,6 +481,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     builder.append(str).append("\n");
                 tvPlaceOpeningHours.setText(Utils.formatDays(builder));
             }
+
+            if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0) {
+                strPlacePhone = place.getFormattedPhoneNumber();
+                tvPlacePhone.setText(strPlacePhone);
+            }
         } else
             logger.write("********************* NO ENCONTRE NADA DE VALOR ...");
     }

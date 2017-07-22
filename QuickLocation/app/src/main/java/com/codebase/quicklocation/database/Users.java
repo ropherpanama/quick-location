@@ -19,6 +19,8 @@ public class Users {
     private String password;
     @DatabaseField
     private String email;
+    @DatabaseField
+    private String fullname;
 
     public Users() {
     }
@@ -53,5 +55,13 @@ public class Users {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 }

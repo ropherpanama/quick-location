@@ -29,7 +29,8 @@ import java.util.HashMap;
 public class GPSTrackingService extends Service {
     private Reporter logger = Reporter.getInstance(GPSTrackingService.class);
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 300000; //5 minutos
+    //private static final int LOCATION_INTERVAL = 300000; //5 minutos
+    private static final int LOCATION_INTERVAL = 10000;
     private static final float LOCATION_DISTANCE = 0;
     DatabaseReference root;
     FirebaseUser userFirebase;
@@ -37,10 +38,7 @@ public class GPSTrackingService extends Service {
         Location mLastLocation;
 
         public LocationListener(String provider) {
-            //logger.write("LocationListener " + provider);
             mLastLocation = new Location(provider);
-
-
         }
 
         @Override
@@ -52,9 +50,9 @@ public class GPSTrackingService extends Service {
             last.setProvider(location.getProvider());
             last.setTime(System.currentTimeMillis());
             Utils.writeJsonOnDisk("location", new StringBuilder(Utils.objectToJson(last)));
-            //logger.write(Utils.objectToJson(last));
             logger.write(Utils.objectToJson(last));
-            setGeoFire(location.getLatitude(),location.getLongitude());
+            Utils.setGeoFire(location.getLatitude(), location.getLongitude());
+            System.out.println(Utils.objectToJson(last));
         }
 
         @Override
@@ -68,29 +66,6 @@ public class GPSTrackingService extends Service {
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
-    }
-
-    /**
-     * Envia las coordenadas con GeoFire;
-     * @param latitude
-     * @param longitude
-     */
-    private void setGeoFire(double latitude, double longitude) {
-
-        if (userFirebase != null)
-        {
-            DatabaseReference ref = root.child(userFirebase.getUid());
-            HashMap<String, Object> result = new HashMap<>();
-            result.put("latitude", latitude);
-            result.put("longitude", longitude);
-            ref.updateChildren(result);
-           // GeoFire geoFire = new GeoFire(ref);
-           // geoFire.setLocation(Utils.location, new GeoLocation(latitude, longitude));
-
-        }
-        /*Map<String, Boolean> mParent = new HashMap<>();
-        mParent.put(tokenFcm, true);
-        user_referemce.setValue(mParent);*/
     }
 
     LocationListener[] mLocationListeners = new LocationListener[]{

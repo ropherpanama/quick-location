@@ -218,6 +218,8 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
         users.setNickname(userName);
         users.setEmail(email);
         users.setPassword(password);
+        users.setFullname(funllName);
+
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -225,6 +227,8 @@ public class ResgisterActivity extends AppCompatActivity implements LoaderCallba
                     showProgress(false);
                     usersDao.add(users);
                     DatabaseReference user_referemce = root.child(task.getResult().getUser().getUid());
+                    Utils.writeJsonOnDisk("firebaseUser", new StringBuilder(task.getResult().getUser().getUid()));
+                    Utils.writeJsonOnDisk("firebaseEmail", new StringBuilder(email));
                     UserStructure userStructure = new UserStructure(task.getResult().getUser().getUid(), userName, funllName);
                     Map<String, Object> postValues = userStructure.toMap();
                     user_referemce.updateChildren(postValues);

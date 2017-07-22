@@ -1,5 +1,6 @@
 package com.codebase.quicklocation;
 
+import android.*;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -30,6 +32,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.codebase.quicklocation.gps.GPSTrackingService;
+import com.codebase.quicklocation.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -40,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static com.codebase.quicklocation.WelcomeActivity.PERMISSION_ALL;
 
 /**
  * A login screen that offers login via email/password.
@@ -136,7 +141,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -185,12 +189,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void singIn(String email, String password) {
+        final String thisEmail = email;
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     showProgress(false);
                     FirebaseUser user = firebaseAuth.getCurrentUser();
+                    Utils.writeJsonOnDisk("firebaseUser", new StringBuilder(user.getUid()));
+                    Utils.writeJsonOnDisk("firebaseEmail", new StringBuilder(thisEmail));
                     updateUI(user);
                 } else {
                     showProgress(false);
@@ -348,6 +355,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        System.out.println("******************** Deteniendo servicio desde Login ... ");
+        stopService(new Intent(this, GPSTrackingService.class));
         finish();
     }
 }
