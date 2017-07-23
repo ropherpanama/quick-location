@@ -64,6 +64,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private String strPlacePhone;
     private String strPlaceId;
     private String strCategory;
+    private String strWebsite;
     private Double doubleRating;
     private StringBuilder strOpeningHours;
     private ResponseForPlaceDetails response;
@@ -303,10 +304,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     tvPlacePhone.setText(strPlacePhone);
                     tvPlaceDirection.setText(strPlaceDirection);
 
-                    if (detail.getWebsite() == null)
-                        tvWebsite.setText("Dato no disponible");
-                    else
+                    if (detail.getWebsite() == null) {
+                        strWebsite = "Dato no disponible";
+                        tvWebsite.setText(strWebsite);
+                    } else {
                         tvWebsite.setText(detail.getWebsite());
+                        strWebsite = detail.getWebsite();
+                    }
 
                     //Buscar reviews, de Google primero, luego del server
                     if(response.getResult().getReviews() != null && !response.getResult().getReviews().isEmpty()) {
@@ -341,10 +345,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     public void goToWebsite(View view){
-        if (!tvWebsite.getText().equals("Dato no disponible")){
-            String url = tvWebsite.getText().toString();
+        if (!"Dato no disponible".equals(strWebsite)){
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
+            i.setData(Uri.parse(strWebsite));
             startActivity(i);
         }
     }
@@ -485,6 +488,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
             if(place.getFormattedPhoneNumber() != null && place.getFormattedPhoneNumber().length() > 0) {
                 strPlacePhone = place.getFormattedPhoneNumber();
                 tvPlacePhone.setText(strPlacePhone);
+            }
+
+            if(place.getWebsite() != null && place.getWebsite().length() > 0) {
+                strWebsite = place.getWebsite();
+                tvWebsite.setText(strWebsite);
             }
         } else
             logger.write("********************* NO ENCONTRE NADA DE VALOR ...");
