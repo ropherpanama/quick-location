@@ -201,7 +201,7 @@ https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.867052
             "point_of_interest",
             "establishment"
          ],
-         "vicinity" : "King Street Wharf, King Street, Sydney"
+         "vicinity" : "Alter King Street Wharf, King Street, Sydney"
       },
       {
          "geometry" : {
